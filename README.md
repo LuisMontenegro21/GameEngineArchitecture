@@ -1,2 +1,2 @@
 # GameEngineArchitecture
-Creating a 2D videogame
+A small breakout videogame 
