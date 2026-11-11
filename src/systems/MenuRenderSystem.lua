@@ -1,0 +1,40 @@
+-- Draws the title screen.
+
+local Screen = require("src.Screen")
+
+local MenuRenderSystem = { name = "menuRender" }
+
+local titleFont, smallFont
+
+function MenuRenderSystem.setup(scene)
+    titleFont = love.graphics.newFont(72)
+    smallFont = love.graphics.newFont(16)
+end
+
+function MenuRenderSystem.unload(scene)
+    -- drop the references; the GC collects them. See RenderSystem.unload
+    -- for why we never release() fonts.
+    titleFont, smallFont = nil, nil
+end
+
+function MenuRenderSystem.draw(scene)
+    local screenW = Screen.w
+    local screenH = Screen.h
+
+    love.graphics.setFont(titleFont)
+    love.graphics.printf("PONG", 0, screenH * 0.28, screenW, "center")
+
+    love.graphics.setFont(smallFont)
+    love.graphics.printf("press SPACE to play  —  ESC quits",
+        0, screenH * 0.62, screenW, "center")
+
+    -- absent until someone has ever won a match on this machine
+    local highscore = scene.registry:resource("highscore")
+    if highscore then
+        love.graphics.printf(
+            ("best victory: %d - %d"):format(highscore.winner, highscore.loser),
+            0, screenH * 0.72, screenW, "center")
+    end
+end
+
+return MenuRenderSystem
