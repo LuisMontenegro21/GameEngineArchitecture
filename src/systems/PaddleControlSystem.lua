@@ -1,40 +1,25 @@
--- Reads the keyboard and turns it into velocity for paddle entities.
--- Note it doesn't move anything: that's the MovementSystem's job.
-
-local Screen = require("src.Screen")
-
-local MARGIN = 30 -- distance from paddles to the side walls
-
+-- Translates keyboard state into horizontal paddle velocity. Position changes
+-- remain the responsibility of MovementSystem.
 local PaddleControlSystem = { name = "paddleControl" }
-
--- This system owns the paddles, so it creates them.
-function PaddleControlSystem.setup(scene)
-    local screenW = Screen.w
-    local screenH = Screen.h
-
-    local function paddlePrefab(x, upKey, downKey)
-        return {
-            position = { x = x, y = (screenH - 80) / 2 },
-            size = { w = 14, h = 80 },
-            velocity = { vx = 0, vy = 0 },
-            paddle = { upKey = upKey, downKey = downKey, speed = 320 },
-            clamp = {},
-        }
-    end
-
-    scene.registry:spawn(paddlePrefab(MARGIN, "w", "s"))
-    scene.registry:spawn(paddlePrefab(screenW - MARGIN - 14, "up", "down"))
-end
 
 function PaddleControlSystem.update(scene, dt)
     local registry = scene.registry
 
-    for _, paddle, vel in registry:each("paddle", "velocity") do
-        local dir = 0
-        if love.keyboard.isDown(paddle.upKey) then dir = dir - 1 end
-        if love.keyboard.isDown(paddle.downKey) then dir = dir + 1 end
+    for _, paddle, velocity in registry:each("paddle", "velocity") do
+        local direction = 0
 
-        vel.vy = dir * paddle.speed
+        if love.keyboard.isDown(paddle.leftKey)
+            or (paddle.altLeftKey and love.keyboard.isDown(paddle.altLeftKey)) then
+            direction = direction - 1
+        end
+
+        if love.keyboard.isDown(paddle.rightKey)
+            or (paddle.altRightKey and love.keyboard.isDown(paddle.altRightKey)) then
+            direction = direction + 1
+        end
+
+        velocity.vx = direction * paddle.speed
+        velocity.vy = 0
     end
 end
 

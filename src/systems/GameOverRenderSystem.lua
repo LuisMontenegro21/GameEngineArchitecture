@@ -1,6 +1,5 @@
--- Draws the results screen from the `finalScore` resource the scene
--- factory made out of the switch payload, plus the `highscore` resource
--- the HighscoreSystem publishes (absent on a first-ever run).
+-- Draws the result of a Breakout round. The scene factory owns the `result`
+-- resource, so this system only renders it.
 
 local Screen = require("src.Screen")
 
@@ -20,31 +19,17 @@ function GameOverRenderSystem.unload(scene)
 end
 
 function GameOverRenderSystem.draw(scene)
-    local finalScore = scene.registry:resource("finalScore")
+    local result = scene.registry:resource("result")
     local screenW = Screen.w
     local screenH = Screen.h
-
-    local winner = finalScore.left > finalScore.right and "Left" or "Right"
+    local message = result == "won" and "You win!" or "Game Over"
 
     love.graphics.setFont(bigFont)
-    love.graphics.printf(winner .. " player wins!",
-        0, screenH * 0.25, screenW, "center")
-    love.graphics.printf(("%d - %d"):format(finalScore.left, finalScore.right),
-        0, screenH * 0.42, screenW, "center")
+    love.graphics.printf(message, 0, screenH * 0.35, screenW, "center")
 
     love.graphics.setFont(smallFont)
-    local highscore = scene.registry:resource("highscore")
-    if highscore and highscore.isNew then
-        love.graphics.printf("a new best victory!",
-            0, screenH * 0.58, screenW, "center")
-    elseif highscore then
-        love.graphics.printf(
-            ("best victory: %d - %d"):format(highscore.winner, highscore.loser),
-            0, screenH * 0.58, screenW, "center")
-    end
-
     love.graphics.printf("press SPACE for the menu",
-        0, screenH * 0.7, screenW, "center")
+        0, screenH * 0.62, screenW, "center")
 end
 
 return GameOverRenderSystem
