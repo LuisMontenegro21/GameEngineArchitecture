@@ -1,19 +1,14 @@
--- Keeps entities tagged with a `clamp` component inside the window
--- (vertically). The paddles use this. Runs AFTER movement.
-
+-- Keeps horizontal paddle entities inside the logical game screen. It runs
+-- after MovementSystem so it resolves the position produced this frame.
 local Screen = require("src.Screen")
 
-local ClampSystem = { name = "clamp" }
+local ClampSystem = { name = "horizontalClamp" }
 
 function ClampSystem.update(scene, dt)
     local registry = scene.registry
 
-    local screenH = Screen.h
-
-    -- the `clamp` tag goes last: its (empty) value just falls off the end
-    for _, pos, size in registry:each("position", "size", "clamp") do
-        if pos.y < 0 then pos.y = 0 end
-        if pos.y + size.h > screenH then pos.y = screenH - size.h end
+    for _, position, size in registry:each("position", "size", "clampHorizontal") do
+        position.x = math.max(0, math.min(Screen.w - size.w, position.x))
     end
 end
 

@@ -1,38 +1,34 @@
--- The pong match itself: everything lesson 02 built, now packaged as a
--- scene factory. Every entry builds it fresh — a rematch is simply
--- "switch here again", and nothing from the previous match can survive.
-
+-- The Breakout board. Movement is followed by boundary resolution: balls
+-- bounce from the left/right/top, while the bottom edge ends the round.
 local Scene = require("src.ecs.Scene")
-
-local BallSpawnSystem = require("src.systems.BallSpawnSystem")
+local BreakoutSetupSystem = require("src.systems.BreakoutSetupSystem")
 local PaddleControlSystem = require("src.systems.PaddleControlSystem")
 local MovementSystem = require("src.systems.MovementSystem")
 local ClampSystem = require("src.systems.ClampSystem")
-local BounceWallsSystem = require("src.systems.BounceWallsSystem")
+local BallWallBounceSystem = require("src.systems.BallWallBounceSystem")
 local PaddleHitsSystem = require("src.systems.PaddleHitsSystem")
-local ScoringSystem = require("src.systems.ScoringSystem")
+local BrickCollisionSystem = require("src.systems.BrickCollisionSystem")
+local BallLossSystem = require("src.systems.BallLossSystem")
 local WinCheckSystem = require("src.systems.WinCheckSystem")
-local DebugSystem = require("src.systems.DebugSystem")
-local RenderSystem = require("src.systems.RenderSystem")
+local ShapeRenderSystem = require("src.systems.ShapeRenderSystem")
+local BrickRenderSystem = require("src.systems.BrickRenderSystem")
+local HudRenderSystem = require("src.systems.HudRenderSystem")
 
 return function(payload)
     local scene = Scene.new("play")
 
-    -- system order IS the frame order. Input systems go first: they
-    -- only fill components and spawn event entities; everything after
-    -- them mutates the world.
-    -- input -> spawn -> control -> simulate -> resolve -> score ->
-    -- decide -> draw
-    scene:addSystem(DebugSystem)
-    scene:addSystem(BallSpawnSystem)
+    scene:addSystem(BreakoutSetupSystem)
     scene:addSystem(PaddleControlSystem)
     scene:addSystem(MovementSystem)
     scene:addSystem(ClampSystem)
-    scene:addSystem(BounceWallsSystem)
+    scene:addSystem(BallWallBounceSystem)
     scene:addSystem(PaddleHitsSystem)
-    scene:addSystem(ScoringSystem)
+    scene:addSystem(BrickCollisionSystem)
+    scene:addSystem(BallLossSystem)
     scene:addSystem(WinCheckSystem)
-    scene:addSystem(RenderSystem)
+    scene:addSystem(ShapeRenderSystem)
+    scene:addSystem(BrickRenderSystem)
+    scene:addSystem(HudRenderSystem)
 
     return scene
 end
