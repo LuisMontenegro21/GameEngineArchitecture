@@ -1,159 +1,193 @@
-# Lesson 05 — Game state: resources, serialization, the save file
+# ECS Breakout
 
-> PIA week 6 · Branch `05-GameState` · Previous: `04.5-GameViewport`
->
-> A small lesson on purpose. Before the card game starts generating
-> state worth keeping (twelve weeks of stats, a whole card collection),
-> pong donates its score one last time so we can build the machinery on
-> something we already understand: a value escapes the entity world,
-> becomes text, survives quitting the game, and greets you on the title
-> screen.
+A small Breakout game built in Lua with LOVE 11.5. The project uses a custom
+Entity Component System (ECS), scene factories, event entities, and fixed-step
+physics.
+
+## Gameplay
+
+The player controls one paddle at the bottom of the screen. Keep the ball in
+play and destroy all 50 bricks.
+
+- The paddle moves horizontally and cannot leave the screen.
+- The ball bounces from the left, right, and top edges.
+- Paddle hits send the ball upward and influence its horizontal direction.
+- A brick disappears when the ball hits it.
+- Letting the ball reach the bottom displays `Game Over`.
+- Destroying every brick displays `You win!`.
+- Each new game reconstructs the complete board and state.
+
+## Requirements
+
+- [LOVE 11.5](https://love2d.org/)
+- Windows, macOS, or Linux
+
+No external Lua packages are required for normal gameplay.
+
+## Running the game
+
+Open a terminal in the repository root and run:
 
 ```sh
-love .             # win a match, quit, relaunch: the menu remembers
-love . --debug     # watch the highscore resource appear in the inspector
+love .
 ```
 
-```sh
-git diff 04.5-GameViewport..05-GameState
+On Windows PowerShell, if `love` is not on `PATH`, run:
+
+```powershell
+& "C:\Program Files\LOVE\love.exe" .
 ```
 
-## 1. The limit of "everything is an entity"
+To open a console for runtime errors on Windows:
 
-Since lesson 02 the answer to "where does data live?" has been *on an
-entity*. The match score already cheated: `ScoringSystem` spawns an
-entity whose only job is to carry the `match` component, and everyone
-finds it with `registry:first("match")`. It works, but look at what
-we're pretending: a score has no position, is never queried alongside
-anything, and there is exactly one. That's not an entity — that's a
-**global with an alibi**.
+```powershell
+& "C:\Program Files\LOVE\love.exe" --console .
+```
 
-Real ECS engines admit this and give singletons their own concept. Bevy
-calls them **resources**; ours is ten lines in `src/ecs/Registry.lua`:
+## Controls
+
+| Action | Keys |
+|---|---|
+| Start the game | `Space` |
+| Move left | `Left Arrow` or `A` |
+| Move right | `Right Arrow` or `D` |
+| Return to the menu after a round | `Space` |
+| Quit | `Escape` |
+
+## Scene flow
+
+```text
+MenuScene --Space--> PlayScene
+PlayScene --ball lost--> GameOverScene (Game Over)
+PlayScene --all bricks destroyed--> GameOverScene (You win!)
+GameOverScene --Space--> MenuScene
+```
+
+`src/Game.lua` owns the active scene. Systems request a transition by spawning
+a `switchRequest` entity. The Game applies that request after the current scene
+update finishes, avoiding scene destruction during system iteration.
+
+## ECS architecture
+
+The ECS consists of:
+
+- **Entities:** numeric identifiers returned by `Registry:spawn`.
+- **Components:** plain Lua tables stored by component name and entity ID.
+- **Systems:** small modules with optional `setup`, `update`, `draw`, and
+  `unload` functions.
+- **Resources:** singleton scene data accessed with `setResource` and
+  `resource`.
+- **Scenes:** an ordered system list with its own Registry.
+
+Important gameplay components include:
+
+```text
+position         x/y coordinates
+size             rectangle width/height
+velocity         horizontal/vertical speed in pixels per second
+moves            enables fixed-step movement
+paddle           paddle speed and key bindings
+ball             identifies the ball
+brick            identifies a brick and stores its color
+clampHorizontal  keeps the paddle inside the screen
+renderShape      selects generic rectangle rendering
+```
+
+The PlayScene owns one `breakout` resource:
 
 ```lua
-registry:setResource("highscore", { winner = 5, loser = 2 })
-local highscore = registry:resource("highscore")
+{
+    remainingBricks = 50,
+    status = "playing", -- playing, lost, or won
+}
 ```
 
-Under the hood it *is* still a hidden singleton entity — which means the
-debug inspector shows every resource for free, no new tooling. The point
-of the API isn't the implementation, it's the **declaration**: code that
-says `resource("finalScore")` tells the reader "there is one of these,
-and it isn't a thing in the world."
+## PlayScene system order
 
-The gameover scene's `finalScore` is the first convert. The `match`
-component stays as-is — migrating it is exercise 1.
+System order is significant because later systems process the state produced by
+earlier systems:
 
-## 2. Serialization: code is data
+```text
+BreakoutSetupSystem
+PaddleControlSystem
+MovementSystem
+ClampSystem
+BallWallBounceSystem
+PaddleHitsSystem
+BrickCollisionSystem
+BallLossSystem
+WinCheckSystem
+ShapeRenderSystem
+BrickRenderSystem
+HudRenderSystem
+```
 
-To outlive a quit, a table has to become text. Lua ships no serializer,
-and it doesn't apologize for it, because it has something better: **a
-Lua table is already valid Lua syntax**. So `src/state/serialize.lua`
-doesn't invent a format — it prints the table as Lua source, and
-deserializing is just *running that text*:
+The systems remain intentionally focused. Input writes velocity, movement
+integrates position, collision systems resolve individual collision types, and
+render systems draw only their assigned data.
+
+## Timing and delta time
+
+LOVE supplies a variable frame delta to `love.update(dt)`. `src/FixedStep.lua`
+accumulates that time and advances gameplay at a fixed rate:
+
+```text
+Physics frequency: 120 Hz
+Physics step:      1 / 120 second
+Maximum frame dt:  0.25 second
+Rendering:         controlled independently by LOVE/VSync
+```
+
+Movement uses pixels per second:
 
 ```lua
-serialize.encode({ bestVictory = { winner = 5, loser = 2 } })
--- "return {\n    bestVictory = {\n        loser = 2,\n        winner = 5,\n    },\n}"
-
-local chunk = loadstring(text)   -- compile the string into a function
-local data = chunk()             -- run it; the table comes back
+position.x = position.x + velocity.vx * dt
+position.y = position.y + velocity.vy * dt
 ```
 
-Thirty lines of recursion, three decisions worth reading:
+Fixed physics reduces collision tunneling and makes movement independent from
+the render frame rate. The game does not currently enforce a 10 FPS rendering
+cap.
 
-- **Plain data only.** Numbers, strings, booleans, tables of those. A
-  function or an Image can't be written down as source, so hitting one
-  is an `error()`, not a shrug — a save you can't write is a bug in
-  *what you tried to save*. This rule is why the GDD's `RunState` will
-  hold no functions, no images, no scene references: state that follows
-  the rule serializes for free, forever.
-- **Sorted keys.** `pairs()` order is undefined; sorting makes the same
-  table always print the same file. Stable output means save files diff
-  cleanly — you can `git diff` your own save while tuning.
-- **`decode` never throws.** `loadstring` + `pcall`, and anything
-  suspicious returns `nil`. A corrupt file is the *caller's* decision
-  (start fresh), not a crash five layers down.
+## Collision behavior
 
-And one warning for later: `loadstring` on a file **executes** that
-file. For your own save directory that's fine; for anything a stranger
-can hand you (downloaded saves, network data) it's an arbitrary-code
-vulnerability, and you'd reach for a data-only format instead. Know
-which one you're holding.
+- Wall collision clamps the ball outside the wall before assigning the correct
+  velocity direction.
+- Paddle collision only accepts a descending ball, pushes it above the paddle,
+  and modifies horizontal velocity based on hit position.
+- Brick collision resolves the smallest overlap axis and processes at most one
+  brick per ball per physics step.
+- Bottom-edge contact is a loss and never reflects the ball upward.
 
-## 3. `love.filesystem`, or: never write next to the executable
+## Project structure
 
-`src/state/SaveFile.lua` owns the file itself, through `love.filesystem`
-— never `io.open`. LÖVE gives every game a per-user **save directory**
-(named by the new `t.identity` in `conf.lua`) and writes there and
-nowhere else. Why not just write `./save.lua`? Because on a machine that
-isn't yours, the game's folder is read-only (`/usr/bin`, `Program
-Files`), shared between users, and wiped by every update. Every engine
-draws this line; LÖVE just refuses to let you cross it.
-
-The other habit worth forming on day one:
-
-```lua
-{ version = 1, bestVictory = { winner = 5, loser = 2 } }
+```text
+main.lua                    LOVE callbacks and fixed-step integration
+conf.lua                    window title, resolution, and LOVE version
+src/Game.lua                scene registration and transitions
+src/FixedStep.lua           fixed physics accumulator
+src/Screen.lua              logical 960x540 resolution
+src/ecs/Registry.lua        entities, components, queries, and resources
+src/ecs/Scene.lua           ordered system lifecycle
+src/scenes/                 menu, play, and result scene factories
+src/systems/                gameplay and rendering systems
 ```
 
-Every save carries a **version**. The day the data changes shape, old
-files announce what they are and can be migrated — or at worst detected
-and discarded — instead of exploding somewhere deep in a scene.
-`SaveFile.load()` returns `nil` for first-run, corrupt, *and*
-wrong-version files alike: to the caller, all three mean "start fresh."
+## Manual verification checklist
 
-## 4. The wiring: nothing on screen is remembered
+1. Start the game and press `Space`.
+2. Confirm the paddle moves with arrows and A/D.
+3. Confirm the paddle remains inside both horizontal edges.
+4. Confirm the ball bounces from the top and side walls.
+5. Confirm paddle contact sends the ball upward.
+6. Confirm struck bricks disappear and the HUD count decreases.
+7. Miss the ball and confirm `Game Over` appears.
+8. Clear every brick and confirm `You win!` appears.
+9. Press `Space` on the result screen and start another game.
+10. Confirm the new game contains all 50 bricks.
 
-`src/systems/HighscoreSystem.lua` runs in the gameover scene — and only
-in `setup`, because the match is already history by the time the scene
-exists; there is nothing to do per-frame. It reads the `finalScore`
-resource, compares the winning *margin* against the file (5–0 beats
-5–2), writes a new best, and publishes a `highscore` resource for the
-render system (`isNew` decides between "a new best victory!" and the
-plain line).
+## Current scope
 
-The title screen closes the loop, and one sentence in `MenuScene.lua`
-is the actual lesson:
-
-> The save file is the only thing that survives between scenes. The
-> title screen reads it fresh every time it's built — nothing on screen
-> is ever "remembered", it's all rebuilt from data.
-
-Scene factories build from scratch (lesson 03), the Game carries no
-payload here, and yet the menu knows. That's the architecture the GDD
-demands — "the save file **is** the run state" — running at pong scale.
-
-One guard worth noticing: the debug scene switcher can jump straight to
-gameover with no payload, so a 0–0 "match" must not become a highscore.
-A scene you can enter directly is a scene that gets entered with
-garbage; defaults are not enough, the *logic* has to survive them too.
-
-## Exercises (for your own game repo)
-
-1. **Migrate `match`.** `ScoringSystem` still hand-rolls its singleton.
-   Move it to `setResource`/`resource` and delete the prefab comment —
-   does anything else break? (The debug inspector shouldn't even
-   notice.)
-2. **Corrupt it on purpose.** Find your save file
-   (`print(love.filesystem.getSaveDirectory())`), open it, and vandalize
-   it — delete a brace, change `version` to 99, replace the whole thing
-   with a poem. The game must start fresh every time, never crash.
-3. **A settings resource.** Add a persistent `settings` table (say,
-   paddle speed) that saves alongside `bestVictory` in the *same* file.
-   What does `SaveFile.save` need so the two owners don't overwrite each
-   other's keys?
-4. **Version 2.** Change the highscore to store the *last five*
-   victories instead of one. Bump `VERSION`, then write a real
-   migration: a v1 file should convert, not be discarded. When is
-   discarding actually the right call?
-5. **The serializer's blind spot.** Our encoder ignores the array part
-   mixed with holes and cycles (`t.self = t` recurses forever). Make
-   cycles an `error("cycle detected")` instead of a stack overflow.
-
-## Next class
-
-`06` — the card game begins for real: the 640×400 canvas from the GDD,
-the real title screen, and the Week scene's first layout. The `RunState`
-you'll build there is this lesson's save file with more fields.
+The playable game includes the complete Breakout loop. Sound effects, lives,
+score persistence, visual effects, and the optional ImGui-based debug overlay
+are outside the current gameplay scope.
