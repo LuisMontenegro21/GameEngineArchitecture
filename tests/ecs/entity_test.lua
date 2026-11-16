@@ -44,8 +44,8 @@ return function()
 
     local listed = manager:entities()
     Assert.equals(2, #listed)
-    Assert.equals(second.id, listed[1].id)
-    Assert.equals(recycled.id, listed[2].id)
+    Assert.equals(recycled.id, listed[1].id)
+    Assert.equals(second.id, listed[2].id)
 
     local iterated = 0
     for handle in manager:each() do

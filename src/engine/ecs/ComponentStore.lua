@@ -68,15 +68,24 @@ function ComponentStore:_default()
     return value
 end
 
-function ComponentStore:add(entityId, value)
+function ComponentStore:prepare(value)
+    if self.tag then
+        return nil
+    end
+    if value == nil then
+        return self:_default()
+    end
+    self:_validate(value)
+    return value
+end
+
+function ComponentStore:add(entityId, value, prepared)
     assert(not self:has(entityId),
         "entity already has component: " .. self.definition.name)
 
     if not self.tag then
-        if value == nil then
-            value = self:_default()
-        else
-            self:_validate(value)
+        if not prepared then
+            value = self:prepare(value)
         end
     end
 
@@ -130,6 +139,10 @@ function ComponentStore:stats()
     stats.tag = self.tag
     stats.used = self.used
     return stats
+end
+
+function ComponentStore:validate()
+    return self.sparse:validate()
 end
 
 return ComponentStore

@@ -3,8 +3,9 @@
 `src.engine` contains reusable, game-agnostic infrastructure.
 
 - `ecs/`: the new ECS public API and its implementation, developed according to
-  `planning.md`. Phases 1-2 currently provide generational entity handles,
-  component definitions, and sparse-set stores.
+  `planning.md`. Phases 1-4 currently provide generational entity handles,
+  component definitions, sparse-set stores, the private-state World facade, and
+  normalized query views.
 - `legacy/`: the current Registry/Scene implementation retained temporarily so
   Breakout remains playable during migration. New engine code must not depend on
   it.

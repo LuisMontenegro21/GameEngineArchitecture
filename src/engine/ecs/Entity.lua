@@ -115,6 +115,16 @@ function Entity:isAlive(handle)
     return self:_isCurrent(handle)
 end
 
+function Entity:handleForId(id)
+    if self.disposed or type(id) ~= "number" or id % 1 ~= 0 or id < 1 then
+        return nil
+    end
+    if not self.alive[id] then
+        return nil
+    end
+    return copyHandle(id, self.generations[id])
+end
+
 function Entity:requireAlive(handle, operation)
     operation = operation or "use entity"
     if not self:_ensureOpen(operation) then

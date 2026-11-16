@@ -106,5 +106,55 @@ tag flag, optional default factory, validator, and future serialization hooks.
   is storage order and is not a simulation-order guarantee.
 - Tag stores contain no per-entity value array.
 - Stores accept numeric entity IDs only. World-level handle/generation checks are
-  added when Phase 3 introduces `World`.
+  applied by `World` before storage is touched.
+
+## World facade
+
+`World` is the public state boundary. Its mutable entity manager, component
+registry, and stores are held privately; callers use World methods rather than
+editing those objects directly.
+
+- `World.new({ identity, validation, diagnostic })` creates an isolated world.
+- `create(initialComponents)` preflights every component name, default, and
+  validator before allocating an entity. A failed creation leaves entity count,
+  stores, and structural version unchanged.
+- `add`, `set`, `get`, `require`, `has`, `remove`, and `destroy` validate the
+  generational entity handle before touching storage.
+- Destroying an entity removes all of its components before invalidating its
+  handle.
+- `structuralVersion` changes on registration, creation, component add/remove,
+  and entity destruction. Mutating a component value with `set` does not change
+  it because the entity/component shape is unchanged.
+- `validate()` checks component-store indexes and confirms every stored entity
+  is alive in the entity manager.
+- `clear()` destroys every live entity; `dispose()` clears the world and rejects
+  subsequent mutation.
+- World instances share no mutable state. A handle from one world is invalid in
+  another, even when its ID and generation match.
+
+## Query views
+
+`World:query(specification)` returns a query instance. The specification accepts
+`all`, `any`, `none`, `optional`, `changed`, and `stable` fields containing
+component-name arrays.
+
+- `all` requires every listed component; `any` requires at least one; `none`
+  excludes every listed component.
+- `optional` values do not affect membership. Iteration returns component values
+  in normalized `all` output order followed by normalized `optional` output
+  order. `any` and `none` are filters, not output columns.
+- Duplicate names are normalized. A component cannot be both `all` and
+  `optional`; unknown names fail when the query is created.
+- Queries with required components plan from the smallest required store. A
+  query with no required components scans live entities.
+- Fast iteration uses dense storage order where possible. `stable = true` sorts
+  matching entity IDs in ascending order and is deterministic.
+- `each()` returns generational entity handles and output values. Normal
+  exhaustion closes the iterator. If iteration stops early, callers must call
+  `query:close()` before structural mutation.
+- Structural changes while any query iterator is active fail immediately.
+  Nested iterators are supported and independently counted.
+- `changed` requires each listed component to have been touched since the query
+  instance's last completed iteration. `World:set` marks a component changed;
+  `World:touch` exists for in-place table edits.
 

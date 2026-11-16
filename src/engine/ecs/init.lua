@@ -8,12 +8,14 @@
 local Entity = require("src.engine.ecs.Entity")
 local ComponentRegistry = require("src.engine.ecs.ComponentRegistry")
 local ComponentStore = require("src.engine.ecs.ComponentStore")
+local World = require("src.engine.ecs.World")
 
 local ECS = {
     version = "0.1.0-dev",
     Entity = Entity,
     ComponentRegistry = ComponentRegistry,
     ComponentStore = ComponentStore,
+    World = World,
     validationModes = {
         off = "off",
         warn = "warn",

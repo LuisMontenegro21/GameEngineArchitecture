@@ -8,6 +8,8 @@ local tests = {
     "tests.ecs.phase0_test",
     "tests.ecs.entity_test",
     "tests.ecs.component_test",
+    "tests.ecs.world_test",
+    "tests.ecs.query_test",
 }
 
 local passed = 0

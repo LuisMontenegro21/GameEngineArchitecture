@@ -130,4 +130,20 @@ function SparseSet:stats()
     }
 end
 
+function SparseSet:validate()
+    local seen = {}
+    for index, entityId in ipairs(self.dense) do
+        assert(not seen[entityId], "sparse set contains duplicate entity ID")
+        seen[entityId] = true
+        assert(self.sparse[entityId] == index,
+            "sparse index does not match dense index")
+    end
+
+    for entityId, index in pairs(self.sparse) do
+        assert(self.dense[index] == entityId,
+            "dense value does not match sparse index")
+    end
+    return true
+end
+
 return SparseSet

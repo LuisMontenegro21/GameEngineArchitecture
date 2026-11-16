@@ -9,7 +9,5 @@ return function()
     Assert.equals("strict", ECS.validationModes.strict)
     Assert.isTable(ECS.Entity, "Phase 1 must expose the Entity manager")
 
-    -- Phase 0 intentionally has no World implementation yet. This assertion
-    -- protects the import boundary without coupling the test to future storage.
-    Assert.falsy(ECS.World, "World is introduced in a later phase")
+    Assert.isTable(ECS.World, "Phase 3 must expose the World facade")
 end

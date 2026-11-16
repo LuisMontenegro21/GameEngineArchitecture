@@ -164,7 +164,7 @@ cap.
 ```text
 main.lua                    LOVE callbacks and fixed-step integration
 conf.lua                    window title, resolution, and LOVE version
-src/engine/ecs/             new ECS API, entity manager, and component stores
+src/engine/ecs/             new ECS API, entity manager, stores, and World
 src/engine/legacy/          temporary Registry/Scene used during migration
 src/engine/loop/            reusable fixed-step timing utility
 src/game/Game.lua           scene registration and transitions
