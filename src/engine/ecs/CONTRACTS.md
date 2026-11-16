@@ -158,3 +158,25 @@ component-name arrays.
   instance's last completed iteration. `World:set` marks a component changed;
   `World:touch` exists for in-place table edits.
 
+## Command buffers
+
+`World:commands()` returns the world's deferred structural command buffer.
+Commands are data until `World:flush()` or `buffer:flush()` is called at a safe
+boundary.
+
+- `create` returns a temporary future-entity token. Commands recorded later in
+  the same buffer may target that token; it resolves to a generational handle
+  when its create command executes.
+- `add`, `set`, `remove`, and `destroy` execute in recorded order. Before flush,
+  they have no effect on queries, counts, or component values.
+- Flushing while a query iterator is active fails. Systems may record commands
+  during iteration, then the scheduler may flush after the iterator closes.
+- Flush uses prefix-commit semantics: successful commands remain committed; the
+  failing command raises a contextual error; the unexecuted suffix is discarded.
+- Duplicate adds, updates to missing components, and operations on destroyed
+  targets fail through the normal World contract. Removing a missing component
+  is a documented no-op returning `false`.
+- `clear()` discards pending commands and unresolved future tokens. Tokens are
+  valid only for their originating buffer and pending flush.
+- Command buffers do not silently flush and do not expose World storage.
+

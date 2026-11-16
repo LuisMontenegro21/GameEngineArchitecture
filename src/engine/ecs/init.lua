@@ -9,6 +9,7 @@ local Entity = require("src.engine.ecs.Entity")
 local ComponentRegistry = require("src.engine.ecs.ComponentRegistry")
 local ComponentStore = require("src.engine.ecs.ComponentStore")
 local World = require("src.engine.ecs.World")
+local CommandBuffer = require("src.engine.ecs.CommandBuffer")
 
 local ECS = {
     version = "0.1.0-dev",
@@ -16,6 +17,7 @@ local ECS = {
     ComponentRegistry = ComponentRegistry,
     ComponentStore = ComponentStore,
     World = World,
+    CommandBuffer = CommandBuffer,
     validationModes = {
         off = "off",
         warn = "warn",

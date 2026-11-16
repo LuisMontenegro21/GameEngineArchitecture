@@ -8,6 +8,7 @@ local Entity = require("src.engine.ecs.Entity")
 local ComponentRegistry = require("src.engine.ecs.ComponentRegistry")
 local ComponentStore = require("src.engine.ecs.ComponentStore")
 local Query = require("src.engine.ecs.Query")
+local CommandBuffer = require("src.engine.ecs.CommandBuffer")
 
 local World = {}
 World.__index = World
@@ -166,6 +167,7 @@ function World.new(options)
         structuralVersion = 0,
         disposed = false,
     }
+    states[world].commandBuffer = CommandBuffer.new(world)
     nextWorldId = nextWorldId + 1
     return world
 end
@@ -368,6 +370,16 @@ function World:query(specification)
     return Query.new(self, state, cached)
 end
 
+function World:commands()
+    return ensureOpen(self, "access command buffer").commandBuffer
+end
+
+function World:flush()
+    local state = ensureOpen(self, "flush commands")
+    assertNoActiveIterators(state, "flush commands")
+    return state.commandBuffer:_flush()
+end
+
 function World:componentStats(name)
     local state = stateOf(self)
     local store = state.stores[name]
@@ -394,6 +406,7 @@ function World:dispose()
     end
 
     assertNoActiveIterators(state, "dispose world")
+    state.commandBuffer:clear()
     self:clear()
     state.entity:dispose()
     state.components = nil
