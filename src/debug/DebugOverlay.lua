@@ -18,8 +18,8 @@
 --   F10  advance exactly one frame while paused
 
 local imlove = require("lib.imlove")
-local Game = require("src.Game") -- for the scene switcher only
-local Screen = require("src.Screen") -- the game's resolution, one source
+local Game = require("src.game.Game") -- for the scene switcher only
+local Screen = require("src.game.Screen") -- the game's resolution, one source
 
 local DebugOverlay = {}
 

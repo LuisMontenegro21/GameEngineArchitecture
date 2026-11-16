@@ -1,4 +1,4 @@
-local Screen = require("src.Screen")
+local Screen = require("src.game.Screen")
 
 local MenuRenderSystem = { name = "menuRender" }
 

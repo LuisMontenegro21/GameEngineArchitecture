@@ -1,6 +1,6 @@
 -- Turns a bottom-edge crossing into a terminal loss. The status guard makes
 -- this safe even if a scene switch is delayed by another engine feature.
-local Screen = require("src.Screen")
+local Screen = require("src.game.Screen")
 
 local BallLossSystem = { name = "ballLoss" }
 

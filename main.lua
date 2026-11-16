@@ -1,8 +1,8 @@
-local Game = require("src.Game")
-local FixedStep = require("src.FixedStep")
-local MenuScene = require("src.scenes.MenuScene")
-local PlayScene = require("src.scenes.PlayScene")
-local GameOverScene = require("src.scenes.GameOverScene")
+local Game = require("src.game.Game")
+local FixedStep = require("src.engine.loop.FixedStep")
+local MenuScene = require("src.game.scenes.MenuScene")
+local PlayScene = require("src.game.scenes.PlayScene")
+local GameOverScene = require("src.game.scenes.GameOverScene")
 
 local PHYSICS_STEP = 1 / 120
 local MAXIMUM_FRAME_DELTA = 0.25

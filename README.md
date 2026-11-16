@@ -63,7 +63,7 @@ PlayScene --all bricks destroyed--> GameOverScene (You win!)
 GameOverScene --Space--> MenuScene
 ```
 
-`src/Game.lua` owns the active scene. Systems request a transition by spawning
+`src/game/Game.lua` owns the active scene. Systems request a transition by spawning
 a `switchRequest` entity. The Game applies that request after the current scene
 update finishes, avoiding scene destruction during system iteration.
 
@@ -128,7 +128,7 @@ render systems draw only their assigned data.
 
 ## Timing and delta time
 
-LOVE supplies a variable frame delta to `love.update(dt)`. `src/FixedStep.lua`
+LOVE supplies a variable frame delta to `love.update(dt)`. `src/engine/loop/FixedStep.lua`
 accumulates that time and advances gameplay at a fixed rate:
 
 ```text
@@ -164,13 +164,13 @@ cap.
 ```text
 main.lua                    LOVE callbacks and fixed-step integration
 conf.lua                    window title, resolution, and LOVE version
-src/Game.lua                scene registration and transitions
-src/FixedStep.lua           fixed physics accumulator
-src/Screen.lua              logical 960x540 resolution
-src/ecs/Registry.lua        entities, components, queries, and resources
-src/ecs/Scene.lua           ordered system lifecycle
-src/scenes/                 menu, play, and result scene factories
-src/systems/                gameplay and rendering systems
+src/engine/ecs/             new ECS API, entity manager, and component stores
+src/engine/legacy/          temporary Registry/Scene used during migration
+src/engine/loop/            reusable fixed-step timing utility
+src/game/Game.lua           scene registration and transitions
+src/game/Screen.lua         logical 960x540 resolution
+src/game/scenes/            menu, play, and result scene factories
+src/game/systems/           Breakout gameplay and rendering systems
 ```
 
 ## Manual verification checklist
@@ -185,6 +185,19 @@ src/systems/                gameplay and rendering systems
 8. Clear every brick and confirm `You win!` appears.
 9. Press `Space` on the result screen and start another game.
 10. Confirm the new game contains all 50 bricks.
+
+## Headless ECS checks
+
+Phase 0 includes a dependency-free sanity suite for the new ECS boundary. Run
+it with Lua or LuaJIT from the repository root:
+
+```sh
+lua tests/run.lua
+```
+
+The new ECS is currently only a public import boundary. Breakout still runs on
+the temporary implementation under `src/engine/legacy` until the migration
+phase in `planning.md`.
 
 ## Current scope
 

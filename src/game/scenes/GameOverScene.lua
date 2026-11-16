@@ -1,6 +1,6 @@
-local Scene = require("src.ecs.Scene")
-local GameOverSystem = require("src.systems.GameOverSystem")
-local GameOverRenderSystem = require("src.systems.GameOverRenderSystem")
+local Scene = require("src.engine.legacy.Scene")
+local GameOverSystem = require("src.game.systems.GameOverSystem")
+local GameOverRenderSystem = require("src.game.systems.GameOverRenderSystem")
 
 return function(payload)
     local scene = Scene.new("gameover")

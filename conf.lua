@@ -1,4 +1,4 @@
-local Screen = require("src.Screen") -- the game's resolution, one source
+local Screen = require("src.game.Screen") -- the game's resolution, one source
 
 function love.conf(t)
     -- names the game's per-user save directory (love.filesystem writes

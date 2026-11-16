@@ -1,7 +1,7 @@
 -- Draws the result of a Breakout round. The scene factory owns the `result`
 -- resource, so this system only renders it.
 
-local Screen = require("src.Screen")
+local Screen = require("src.game.Screen")
 
 local GameOverRenderSystem = { name = "gameOverRender" }
 

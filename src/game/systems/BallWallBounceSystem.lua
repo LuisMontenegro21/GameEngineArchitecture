@@ -1,6 +1,6 @@
 -- Reflects balls from the left, right, and top boundaries. The bottom edge
 -- belongs to BallLossSystem and must never bounce a ball back into play.
-local Screen = require("src.Screen")
+local Screen = require("src.game.Screen")
 
 local BallWallBounceSystem = { name = "ballWallBounce" }
 

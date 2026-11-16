@@ -1,3 +1,8 @@
+-- Legacy Scene: the current Breakout scene implementation.
+--
+-- It remains available only while Breakout is migrated to the new ECS in
+-- src.engine.ecs. New engine code must not require this module.
+--
 -- A Scene is one screen of the game: a menu, the overworld, a battle...
 -- It owns the two halves of ECS:
 --
@@ -19,9 +24,9 @@
 -- system order: they only fill components and spawn event entities;
 -- the systems after them mutate the world.
 --
--- The Game owns the scenes and switches between them; see src/Game.lua.
+-- The Game owns the scenes and switches between them; see src.game.Game.
 
-local Registry = require("src.ecs.Registry")
+local Registry = require("src.engine.legacy.Registry")
 
 local Scene = {}
 Scene.__index = Scene

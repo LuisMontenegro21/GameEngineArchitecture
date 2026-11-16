@@ -1,3 +1,8 @@
+-- Legacy Registry: the current Breakout ECS implementation.
+--
+-- It remains available only while Breakout is migrated to the new ECS in
+-- src.engine.ecs. New engine code must not require this module.
+--
 -- The Registry: where all components live, indexed by entity.
 --
 --   Entity    = just a number. It has no data, no behavior, no class.

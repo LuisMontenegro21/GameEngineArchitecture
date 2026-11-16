@@ -1,6 +1,6 @@
 -- Keeps horizontal paddle entities inside the logical game screen. It runs
 -- after MovementSystem so it resolves the position produced this frame.
-local Screen = require("src.Screen")
+local Screen = require("src.game.Screen")
 
 local ClampSystem = { name = "horizontalClamp" }
 
