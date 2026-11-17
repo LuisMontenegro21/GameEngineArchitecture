@@ -4,9 +4,9 @@ A small Breakout game written in Lua for LOVE 11.5. It is also a learning and
 experimentation project for a custom, reusable Entity Component System (ECS).
 
 The active game path uses the custom `World`, `Scheduler`, `Runtime`, Scene,
-and SceneManager layers. The older Registry/Scene implementation remains in the
-repository only as compatibility code pending final manual verification and
-removal.
+and SceneManager layers. 
+
+![Breakout gameplay](assets/demo/breakout-demo.gif)
 
 ## Gameplay specification
 
