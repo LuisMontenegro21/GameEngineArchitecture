@@ -127,6 +127,9 @@ return function()
     end
     Assert.truthy(randomized:validate())
 
+    Assert.equals("position", world:componentsOf(second)[1])
+    Assert.equals(1, #world:componentsOf(second))
+
     local cleared = world:clear()
     Assert.equals(1, cleared)
     Assert.equals(0, world:count())

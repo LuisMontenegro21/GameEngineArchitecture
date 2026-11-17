@@ -1,0 +1,16 @@
+local Game = require("src.game.Game")
+local MenuScene = require("src.game.scenes.MenuScene")
+local PlayScene = require("src.game.scenes.PlayScene")
+local GameOverScene = require("src.game.scenes.GameOverScene")
+
+return function()
+    Game.registerScene("menu", MenuScene)
+    Game.registerScene("play", PlayScene)
+    Game.registerScene("gameover", GameOverScene)
+    Game.start("menu")
+    Game.keypressed("space")
+    Game.update(0)
+    assert(Game.current():name() == "play")
+    Game.draw(0)
+    assert(Game.quit())
+end

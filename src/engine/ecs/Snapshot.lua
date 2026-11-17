@@ -1,5 +1,6 @@
 local Snapshot = {}
 Snapshot.VERSION = 1
+Snapshot.schemaVersion = "1.0"
 
 local function clone(value, seen)
     local t = type(value)

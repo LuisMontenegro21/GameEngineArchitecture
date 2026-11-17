@@ -62,8 +62,12 @@ end
 -- With a tree per component the editor grows with the entity; with a
 -- Combo it stays one dropdown tall no matter how many components the
 -- dating sim will pile on.
-local function componentEditor(registry, entity)
-    local names = registry:componentsOf(entity)
+local function sameEntity(left, right)
+    return left and right and left.id == right.id and left.generation == right.generation
+end
+
+local function componentEditor(world, entity)
+    local names = world:componentsOf(entity)
     if inspectedComponent > #names then
         inspectedComponent = 1 -- the entity changed shape under us
     end
@@ -71,7 +75,11 @@ local function componentEditor(registry, entity)
 
     local name = names[inspectedComponent]
     if not name then return end
-    local data = registry:get(entity, name)
+    local data = world:get(entity, name)
+    if type(data) ~= "table" then
+        imlove.Text("tag component")
+        return
+    end
 
     local keys = {} -- pairs() order is unstable; sort for a calm UI
     for k in pairs(data) do
@@ -89,6 +97,7 @@ local function componentEditor(registry, entity)
             imlove.Text("%s: %s", k, tostring(v))
         end
     end
+    world:touch(entity, name)
 end
 
 local function buildUi(scene)
@@ -112,18 +121,18 @@ local function buildUi(scene)
                 ("%.1f ms"):format(frameTimes[#frameTimes] or 0))
         end
 
-        local registry = scene.registry
+        local world = scene:world()
         if imlove.CollapsingHeader("entities", true) then
             -- a fixed-height scrolling region: the list must stay usable
             -- when a scene holds hundreds of entities, not just pong's
             -- dozen. (BeginChild must ALWAYS be matched by EndChild,
             -- even when it reports itself as not visible.)
             if imlove.BeginChild("entityList", 0, 150, true) then
-                for _, entity in ipairs(registry:entities()) do
-                    imlove.PushID(entity)
-                    local label = ("%d: %s"):format(entity,
-                        table.concat(registry:componentsOf(entity), " "))
-                    if imlove.Selectable(label, selectedEntity == entity) then
+                for _, entity in ipairs(world:entities()) do
+                    imlove.PushID(entity.id)
+                    local label = ("%d:%d: %s"):format(entity.id, entity.generation,
+                        table.concat(world:componentsOf(entity), " "))
+                    if imlove.Selectable(label, sameEntity(selectedEntity, entity)) then
                         selectedEntity = entity
                         inspectedComponent = 1 -- new entity, new dropdown
                     end
@@ -134,7 +143,7 @@ local function buildUi(scene)
         end
 
         -- the selected entity may have been destroyed since last frame
-        if selectedEntity and #registry:componentsOf(selectedEntity) == 0 then
+        if selectedEntity and not world:isAlive(selectedEntity) then
             selectedEntity = nil
         end
 
@@ -144,8 +153,8 @@ local function buildUi(scene)
             -- per entity — and stale state when numbers recycle across
             -- scenes. The number is shown inside instead.
             if imlove.CollapsingHeader("selected entity", true) then
-                imlove.Text("entity %d", selectedEntity)
-                componentEditor(registry, selectedEntity)
+                imlove.Text("entity %d:%d", selectedEntity.id, selectedEntity.generation)
+                componentEditor(world, selectedEntity)
             end
         end
     end
@@ -202,13 +211,13 @@ local function buildEnginePanel(scene)
         -- the tool has no special powers. Pressing the current scene's
         -- button rebuilds it fresh (factories!), so it doubles as a
         -- restart button. While paused the request just sits in the
-        -- registry: Game.update is what honors it, on the next step.
+        -- SceneManager applies it at the next safe application boundary.
         if imlove.CollapsingHeader("scenes", true) then
-            imlove.Text("current: %s", scene.name)
+            imlove.Text("current: %s", scene:name())
             for i, name in ipairs(Game.sceneNames()) do
                 if i > 1 then imlove.SameLine() end
                 if imlove.Button(name) then
-                    scene.registry:spawn({ switchRequest = { to = name } })
+                    Game.manager():requestTransition(name)
                 end
             end
         end
@@ -218,10 +227,10 @@ local function buildEnginePanel(scene)
         -- world keep running without it. The off-flag lives on the scene
         -- (see Scene.new), so a fresh scene always starts with all on.
         if imlove.CollapsingHeader("systems", true) then
-            for _, system in ipairs(scene.systems) do
-                local enabled = imlove.Checkbox(system.name or "(unnamed)",
-                    not scene.disabledSystems[system])
-                scene.disabledSystems[system] = (not enabled) or nil
+            local runtime = scene:runtime()
+            for _, name in ipairs(runtime:scheduler():systemNames()) do
+                local enabled = imlove.Checkbox(name, runtime:isSystemEnabled(name))
+                runtime:setSystemEnabled(name, enabled)
             end
         end
     end
@@ -288,7 +297,7 @@ function DebugOverlay.beginFrame(scene)
     installFont()
     imlove.NewFrame()
 
-    if scene ~= inspectedScene then -- entity numbers reset with the registry
+    if scene ~= inspectedScene then -- each scene owns a fresh World
         inspectedScene = scene
         selectedEntity = nil
         inspectedComponent = 1

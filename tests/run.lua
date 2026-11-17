@@ -18,6 +18,16 @@ local tests = {
     "tests.ecs.relationship_test",
     "tests.ecs.snapshot_test",
     "tests.ecs.diagnostics_test",
+    "tests.game_breakout_ecs_test",
+    "tests.phase14_release_test",
+    "tests.scene_test",
+    "tests.scene_runner_test",
+    "tests.game_ecs_definitions_test",
+    "tests.gameplay_systems_test",
+    "tests.scene_event_transition_test",
+    "tests.game_scene_flow_test",
+    "tests.game_application_test",
+    "tests.phase13_integration_test",
 }
 
 local passed = 0

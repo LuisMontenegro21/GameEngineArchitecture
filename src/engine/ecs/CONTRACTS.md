@@ -23,6 +23,10 @@ An entity handle is a plain table containing an integer `id` and positive
 integer `generation`. The entity manager owns both values and the caller must
 not use an ID by itself as an entity reference.
 
+Tools may use `World:entities()` and `World:componentsOf(handle)` to inspect
+live entities through the supported API. `componentsOf` returns sorted component
+names only; it does not expose component-store internals.
+
 - `create()` returns a new live handle.
 - `isAlive(handle)` is a side-effect-free predicate and returns `false` for
   malformed, stale, destroyed, or disposed handles.

@@ -441,6 +441,18 @@ function World:has(handle, name)
     return store:has(handle.id)
 end
 
+-- Supported inspection surface for tools. It returns metadata only; component
+-- storage stays private to the World.
+function World:componentsOf(handle)
+    local state = requireEntity(self, handle, "inspect components")
+    local names = {}
+    for name, store in pairs(state.stores) do
+        if store:has(handle.id) then names[#names + 1] = name end
+    end
+    table.sort(names)
+    return names
+end
+
 function World:getParent(handle)
     local state = requireEntity(self, handle, "get parent")
     local parentId = state.parent[handle.id]

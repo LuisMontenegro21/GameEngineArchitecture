@@ -1,18 +1,22 @@
-local Scene = require("src.engine.legacy.Scene")
-local GameOverSystem = require("src.game.systems.GameOverSystem")
-local GameOverRenderSystem = require("src.game.systems.GameOverRenderSystem")
+local Scene = require("src.engine.scene.Scene")
+local Screen = require("src.game.Screen")
+local registerBreakout = require("src.game.ecs.register")
+local RenderSystems = require("src.game.ecs.RenderSystems")
 
 return function(payload)
-    local scene = Scene.new("gameover")
-    local result = payload and payload.result or "lost"
-
-    if result ~= "won" then
-        result = "lost"
-    end
-
-    scene.registry:setResource("result", result)
-    scene:addSystem(GameOverSystem)
-    scene:addSystem(GameOverRenderSystem)
+    local result = payload and payload.result == "won" and "won" or "lost"
+    local scene = Scene.new({ name = "gameover" })
+    local world = scene:world()
+    registerBreakout(world)
+    world:setResource("screen", { w = Screen.w, h = Screen.h })
+    world:setResource("input", {})
+    world:setResource("match", { status = result, remainingBricks = 0 })
+    scene:addSystem({ name = "gameOverInput", stage = "fixedUpdate", run = function(context)
+        for event in context.world:events("keyPressed") do
+            if event.payload.key == "space" then context.emit("sceneRequest", { to = "menu" }) end
+        end
+    end })
+    RenderSystems.installGameOver(scene:scheduler())
 
     return scene
 end

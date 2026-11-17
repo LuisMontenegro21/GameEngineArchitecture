@@ -1,95 +1,45 @@
--- The Game: owns the scenes and switches between them. There is exactly
--- one Game, so it's a plain module (require caches it), not a class.
---
--- Nobody calls a switch function directly. To change scenes, ANY system
--- spawns an event entity in its own registry:
---
---   registry:spawn({ switchRequest = { to = "gameover", payload = {...} } })
---
--- and the Game honors it AFTER the frame's update — never in the middle
--- of one, when the current scene's systems are still iterating the very
--- registry that a switch would destroy. Deferred transitions like this
--- are how real engines avoid that whole class of crashes.
+-- Application facade for the ECS-backed scene manager. LOVE callbacks only
+-- enqueue input; scene systems receive it through registered event channels.
+local SceneManager = require("src.engine.scene.SceneManager")
 
 local Game = {}
+local manager = SceneManager.new()
+local inputQueue = {}
 
-local factories = {} -- scene name -> function(payload) -> Scene
-local current = nil
+function Game.registerScene(name, factory) manager:register(name, factory) end
+function Game.start(name) return manager:start(name) end
 
--- Scenes register a factory, not an instance: every entry builds the
--- scene fresh, so no stale state can survive a visit.
-function Game.registerScene(name, factory)
-    factories[name] = factory
-end
-
-local function performSwitch(name, payload)
-    assert(factories[name], "unknown scene: " .. tostring(name))
-    if current then
-        current:unload()
+local function drainInput()
+    local scene = manager:current()
+    if not scene then return end
+    local world = scene:world()
+    for _, record in ipairs(inputQueue) do
+        local event = record.kind == "keypressed" and "keyPressed" or "keyReleased"
+        if world:hasEventDefinition(event) then world:emit(event, { key = record.key }) end
     end
-    current = factories[name](payload)
-    current:setup()
+    inputQueue = {}
 end
 
-function Game.start(name)
-    performSwitch(name, nil)
-end
-
+-- The legacy main loop currently calls this once per fixed tick. LoveRunner
+-- takes over frame orchestration after the remaining callback migration.
 function Game.update(dt)
-    current:update(dt)
-
-    -- key events are broadcasts: systems READ them, nobody destroys
-    -- them. Their frame is over, so the Game — which spawned them —
-    -- sweeps them now. Input lives for exactly one update.
-    for _, entity in ipairs(current.registry:query("keyPressed")) do
-        current.registry:destroy(entity)
-    end
-
-    -- the frame is over; now it's safe to honor a switch request
-    local _, request = current.registry:first("switchRequest")
-    if request then
-        performSwitch(request.to, request.payload)
-    end
+    drainInput()
+    manager:preUpdate(dt)
+    manager:fixedUpdate(dt)
+    manager:postFixedUpdate(dt)
+    manager:update(dt)
+    return manager:postUpdate(dt)
 end
 
-function Game.draw()
-    current:draw()
-end
-
+function Game.draw(alpha) return manager:draw(alpha or 0) end
 function Game.keypressed(key)
-    if key == "escape" then -- quitting is a Game concern, not a scene's
-        love.event.quit()
-        return
-    end
-    -- everything else enters the world as DATA: a `keyPressed` event
-    -- entity. LÖVE delivers key events BEFORE love.update, so every
-    -- system sees it during this frame's update; Game.update sweeps it
-    -- afterwards.
-    current.registry:spawn({ keyPressed = { key = key } })
+    if key == "escape" then if love and love.event then love.event.quit() end; return end
+    inputQueue[#inputQueue + 1] = { kind = "keypressed", key = key }
 end
-
-function Game.quit()
-    if current then
-        current:unload()
-    end
-end
-
--- Handy for tests and (soon) debug tooling.
-function Game.current()
-    return current
-end
-
--- Every registered scene name, sorted. Game code never needs this — it
--- always knows where it's going. It exists for TOOLS, same story as
--- Registry:entities(): the debug scene switcher asks "where could we
--- go?" without hardcoding a scene list.
-function Game.sceneNames()
-    local names = {}
-    for name in pairs(factories) do
-        names[#names + 1] = name
-    end
-    table.sort(names)
-    return names
-end
+function Game.keyreleased(key) inputQueue[#inputQueue + 1] = { kind = "keyreleased", key = key } end
+function Game.quit() inputQueue = {}; return manager:quit() end
+function Game.current() return manager:current() end
+function Game.sceneNames() return manager:sceneNames() end
+function Game.manager() return manager end
 
 return Game

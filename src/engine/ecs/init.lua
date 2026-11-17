@@ -19,7 +19,8 @@ local Snapshot = require("src.engine.ecs.Snapshot")
 local Prefab = require("src.engine.ecs.Prefab")
 
 local ECS = {
-    version = "0.1.0-dev",
+    version = "1.0.0",
+    apiVersion = 1,
     Entity = Entity,
     ComponentRegistry = ComponentRegistry,
     ComponentStore = ComponentStore,

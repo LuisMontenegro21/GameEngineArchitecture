@@ -14,15 +14,18 @@
   it.
 - `loop/`: timing and application-loop utilities that do not depend on game
   modules or LOVE.
-- `scene/`: reserved for the future Scene and SceneStack layer. It will compose
-  Worlds and Runtimes without becoming part of the ECS core.
+- `scene/`: application-level `Scene` and `SceneManager` composition. A Scene
+  owns one World, Scheduler, and Runtime; SceneManager performs deferred,
+  lifecycle-safe replacement without becoming part of the ECS core.
 
 Game-specific code belongs in `src.game`. The root `main.lua` and `conf.lua`
 are the only LOVE entry points.
 
-`LoveRunner` is a thin adapter: it updates the transient `time` resource and
-invokes Runtime stages. Render stages execute in a read-only World scope;
-mutation or command flushing from render code is rejected.
+`LoveRunner` is a thin adapter: it can drive either one Runtime or a
+SceneManager, queues keyboard input outside ECS iteration, updates the transient
+`time` resource, and invokes stages in `preUpdate`, fixed-step, post-update,
+and render order. Render stages execute in a read-only World scope; mutation or
+command flushing from render code is rejected.
 
 World relationships support deterministic parent/child traversal, cycle-safe
 reparenting, and `cascade`, `orphan`, or `reject` destruction policies. These
@@ -41,6 +44,10 @@ be enabled with `Runtime.new({ trace = function(event) ... end })` or changed
 with `runtime:setTrace(callback)`; `runtime:metrics()` reports stage/system
 execution counts and flush totals. Tracing is observational and does not alter
 simulation state.
+
+Debug tools inspect entity membership through `world:entities()` and
+`world:componentsOf(handle)`, and manage system enablement through Runtime;
+they do not access World storage or scene-private system lists.
 
 Creation baseline on the reference Lua 5.1 environment (one scalar component):
 1k entities: 0.004s, 10k: 0.028s, 100k: 0.279s. These are indicative rather

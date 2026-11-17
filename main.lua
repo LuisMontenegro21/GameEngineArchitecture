@@ -8,12 +8,24 @@ local PHYSICS_STEP = 1 / 120
 local MAXIMUM_FRAME_DELTA = 0.25
 local physics = FixedStep.new(PHYSICS_STEP, MAXIMUM_FRAME_DELTA)
 
+local function hasGameArgument(wanted)
+    for _, value in ipairs(arg or {}) do
+        if value == wanted then return true end
+    end
+    return false
+end
+
 function love.load()
     Game.registerScene("menu", MenuScene)
     Game.registerScene("play", PlayScene)
     Game.registerScene("gameover", GameOverScene)
 
     Game.start("menu")
+
+    if hasGameArgument("--debug") then
+        require("src.debug.attach")(Game)
+        require("src.debug.DebugOverlay").enterEditor()
+    end
 end
 
 function love.update(dt)
@@ -26,6 +38,10 @@ end
 
 function love.keypressed(key)
     Game.keypressed(key)
+end
+
+function love.keyreleased(key)
+    Game.keyreleased(key)
 end
 
 function love.quit()
