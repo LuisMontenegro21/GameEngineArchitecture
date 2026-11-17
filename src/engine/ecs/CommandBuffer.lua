@@ -68,11 +68,17 @@ function CommandBuffer:remove(target, name)
     })
 end
 
-function CommandBuffer:destroy(target)
+function CommandBuffer:destroy(target, policy)
     append(stateOf(self), "destroy", {
         target = target,
+        policy = policy,
     })
 end
+
+function CommandBuffer:setParent(child, parent)
+    append(stateOf(self), "setParent", { target = child, parent = parent })
+end
+CommandBuffer.reparent = CommandBuffer.setParent
 
 function CommandBuffer:setResource(name, value)
     append(stateOf(self), "setResource", {
@@ -80,6 +86,21 @@ function CommandBuffer:setResource(name, value)
         value = value,
     })
 end
+
+function CommandBuffer:removeResource(name)
+    append(stateOf(self), "removeResource", {
+        name = name,
+    })
+end
+
+function CommandBuffer:emit(name, payload)
+    append(stateOf(self), "emit", {
+        name = name,
+        payload = payload,
+    })
+end
+
+CommandBuffer.emitEvent = CommandBuffer.emit
 
 function CommandBuffer:count()
     return #stateOf(self).commands
@@ -111,13 +132,26 @@ function CommandBuffer:_execute(command)
     end
 
     if command.kind == "setResource" then
-        assert(type(world.setResource) == "function",
-            "resources are not available until Phase 6")
         world:setResource(command.name, command.value)
         return
     end
 
+    if command.kind == "removeResource" then
+        world:removeResource(command.name)
+        return
+    end
+
+    if command.kind == "emit" then
+        world:emit(command.name, command.payload)
+        return
+    end
+
     local target = self:_resolve(command.target)
+    if command.kind == "setParent" then
+        local parent = command.parent and self:_resolve(command.parent) or nil
+        world:setParent(target, parent)
+        return
+    end
     if command.kind == "add" then
         world:add(target, command.name, command.value)
     elseif command.kind == "set" then
@@ -125,7 +159,7 @@ function CommandBuffer:_execute(command)
     elseif command.kind == "remove" then
         world:remove(target, command.name)
     elseif command.kind == "destroy" then
-        world:destroy(target)
+        world:destroy(target, command.policy)
     else
         error("unknown command kind: " .. tostring(command.kind), 0)
     end

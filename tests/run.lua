@@ -11,6 +11,13 @@ local tests = {
     "tests.ecs.world_test",
     "tests.ecs.query_test",
     "tests.ecs.command_test",
+    "tests.ecs.resource_test",
+    "tests.ecs.event_test",
+    "tests.ecs.runtime_test",
+    "tests.ecs.loop_test",
+    "tests.ecs.relationship_test",
+    "tests.ecs.snapshot_test",
+    "tests.ecs.diagnostics_test",
 }
 
 local passed = 0

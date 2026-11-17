@@ -180,3 +180,79 @@ boundary.
   valid only for their originating buffer and pending flush.
 - Command buffers do not silently flush and do not expose World storage.
 
+## Event channels
+
+`World:registerEvent(name, definition)` creates a double-buffered event channel.
+Events are transient facts, not entities or components.
+
+- `World:emit` validates a payload and appends it to the pending buffer. It does
+  not allocate an entity ID.
+- `World:advanceEvents` swaps pending events into the current buffer and clears
+  the previous current buffer. Events are therefore visible only after an
+  explicit boundary and expire at the next boundary.
+- `World:events(name)` returns a non-destructive iterator over a snapshot of
+  current records. Each record has `name`, `payload`, and monotonic `sequence`.
+  Multiple readers receive independent snapshots in emission order.
+- Events emitted while current events are being processed enter pending and
+  cannot extend the current reader's iteration.
+- Definitions support `version`, `validate`, and `maxQueue`. Queue-limit and
+  payload-validation violations raise contextual errors.
+- `eventCount`, `pendingEventCount`, `eventStats`, and `eventDefinition` provide
+  diagnostics without exposing channel tables.
+- `CommandBuffer:emit`/`emitEvent` defers emission to the normal command flush
+  boundary. Event channels are isolated per World.
+
+## Systems, Scheduler, and Runtime
+
+Systems are the ECS behavior pillar. `System.new` normalizes a definition with a
+unique name, stage, `run(context)`, optional `initialize`/`shutdown` hooks, and
+component/resource access declarations.
+
+- `Scheduler` owns system instances and resolves stage order. It does not own a
+  World and cannot execute systems by itself.
+- Stage order is explicit. `before` and `after` constraints are resolved by a
+  stable topological sort; systems without constraints retain registration
+  order. Missing dependencies and cycles fail during `build`.
+- Read/write conflicts are reported through the scheduler diagnostic callback;
+  Phase 8 remains single-threaded, so conflicts are diagnostics rather than
+  parallel-execution failures.
+- `Runtime` binds exactly one World to one Scheduler. It must be built and then
+  initialized before a stage can run.
+- Runtime stage execution supplies `world`, `runtime`, `scheduler`, `system`,
+  `stage`, `dt`, `commands`, and an event-emission helper in the context.
+- After each stage, Runtime flushes commands and advances event buffers. A
+  system may record structural changes while iterating, but cannot force a
+  flush through an active query.
+- Enable/disable state belongs to the Runtime instance. Disabling a system in
+  one Runtime does not affect another Runtime using the same definition.
+- Every successfully initialized system receives exactly one shutdown callback,
+  even if it was disabled after initialization. Shutdown occurs in reverse
+  schedule order.
+- Runtime errors identify the system and stage and retain the original
+  traceback. Optional clock callbacks accumulate per-system timing diagnostics.
+
+## Resources
+
+Resources are world-level singleton values stored in a dedicated container.
+They never allocate entity IDs and never participate in component queries.
+
+- `registerResource(name, definition)` creates immutable metadata. Definitions
+  support `version`, `validate`, `transient`, `serializable`, `owned`, and
+  `onDispose`.
+- `setResource` requires a registered type and a non-nil value. `getResource`
+  returns `nil` when absent; `requireResource` raises when absent; `hasResource`
+  distinguishes the two cases.
+- `removeResource` returns the old value and a boolean, and is a no-op when no
+  value is present.
+- Transient resources always report `serializable = false`, allowing future
+  snapshots to omit services, clocks, and other runtime-only values.
+- Replacing, removing, or disposing an owned value clears the stored value
+  before calling `onDispose`, so each value's hook runs at most once even if a
+  hook raises. Other owned values still receive their hooks during container
+  disposal.
+- Setting the same object again is a no-op and does not dispose it.
+- Resource definitions and values are isolated per World. Resource operations do
+  not affect entity counts or component query membership.
+- `CommandBuffer:setResource` and `removeResource` defer resource mutations to
+  the same explicit flush boundary as entity commands.
+
