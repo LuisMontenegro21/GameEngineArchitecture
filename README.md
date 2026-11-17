@@ -1,44 +1,51 @@
 # ECS Breakout
 
-A small Breakout game built in Lua with LOVE 11.5. The project uses a custom
-Entity Component System (ECS), scene factories, event entities, and fixed-step
-physics.
+A small Breakout game written in Lua for LOVE 11.5. It is also a learning and
+experimentation project for a custom, reusable Entity Component System (ECS).
 
-## Gameplay
+The active game path uses the custom `World`, `Scheduler`, `Runtime`, Scene,
+and SceneManager layers. The older Registry/Scene implementation remains in the
+repository only as compatibility code pending final manual verification and
+removal.
 
-The player controls one paddle at the bottom of the screen. Keep the ball in
-play and destroy all 50 bricks.
+## Gameplay specification
 
-- The paddle moves horizontally and cannot leave the screen.
-- The ball bounces from the left, right, and top edges.
-- Paddle hits send the ball upward and influence its horizontal direction.
-- A brick disappears when the ball hits it.
-- Letting the ball reach the bottom displays `Game Over`.
-- Destroying every brick displays `You win!`.
-- Each new game reconstructs the complete board and state.
+- One paddle moves horizontally with `Left`/`Right` or `A`/`D`.
+- The paddle is clamped to the logical game screen.
+- A rectangular ball moves using delta-time-based velocity.
+- The ball bounces from the left, right, and top screen edges.
+- The ball bounces from a descending collision with the paddle; hit position
+  adjusts its horizontal velocity.
+- The board contains 50 rectangular bricks in a 5 × 10 grid.
+- One brick is removed per ball collision per fixed simulation tick.
+- Missing the ball ends the round with `Game Over`.
+- Removing every brick ends the round with `You win!`.
+- Starting play again creates a fresh World, match resource, paddle, ball, and
+  full brick layout.
 
 ## Requirements
 
-- [LOVE 11.5](https://love2d.org/)
-- Windows, macOS, or Linux
+- [LOVE 11.5](https://love2d.org/) to run the game.
+- Lua 5.1, LuaJIT, or another compatible Lua runtime to run the headless tests.
+- Windows, macOS, or Linux.
 
-No external Lua packages are required for normal gameplay.
+No external Lua package is required for normal gameplay.
 
-## Running the game
+## Run the game
 
-Open a terminal in the repository root and run:
+From the repository root:
 
 ```sh
 love .
 ```
 
-On Windows PowerShell, if `love` is not on `PATH`, run:
+On Windows PowerShell, when LOVE is not on `PATH`:
 
 ```powershell
 & "C:\Program Files\LOVE\love.exe" .
 ```
 
-To open a console for runtime errors on Windows:
+For a console window with LOVE runtime errors:
 
 ```powershell
 & "C:\Program Files\LOVE\love.exe" --console .
@@ -47,160 +54,143 @@ To open a console for runtime errors on Windows:
 ## Controls
 
 | Action | Keys |
-|---|---|
-| Start the game | `Space` |
+| --- | --- |
+| Start or return to the menu | `Space` |
 | Move left | `Left Arrow` or `A` |
 | Move right | `Right Arrow` or `D` |
-| Return to the menu after a round | `Space` |
 | Quit | `Escape` |
 
 ## Scene flow
 
 ```text
-MenuScene --Space--> PlayScene
-PlayScene --ball lost--> GameOverScene (Game Over)
-PlayScene --all bricks destroyed--> GameOverScene (You win!)
-GameOverScene --Space--> MenuScene
+Menu --Space--> Play
+Play --ball lost--> Game Over (Game Over)
+Play --all bricks removed--> Game Over (You win!)
+Game Over --Space--> Menu
 ```
 
-`src/game/Game.lua` owns the active scene. Systems request a transition by spawning
-a `switchRequest` entity. The Game applies that request after the current scene
-update finishes, avoiding scene destruction during system iteration.
+Scene transitions are requested through ECS event channels and applied by
+SceneManager after the active Runtime stage completes. This prevents a scene or
+World from being disposed while one of its systems is still executing.
 
-## ECS architecture
+## Timing
 
-The ECS consists of:
-
-- **Entities:** numeric identifiers returned by `Registry:spawn`.
-- **Components:** plain Lua tables stored by component name and entity ID.
-- **Systems:** small modules with optional `setup`, `update`, `draw`, and
-  `unload` functions.
-- **Resources:** singleton scene data accessed with `setResource` and
-  `resource`.
-- **Scenes:** an ordered system list with its own Registry.
-
-Important gameplay components include:
-
-```text
-position         x/y coordinates
-size             rectangle width/height
-velocity         horizontal/vertical speed in pixels per second
-moves            enables fixed-step movement
-paddle           paddle speed and key bindings
-ball             identifies the ball
-brick            identifies a brick and stores its color
-clampHorizontal  keeps the paddle inside the screen
-renderShape      selects generic rectangle rendering
-```
-
-The PlayScene owns one `breakout` resource:
-
-```lua
-{
-    remainingBricks = 50,
-    status = "playing", -- playing, lost, or won
-}
-```
-
-## PlayScene system order
-
-System order is significant because later systems process the state produced by
-earlier systems:
-
-```text
-BreakoutSetupSystem
-PaddleControlSystem
-MovementSystem
-ClampSystem
-BallWallBounceSystem
-PaddleHitsSystem
-BrickCollisionSystem
-BallLossSystem
-WinCheckSystem
-ShapeRenderSystem
-BrickRenderSystem
-HudRenderSystem
-```
-
-The systems remain intentionally focused. Input writes velocity, movement
-integrates position, collision systems resolve individual collision types, and
-render systems draw only their assigned data.
-
-## Timing and delta time
-
-LOVE supplies a variable frame delta to `love.update(dt)`. `src/engine/loop/FixedStep.lua`
-accumulates that time and advances gameplay at a fixed rate:
+The active LOVE entry point uses a fixed physics step:
 
 ```text
 Physics frequency: 120 Hz
 Physics step:      1 / 120 second
 Maximum frame dt:  0.25 second
-Rendering:         controlled independently by LOVE/VSync
+Logical screen:    960 × 540
 ```
 
-Movement uses pixels per second:
+The reusable `LoveRunner` also supports an ECS SceneManager with a separate
+variable render frequency, input queue, transient time resource, pause, time
+scale, and interpolation alpha.
 
-```lua
-position.x = position.x + velocity.vx * dt
-position.y = position.y + velocity.vy * dt
-```
-
-Fixed physics reduces collision tunneling and makes movement independent from
-the render frame rate. The game does not currently enforce a 10 FPS rendering
-cap.
-
-## Collision behavior
-
-- Wall collision clamps the ball outside the wall before assigning the correct
-  velocity direction.
-- Paddle collision only accepts a descending ball, pushes it above the paddle,
-  and modifies horizontal velocity based on hit position.
-- Brick collision resolves the smallest overlap axis and processes at most one
-  brick per ball per physics step.
-- Bottom-edge contact is a loss and never reflects the ball upward.
-
-## Project structure
+## Architecture
 
 ```text
-main.lua                    LOVE callbacks and fixed-step integration
-conf.lua                    window title, resolution, and LOVE version
-src/engine/ecs/             new ECS API, entity manager, stores, and World
-src/engine/legacy/          temporary Registry/Scene used during migration
-src/engine/loop/            reusable fixed-step timing utility
-src/game/Game.lua           scene registration and transitions
-src/game/Screen.lua         logical 960x540 resolution
-src/game/scenes/            menu, play, and result scene factories
-src/game/systems/           Breakout gameplay and rendering systems
+main.lua                     LOVE callbacks and fixed-step entry point
+src/engine/ecs/              reusable ECS core
+src/engine/loop/             fixed-step and LOVE runner adapters
+src/engine/scene/            Scene and deferred SceneManager
+src/game/ecs/                Breakout components, resources, events, systems
+src/game/scenes/             ECS-backed menu, play, and game-over factories
+src/game/Game.lua            application facade and input queue
+src/game/Screen.lua          logical 960 × 540 game resolution
+src/debug/                   optional debug overlay integration
+src/engine/legacy/           obsolete compatibility implementation; pending removal
+src/game/systems/            obsolete legacy systems; pending removal
 ```
 
-## Manual verification checklist
+The separation is intentional:
 
-1. Start the game and press `Space`.
-2. Confirm the paddle moves with arrows and A/D.
-3. Confirm the paddle remains inside both horizontal edges.
-4. Confirm the ball bounces from the top and side walls.
-5. Confirm paddle contact sends the ball upward.
-6. Confirm struck bricks disappear and the HUD count decreases.
-7. Miss the ball and confirm `Game Over` appears.
-8. Clear every brick and confirm `You win!` appears.
-9. Press `Space` on the result screen and start another game.
-10. Confirm the new game contains all 50 bricks.
+- `src/engine/ecs/` defines how the ECS works: generational entities,
+  components, queries, commands, resources, events, scheduling, runtime,
+  snapshots, relationships, and diagnostics.
+- `src/game/ecs/` defines how Breakout uses that ECS: paddle/ball/brick data,
+  match and input resources, scene events, gameplay systems, and rendering.
 
-## Headless ECS checks
+Core ECS modules do not import LOVE or Breakout code.
 
-Phase 0 includes a dependency-free sanity suite for the new ECS boundary. Run
-it with Lua or LuaJIT from the repository root:
+## ECS and game contracts
 
-```sh
-lua tests/run.lua
+### Engine services
+
+- Generational entity handles prevent stale entity IDs from being reused.
+- Component stores use sparse-set-style storage and validated definitions.
+- Queries support required, optional, excluded, any, changed, and stable views.
+- Structural changes use deferred commands during system execution.
+- Resources are world-level singleton values; input and render assets are
+  transient.
+- Events are double-buffered and validated at their channel boundary.
+- Scheduler ordering is explicit through stages and `before`/`after` metadata.
+- Render stages execute with a read-only World.
+- Snapshots, prefab instantiation, hierarchy, diagnostics, and invariant
+  validation are available through the ECS public API.
+
+### Breakout execution order
+
+```text
+inputState
+→ paddleControl
+→ movement
+→ horizontalClamp
+→ ballWallBounce
+→ paddleHits
+→ brickCollision
+→ ballLoss
+→ winCheck
 ```
 
-The new ECS is currently only a public import boundary. Breakout still runs on
-the temporary implementation under `src/engine/legacy` until the migration
-phase in `planning.md`.
+The game owns `match`, `input`, and `screen` resources. Terminal gameplay emits
+`roundWon` or `roundLost`, then a `sceneRequest` event for the game-over scene.
 
-## Current scope
+## Tests
 
-The playable game includes the complete Breakout loop. Sound effects, lives,
-score persistence, visual effects, and the optional ImGui-based debug overlay
-are outside the current gameplay scope.
+Run the complete headless suite from the repository root:
+
+```powershell
+& "C:\Program Files (x86)\Lua\5.1\lua.exe" tests\run.lua
+```
+
+The suite currently contains ECS unit tests plus Breakout integration coverage
+for scene flow, fresh Worlds, win/loss transitions, input events, collision
+behavior, pause/draw behavior, and equivalent simulation outcomes at 30, 60,
+and 144 rendered FPS.
+
+For the remaining interactive checks, see
+[PHASE13_MANUAL_CHECKLIST.md](PHASE13_MANUAL_CHECKLIST.md). Its entries are
+pending until they are observed manually in LOVE.
+
+## Debug overlay
+
+The optional editor-style overlay is intended to launch with:
+
+```powershell
+& "C:\Program Files\LOVE\love.exe" . --debug
+```
+
+It supports entity inspection, scene switching, system enablement, pause, and
+single-frame stepping. The repository currently does **not** include its
+required vendored `lib/imlove.lua` dependency or font asset, so this mode will
+not launch until those assets are restored or the overlay is replaced with a
+dependency-free implementation.
+
+## Current migration status
+
+The custom ECS and ECS-backed Breakout scene path are covered by automated
+tests. Before deleting `src/engine/legacy` and `src/game/systems`, complete the
+manual LOVE checklist and record the results. Phase 14 release tagging must
+wait until that migration gate has passed.
+
+## AI assistance disclosure
+
+This repository has used AI-assisted development tools, including OpenAI Codex,
+for planning, code generation, refactoring, test creation, documentation, and
+review support. AI-produced changes should be treated like any other proposed
+change: reviewed, tested, and validated by a human maintainer before release.
+
+The project owner remains responsible for the architecture, final decisions,
+manual gameplay verification, dependency licensing, and all distributed code.
