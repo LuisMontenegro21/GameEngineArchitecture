@@ -28,6 +28,9 @@ local tests = {
     "tests.game_scene_flow_test",
     "tests.game_application_test",
     "tests.phase13_integration_test",
+    "tests.progression_cycle_test",
+    "tests.arcane_data_test",
+    "tests.training_scene_test",
 }
 
 local passed = 0

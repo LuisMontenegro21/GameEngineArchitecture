@@ -97,6 +97,9 @@ src/engine/loop/             fixed-step and LOVE runner adapters
 src/engine/scene/            Scene and deferred SceneManager
 src/game/ecs/                Breakout components, resources, events, systems
 src/game/scenes/             ECS-backed menu, play, and game-over factories
+src/game/progression/        reusable game progression cycle foundation
+src/game/maps/               map-system extension point for the next game
+src/game/ui/                 UI-system extension point for the next game
 src/game/Game.lua            application facade and input queue
 src/game/Screen.lua          logical 960 × 540 game resolution
 src/debug/                   optional debug overlay integration
@@ -113,6 +116,10 @@ The separation is intentional:
   match and input resources, scene events, gameplay systems, and rendering.
 
 Core ECS modules do not import LOVE or Breakout code.
+
+For starting a different game while preserving the engine, see
+[src/game/README.md](src/game/README.md) and the progression package guide at
+[src/game/progression/README.md](src/game/progression/README.md).
 
 ## ECS and game contracts
 
