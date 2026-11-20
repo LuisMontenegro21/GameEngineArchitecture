@@ -1,8 +1,9 @@
 local Game = require("src.game.Game")
 local FixedStep = require("src.engine.loop.FixedStep")
-local MenuScene = require("src.game.scenes.MenuScene")
-local PlayScene = require("src.game.scenes.PlayScene")
-local GameOverScene = require("src.game.scenes.GameOverScene")
+local GameSession = require("src.game.session.GameSession")
+local TrainingScene = require("src.game.scenes.TrainingScene")
+local CardAcquisitionScene = require("src.game.scenes.CardAcquisitionScene")
+local ArcaneCompleteScene = require("src.game.scenes.ArcaneCompleteScene")
 
 local PHYSICS_STEP = 1 / 120
 local MAXIMUM_FRAME_DELTA = 0.25
@@ -16,11 +17,11 @@ local function hasGameArgument(wanted)
 end
 
 function love.load()
-    Game.registerScene("menu", MenuScene)
-    Game.registerScene("play", PlayScene)
-    Game.registerScene("gameover", GameOverScene)
+    Game.registerScene("training", TrainingScene)
+    Game.registerScene("cardAcquisition", CardAcquisitionScene)
+    Game.registerScene("arcaneComplete", ArcaneCompleteScene)
 
-    Game.start("menu")
+    Game.start("training", { session = GameSession.new() })
 
     if hasGameArgument("--debug") then
         require("src.debug.attach")(Game)

@@ -108,6 +108,10 @@ local function positiveIndex(value)
     return integer(value) and value >= 1
 end
 
+local function cardFocus(value)
+    return value == "generated" or value == "collection"
+end
+
 local function activityRequest(value)
     return type(value) == "table"
         and type(value.activityId) == "string" and value.activityId ~= ""
@@ -158,6 +162,9 @@ function Definitions.registerArcaneHearts(world)
         transient = true,
         validate = function(value) return type(value) == "boolean" end,
     })
+    world:registerResource("generatedCardSelection", { validate = positiveIndex })
+    world:registerResource("collectionSelection", { validate = positiveIndex })
+    world:registerResource("cardFocus", { validate = cardFocus })
 
     world:registerEvent("keyPressed", {
         validate = function(value)
@@ -168,7 +175,10 @@ function Definitions.registerArcaneHearts(world)
     world:registerEvent("trainingSelectionChanged", { validate = selectionChanged, maxQueue = 8 })
     world:registerEvent("trainingActivityRequested", { validate = activityRequest, maxQueue = 8 })
     world:registerEvent("trainingActivityResolved", { validate = activityResult, maxQueue = 8 })
-    world:registerEvent("cardGenerationRequested", { validate = plain, maxQueue = 2 })
+    world:registerEvent("cardGenerationRequested", {
+        validate = function(value) return value == nil end,
+        maxQueue = 2,
+    })
     world:registerEvent("cardsGenerated", { validate = cardsGenerated, maxQueue = 2 })
     world:registerEvent("generatedCardSelectionChanged", { validate = selectionChanged, maxQueue = 8 })
     world:registerEvent("collectionSelectionChanged", { validate = selectionChanged, maxQueue = 8 })

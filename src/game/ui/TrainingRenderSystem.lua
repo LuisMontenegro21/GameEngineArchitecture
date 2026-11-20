@@ -18,7 +18,7 @@ function TrainingRenderSystem.install(scheduler)
 
             g.clear(0.06, 0.04, 0.12, 1)
             g.setColor(0.9, 0.82, 1, 1)
-            g.printf("ARCANE HEARTS", 0, 28, Screen.w, "center")
+            g.printf("WIZARD ACADEMIA", 0, 28, Screen.w, "center")
             g.setColor(1, 1, 1, 1)
             g.printf(("Day %d / %d    Actions: %d    Energy: %d / %d"):format(
                 session.day, session.maxDays, session.actionsRemaining,
@@ -35,7 +35,8 @@ function TrainingRenderSystem.install(scheduler)
                 end
                 g.setColor(1, 1, 1, 1)
                 local cost = activity.energyCost == 0 and "no energy" or (activity.energyCost .. " energy")
-                g.printf(("%s  [%s]"):format(activity.name, cost), 190, y, 580, "left")
+                local marker = index == selected and ">" or " "
+                g.printf(("%s %s  [%s]"):format(marker, activity.name, cost), 190, y, 580, "left")
             end
             g.setColor(0.8, 0.9, 1, 1)
             g.printf(session.feedback, 100, 420, 760, "center")

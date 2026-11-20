@@ -4,8 +4,8 @@ function love.conf(t)
     -- names the game's per-user save directory (love.filesystem writes
     -- there and nowhere else) — without it, LÖVE falls back to the
     -- folder name, and renaming the project would orphan every save
-    t.identity = "game-engine-v3"
-    t.window.title = "Breakout"
+    t.identity = "wizard-academia"
+    t.window.title = "Wizard Academia"
     t.window.width = Screen.w
     t.window.height = Screen.h
     t.version = "11.5"

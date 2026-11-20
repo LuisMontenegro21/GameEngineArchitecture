@@ -1,0 +1,30 @@
+local Scene = require("src.engine.scene.Scene")
+local GameSession = require("src.game.session.GameSession")
+local Definitions = require("src.game.progression.Definitions")
+local CardGenerationSystem = require("src.game.cards.CardGenerationSystem")
+local CardInputSystem = require("src.game.cards.CardInputSystem")
+local CardAcquisitionSystem = require("src.game.cards.CardAcquisitionSystem")
+local CollectionNavigationSystem = require("src.game.cards.CollectionNavigationSystem")
+local DayAdvanceSystem = require("src.game.cards.DayAdvanceSystem")
+local CardRenderSystem = require("src.game.ui.CardRenderSystem")
+
+return function(payload)
+    payload = payload or {}
+    local session = payload.session or GameSession.new()
+    assert(GameSession.validate(session), "CardAcquisitionScene requires a valid game session")
+
+    local scene = Scene.new({ name = "cardAcquisition" })
+    local world = scene:world()
+    Definitions.registerArcaneHearts(world)
+    world:setResource("gameSession", session)
+    world:setResource("generatedCardSelection", session.generatedSelection)
+    world:setResource("collectionSelection", session.collectionSelection)
+    world:setResource("cardFocus", "generated")
+    CardGenerationSystem.install(scene:scheduler())
+    CardInputSystem.install(scene:scheduler())
+    CardAcquisitionSystem.install(scene:scheduler())
+    CollectionNavigationSystem.install(scene:scheduler())
+    DayAdvanceSystem.install(scene:scheduler())
+    CardRenderSystem.install(scene:scheduler())
+    return scene
+end

@@ -40,12 +40,12 @@ local function plain(value, seen)
     return true
 end
 
-local function validCardList(cards, expectedCount)
+local function validCardList(cards, expectedCount, uniqueIds)
     if type(cards) ~= "table" then return false end
     if expectedCount ~= nil and #cards ~= expectedCount then return false end
     local ids = {}
     for _, card in ipairs(cards) do
-        if not CardCatalog.validate(card) or ids[card.id] then return false end
+        if not CardCatalog.validate(card) or (uniqueIds and ids[card.id]) then return false end
         ids[card.id] = true
     end
     return true
@@ -68,7 +68,7 @@ function GameSession.validate(session)
         and integer(session.stats.arcaneKnowledge, 0)
         and (session.lastActivity == nil or type(session.lastActivity) == "string")
         and type(session.feedback) == "string"
-        and validCardList(session.generatedCards)
+        and validCardList(session.generatedCards, nil, true)
         and integer(session.generatedSelection, 1)
         and validCardList(session.collection)
         and integer(session.collectionSelection, 1)
