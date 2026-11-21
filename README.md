@@ -16,6 +16,8 @@ Train at the academy
 
 After five academy days, the game shows a completion screen.
 
+![display](assets/demo/demo.gif)
+
 ## Requirements
 
 - [LOVE 11.5](https://love2d.org/) to play.
