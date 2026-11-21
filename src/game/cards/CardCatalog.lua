@@ -1,4 +1,4 @@
--- Plain-data Arcane Hearts conversation cards. Rendering stays separate.
+-- Plain-data Wizard Academia conversation cards. Rendering stays separate.
 local CardCatalog = {}
 
 local validCategories = {
@@ -11,7 +11,7 @@ local validCategories = {
 local function integer(value, minimum)
     return type(value) == "number" and value % 1 == 0 and value >= minimum
 end
-
+-- twelve cards, might add more later?
 local catalog = {
     confidence = {
         { id = "dazzling_introduction", name = "Dazzling Introduction", description = "Open with a small, charming illusion.", power = 2, cost = 1, symbol = "star" },

@@ -87,7 +87,7 @@ The shared `GameSession` exists above individual scene Worlds. Each scene owns
 its own ECS World, but receives the same validated plain-data session object so
 stats, generated cards, and the collection persist across transitions.
 
-For detailed implementation phases and exit criteria, see [planning.md](planning.md).
+
 For submission screenshots/GIF guidance and direct source links, see
 [PORTFOLIO_EVIDENCE.md](PORTFOLIO_EVIDENCE.md).
 
@@ -128,7 +128,6 @@ coverage while the project evolves.
 | Documentation | Contents |
 | --- | --- |
 | [README.md](README.md) | Wizard Academia setup, controls, game loop, card rule, tests, and disclosure. |
-| [planning.md](planning.md) | Wizard Academia scope, architecture, implementation phases, and exit criteria. |
 | [src/engine/README.md](src/engine/README.md) | Reusable ECS, scheduler, runtime, scenes, timing, snapshots, and diagnostics. |
 | [src/game/README.md](src/game/README.md) | Boundaries between reusable engine code and replaceable game code. |
 | [src/game/progression/README.md](src/game/progression/README.md) | Existing generic progression-cycle package and its contracts. |
@@ -136,5 +135,5 @@ coverage while the project evolves.
 | [src/game/ui/README.md](src/game/ui/README.md) | UI-system ownership rules. |
 | [src/game/maps/README.md](src/game/maps/README.md) | Future map/exploration extension point; not part of the current assignment scope. |
 | [tests/README.md](tests/README.md) | Headless test-runner conventions. |
-| [PORTFOLIO_EVIDENCE.md](PORTFOLIO_EVIDENCE.md) | Source links and the manual visual-evidence checklist. |
-| [assets/demo/arcane-hearts/README.md](assets/demo/arcane-hearts/README.md) | Required screenshot and GIF/video filenames and capture targets. |
+| [PORTFOLIO_EVIDENCE.md](PORTFOLIO_EVIDENCE.md) | Source links and the visual-evidence checklist. |
+| [assets/demo/wizard-academia/README.md](assets/demo/wizard-academia/README.md) | Required screenshot and GIF/video filenames and capture targets. |

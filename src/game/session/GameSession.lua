@@ -1,4 +1,4 @@
--- Persistent, plain-data state shared by Arcane Hearts scenes. This object is
+-- Persistent, plain-data state shared by Wizard Academia scenes. This object is
 -- owned by the application layer, not by a Scene-local ECS World.
 local GameSession = {}
 local CardCatalog = require("src.game.cards.CardCatalog")
