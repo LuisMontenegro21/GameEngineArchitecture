@@ -1,6 +1,7 @@
 local ECS = require("src.engine.ecs")
 local registerProgression = require("src.game.progression.register")
-local ProgressionSystems = require("src.game.progression.Systems")
+local ProgressionCycleSystem = require("src.game.progression.ProgressionCycleSystem")
+local ProgressionRewardSystem = require("src.game.progression.ProgressionRewardSystem")
 
 local function event(world, name, payload)
     world:emit(name, payload)
@@ -19,7 +20,8 @@ return function()
     }
     local world, scheduler = ECS.World.new(), ECS.Scheduler.new()
     registerProgression(world, plan)
-    ProgressionSystems.install(scheduler)
+    ProgressionCycleSystem.install(scheduler)
+    ProgressionRewardSystem.install(scheduler)
     local runtime = ECS.Runtime.new({ world = world, scheduler = scheduler })
     runtime:build(); runtime:initialize()
 

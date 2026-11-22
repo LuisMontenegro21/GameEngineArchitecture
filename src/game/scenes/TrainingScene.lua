@@ -2,7 +2,10 @@ local Scene = require("src.engine.scene.Scene")
 local Screen = require("src.game.Screen")
 local GameSession = require("src.game.session.GameSession")
 local Definitions = require("src.game.progression.Definitions")
-local TrainingSystems = require("src.game.progression.Systems")
+local TrainingInputSystem = require("src.game.progression.TrainingInputSystem")
+local TrainingActivitySystem = require("src.game.progression.TrainingActivitySystem")
+local TrainingFeedbackSystem = require("src.game.progression.TrainingFeedbackSystem")
+local TrainingTransitionSystem = require("src.game.progression.TrainingTransitionSystem")
 local TrainingRenderSystem = require("src.game.ui.TrainingRenderSystem")
 
 -- Factory payload is `{ session = GameSession }`; a fresh session also makes
@@ -18,7 +21,10 @@ return function(payload)
     world:setResource("gameSession", session)
     world:setResource("trainingSelection", 1)
     world:setResource("trainingTransitionQueued", false)
-    TrainingSystems.installArcaneTraining(scene:scheduler())
+    TrainingInputSystem.install(scene:scheduler())
+    TrainingActivitySystem.install(scene:scheduler())
+    TrainingFeedbackSystem.install(scene:scheduler())
+    TrainingTransitionSystem.install(scene:scheduler())
     TrainingRenderSystem.install(scene:scheduler())
     return scene
 end

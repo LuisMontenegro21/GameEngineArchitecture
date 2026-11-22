@@ -15,7 +15,7 @@ del ECS. De esta forma está desligada y posee su propia responsabilidad.
 Crea una escena de entrenamiento con base en una sesión válida. Si la sesión no es válida
 no procede.
 
-3. Training logic: [Systems.lua](src/game/progression/Systems.lua)
+3. Training logic: [TrainingActivitySystem.lua](src/game/progression/TrainingActivitySystem.lua)
 Se usa para tener un módulo que registra distintos sistemas que se encarga
 de instalarlos al orquestrador de escenas. Este se enfoca inicialmente en la lógica de 
 la escena de entrenamiento, donde maneja el input, las actividades, feedback y las transiciones. 

@@ -26,7 +26,8 @@ Register the plan and install its systems before initializing a Runtime:
 
 ```lua
 require("src.game.progression.register")(world, plan)
-require("src.game.progression.Systems").install(scheduler)
+require("src.game.progression.ProgressionCycleSystem").install(scheduler)
+require("src.game.progression.ProgressionRewardSystem").install(scheduler)
 ```
 
 Gameplay emits request/fact events; progression systems own state transitions:
