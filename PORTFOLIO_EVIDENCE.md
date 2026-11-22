@@ -40,7 +40,7 @@ En esta escena se permite seleccionar 1 de  3 cartas desplegadas. Este se encarg
 [CardAcquisitionSystem.lua](src/game/cards/CardAcquisitionSystem.lua) de agrear una carta más a la colección.
 
 6. Daily transition and completion: [DayAdvanceSystem.lua](src/game/cards/DayAdvanceSystem.lua)
-Este sistema nos permite cambiar de día.
+Este sistema nos permite cambiar de día hasta que se cumple el máximo de días permitidos por la sesión. 
 
 7. End-to-end test: [arcane_daily_cycle_test.lua](tests/arcane_daily_cycle_test.lua)
 Tests para asegurar el correcto funcionamiento de las funciones y valores esperados.
@@ -60,12 +60,12 @@ En esta escena, la principal al iniciar el juego, se da 4 opciones al jugador.
 Estas son _practice illusions_, _care for a familiar_, _study ancient runes_, _meditate_. De las cuales solo la opción
 de meditar no require de energía alguna. Las otras requiren al menos 1 de energía; el día comienza teniendo 3/5 de energía
 y 2 acciones. 
-![training](assets/demo/training.png)
+![training](assets/demo/training-scene.png)
 
 ### Escena secundaria: adquisición de cartas.
 En esta otra escena se nos otorga la posibilidad de adquirir cartas. Se presenta 3 cartas en pantalla para que nosotros elijamos
 cuál tomar. También en la esquina inferior izquierda se nos muestra las cartas que tenemos hasta el momento. 
-![cards](assets/demo/card_acquisition.png)
+![cards](assets/demo/card-acquisition.png)
 
 ### Escena final: fin
 En esta última escena se culmina los 5 días de entrenamiento y termina el ciclo.
