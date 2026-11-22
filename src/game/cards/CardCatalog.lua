@@ -14,19 +14,19 @@ end
 -- twelve cards, might add more later?
 local catalog = {
     confidence = {
-        { id = "dazzling_introduction", name = "Dazzling Introduction", description = "Open with a small, charming illusion.", power = 2, cost = 1, symbol = "star" },
-        { id = "playful_illusion", name = "Playful Illusion", description = "Turn an awkward pause into a shared laugh.", power = 2, cost = 1, symbol = "spark" },
+        { id = "dazzling_introduction", name = "Dazzling Introduction", description = "Open with a small, charming spell.", power = 2, cost = 1, symbol = "star" },
+        { id = "playfull_laugh", name = "Playful Laugh", description = "Turn an awkward pause into a shared laugh.", power = 2, cost = 1, symbol = "spark" },
         { id = "honest_invitation", name = "Honest Invitation", description = "Say what you mean with confidence.", power = 3, cost = 2, symbol = "moon" },
     },
     empathy = {
-        { id = "calming_charm", name = "Calming Charm", description = "Help someone feel safe during an awkward moment.", power = 2, cost = 1, symbol = "heart" },
+        { id = "calming_charm", name = "Calming Charm", description = "Help someone feel safe during a bad moment.", power = 2, cost = 1, symbol = "heart" },
         { id = "thoughtful_question", name = "Thoughtful Question", description = "Ask about something that matters to them.", power = 2, cost = 1, symbol = "leaf" },
-        { id = "familiar_friend", name = "Familiar Friend", description = "Offer gentle help with a restless familiar.", power = 3, cost = 2, symbol = "paw" },
+        { id = "familiar_friend", name = "Familiar Friend", description = "Offer gentle help with a restless peer.", power = 3, cost = 2, symbol = "paw" },
     },
     knowledge = {
         { id = "shared_research", name = "Shared Research", description = "Discuss a difficult magical theory together.", power = 2, cost = 1, symbol = "rune" },
         { id = "constellation_trivia", name = "Constellation Trivia", description = "Recognize a story hidden in the night sky.", power = 2, cost = 1, symbol = "star" },
-        { id = "ancient_riddle", name = "Ancient Riddle", description = "Solve an old academy puzzle together.", power = 3, cost = 2, symbol = "book" },
+        { id = "ancient_riddle", name = "Ancient Riddle", description = "Solve an old puzzle together.", power = 3, cost = 2, symbol = "book" },
     },
     balanced = {
         { id = "comfortable_silence", name = "Comfortable Silence", description = "Let a quiet moment feel natural.", power = 2, cost = 1, symbol = "cloud" },

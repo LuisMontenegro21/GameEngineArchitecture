@@ -5,6 +5,15 @@ Correr `love .` desde la raiz del repo. El juego comienza con la escena de entre
 Luego de completar dos acciones de entrenamiento, se elige una carta de conversación, se presiona Enter
 nuevamente para iniciar un nuevo día. El proceso termina en el día 5. 
 
+El ciclo del juego es:
+1. Inicia un nuevo día
+2. Se elige dos actividades de entrenamiento
+3. Se cambia los estados, energía y el feedback
+4. Se recibe tres opciones de cartas para elegir basadas en el entrenamiento
+5. Se elige una carta para almacenar en la colección
+6. Comienza un nuevo día
+7. Se repite hasta completar el quinto día
+
 ## Enlaces de implementación
 
 1. Shared run data: [GameSession.lua](src/game/session/GameSession.lua)

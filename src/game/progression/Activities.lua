@@ -2,20 +2,20 @@
 local Activities = {}
 
 local catalog = {
-    practice_illusions = {
-        id = "practice_illusions",
-        name = "Practice Illusions",
+    practice_spells = {
+        id = "practice_spells",
+        name = "Practice Spells",
         energyCost = 1,
         effects = { confidence = 2 },
-        feedback = "Your illusion fills the hall with floating stars. Confidence +2.",
+        feedback = "Your spells fills the hall with floating stars. Confidence +2.",
         cardCategory = "confidence",
     },
-    care_for_familiar = {
-        id = "care_for_familiar",
-        name = "Care for a Familiar",
+    help_a_classmate = {
+        id = "help_a_classmate",
+        name = "Help a Classmate",
         energyCost = 1,
         effects = { empathy = 2 },
-        feedback = "A nervous familiar relaxes in your care. Empathy +2.",
+        feedback = "You help a classmate through a difficult lesson. Empathy +2.",
         cardCategory = "empathy",
     },
     study_ancient_runes = {
@@ -37,8 +37,8 @@ local catalog = {
 }
 
 local order = {
-    "practice_illusions",
-    "care_for_familiar",
+    "practice_spells",
+    "help_a_classmate",
     "study_ancient_runes",
     "meditate",
 }
