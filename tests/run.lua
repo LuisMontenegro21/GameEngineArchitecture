@@ -31,6 +31,7 @@ local tests = {
     "tests.encounter_systems_test",
     "tests.final_conversation_scene_test",
     "tests.final_conversation_ui_test",
+    "tests.arcane_complete_scene_test",
     "tests.ui_setup_test",
     "tests.ui_visual_theme_test",
     "tests.map_data_test",

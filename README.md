@@ -16,7 +16,8 @@ Train at the academy
 ```
 
 After five academy days, the player uses three collected cards in a final
-conversation before reaching the completion screen.
+conversation before reaching a completion screen whose ending reflects final
+rapport.
 
 The Training Scene also opens an optional Academy Garden map. Exploration is a
 physical hub for the academy locations; it does not consume a training action.

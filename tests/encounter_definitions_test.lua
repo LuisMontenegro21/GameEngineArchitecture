@@ -9,11 +9,21 @@ return function()
     assert(#definition.endings >= 2, "the encounter requires multiple outcomes")
     assert(definition.endings[1].minimumRapport == 0,
         "the first ending must cover a zero-rapport result")
+    assert(EncounterDefinitions.endingForRapport(0).id == "promising_friendship")
+    assert(EncounterDefinitions.endingForRapport(7).id == "promising_friendship")
+    assert(EncounterDefinitions.endingForRapport(8).id == "growing_connection")
+    assert(EncounterDefinitions.endingForRapport(12).id == "arcane_hearts")
+    assert(not pcall(function() EncounterDefinitions.endingForRapport(-1) end),
+        "ending lookup must reject negative rapport")
 
     local originalText = EncounterDefinitions.get().prompts[1].text
     definition.prompts[1].text = "changed"
     assert(EncounterDefinitions.get().prompts[1].text == originalText,
         "callers must receive isolated encounter definitions")
+    local endingCopy = EncounterDefinitions.endingForRapport(12)
+    endingCopy.title = "changed"
+    assert(EncounterDefinitions.endingForRapport(12).title ~= "changed",
+        "ending lookup must return isolated records")
 
     local invalid = EncounterDefinitions.get()
     invalid.prompts[1].preferredCategory = "missing"

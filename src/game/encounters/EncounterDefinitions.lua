@@ -128,4 +128,15 @@ function EncounterDefinitions.get()
     return copy(definition)
 end
 
+-- Returns an isolated ending record using the same ordered thresholds that
+-- encounter progression persists into GameSession.
+function EncounterDefinitions.endingForRapport(rapport)
+    assert(integer(rapport, 0), "rapport must be a non-negative integer")
+    local selected = definition.endings[1]
+    for _, ending in ipairs(definition.endings) do
+        if rapport >= ending.minimumRapport then selected = ending end
+    end
+    return copy(selected)
+end
+
 return EncounterDefinitions

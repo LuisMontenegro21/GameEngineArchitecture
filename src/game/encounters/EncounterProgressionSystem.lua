@@ -1,14 +1,7 @@
 -- Advances prompts after a resolved card play and commits only the final
 -- encounter result to the shared GameSession.
+local EncounterDefinitions = require("src.game.encounters.EncounterDefinitions")
 local EncounterProgressionSystem = {}
-
-local function endingForRapport(definition, rapport)
-    local selected = definition.endings[1]
-    for _, ending in ipairs(definition.endings) do
-        if rapport >= ending.minimumRapport then selected = ending end
-    end
-    return selected
-end
 
 function EncounterProgressionSystem.install(scheduler)
     scheduler:addSystem({
@@ -35,7 +28,7 @@ function EncounterProgressionSystem.install(scheduler)
                             promptId = nextPrompt.id,
                         })
                     else
-                        local ending = endingForRapport(definition, state.rapport)
+                        local ending = EncounterDefinitions.endingForRapport(state.rapport)
                         state.complete = true
                         state.transitionQueued = true
                         state.feedback = "Conversation complete: " .. ending.title .. "."
@@ -63,5 +56,5 @@ function EncounterProgressionSystem.install(scheduler)
     })
 end
 
-EncounterProgressionSystem.endingForRapport = endingForRapport
+EncounterProgressionSystem.endingForRapport = EncounterDefinitions.endingForRapport
 return EncounterProgressionSystem

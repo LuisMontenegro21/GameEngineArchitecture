@@ -61,5 +61,25 @@ return function()
         "the final encounter must begin at its first prompt")
     assert(#session.collection == session.maxDays and session.stats.confidence == 10,
         "all daily rewards and training changes must persist through the run")
+
+    -- The deterministic training route above collected confidence cards. They
+    -- only match the last prompt, so this complete application path produces a
+    -- different outcome than the fully matching Arcane Hearts system test.
+    press(manager, "return")
+    assert(manager:current():name() == "finalConversation")
+    press(manager, "right")
+    press(manager, "return")
+    assert(manager:current():name() == "finalConversation")
+    press(manager, "right")
+    press(manager, "return")
+
+    assert(manager:current():name() == "arcaneComplete",
+        "the completed encounter must transition to the result scene")
+    assert(session.complete and session.finalRapport == 8
+        and session.endingId == "growing_connection",
+        "a different card-match sequence must produce its rapport-based ending")
+    assert(manager:current():world():requireResource("gameSession") == session,
+        "the result scene must preserve the completed shared session")
+    manager:draw(0)
     manager:quit()
 end
