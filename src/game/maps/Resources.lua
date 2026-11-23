@@ -56,6 +56,10 @@ function Resources.register(world)
         transient = true,
         validate = nearbyPointOfInterest,
     })
+    world:registerResource("mapHudLocation", {
+        transient = true,
+        validate = nearbyPointOfInterest,
+    })
     world:registerResource("mapTransitionQueued", {
         transient = true,
         validate = function(value) return type(value) == "boolean" end,

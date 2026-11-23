@@ -1,8 +1,11 @@
-local CardInputSystem = {}
+-- Converts card-screen navigation and confirmation input into UI focus,
+-- selection-change, acquisition, and day-advance requests. Card data remains
+-- owned by card gameplay systems.
+local CardUiUpdateSystem = {}
 
-function CardInputSystem.install(scheduler)
+function CardUiUpdateSystem.install(scheduler)
     scheduler:addSystem({
-        name = "cardInput",
+        name = "cardUiUpdate",
         stage = "fixedUpdate",
         readsResources = { "gameSession", "generatedCardSelection", "collectionSelection", "cardFocus" },
         writesResources = { "cardFocus" },
@@ -18,8 +21,7 @@ function CardInputSystem.install(scheduler)
                 elseif key == "left" or key == "a" then
                     if focus == "generated" then
                         context.emit("generatedCardSelectionChanged", {
-                            index = math.max(1,
-                                world:requireResource("generatedCardSelection") - 1),
+                            index = math.max(1, world:requireResource("generatedCardSelection") - 1),
                         })
                     else
                         context.emit("collectionSelectionChanged", {
@@ -53,4 +55,4 @@ function CardInputSystem.install(scheduler)
     })
 end
 
-return CardInputSystem
+return CardUiUpdateSystem

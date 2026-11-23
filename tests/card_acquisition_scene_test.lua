@@ -1,5 +1,6 @@
 local GameSession = require("src.game.session.GameSession")
 local CardAcquisitionScene = require("src.game.scenes.CardAcquisitionScene")
+local CardRenderSystem = require("src.game.ui.CardRenderSystem")
 
 local function frame(scene)
     scene:preUpdate(1 / 60)
@@ -26,13 +27,23 @@ return function()
     })
     confident.lastActivity = "help_a_classmate"
     local firstScene = start(confident)
+    local fixedSystems = firstScene:scheduler():systemsFor("fixedUpdate")
+    assert(fixedSystems[1].name == "cardUiUpdate",
+        "Card scene must install the explicit UI update system")
     assert(#confident.generatedCards == 3)
     assert(confident.generatedCards[1].category == "confidence")
     assert(confident.generatedCards[2].category == "empathy")
     assert(confident.generatedCards[3].category == "balanced")
+    assert(CardRenderSystem.cardText(nil):find("No cards acquired", 1, true),
+        "card UI must provide a clear empty-collection message")
+    assert(CardRenderSystem.categoryColor("confidence").r > 0,
+        "card UI must provide a visual category identity")
+    assert(CardRenderSystem.cardText(confident.generatedCards[1]):find(
+        confident.generatedCards[1].name, 1, true),
+        "selected-card details must identify the selected card")
 
     press(firstScene, "tab")
-    press(firstScene, "right")
+    press(firstScene, "d")
     assert(confident.collectionSelection == 1,
         "an empty collection must remain safe to navigate")
     press(firstScene, "tab")
@@ -51,6 +62,8 @@ return function()
     press(firstScene, "right")
     assert(confident.collectionSelection == 1,
         "a non-empty collection must keep a valid selected card")
+    firstScene:draw(0)
+    assert(firstScene:world():validate(), "card UI render must remain read-only and headless-safe")
     firstScene:dispose()
 
     local empathic = GameSession.new({

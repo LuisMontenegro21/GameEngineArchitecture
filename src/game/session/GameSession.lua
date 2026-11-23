@@ -2,6 +2,7 @@
 -- owned by the application layer, not by a Scene-local ECS World.
 local GameSession = {}
 local CardCatalog = require("src.game.cards.CardCatalog")
+local EncounterDefinitions = require("src.game.encounters.EncounterDefinitions")
 
 local DEFAULTS = {
     day = 1,
@@ -51,6 +52,15 @@ local function validCardList(cards, expectedCount, uniqueIds)
     return true
 end
 
+local function validEndingId(endingId)
+    if endingId == nil then return true end
+    if type(endingId) ~= "string" then return false end
+    for _, ending in ipairs(EncounterDefinitions.get().endings) do
+        if ending.id == endingId then return true end
+    end
+    return false
+end
+
 function GameSession.validate(session)
     return type(session) == "table"
         and integer(session.day, 1)
@@ -73,6 +83,8 @@ function GameSession.validate(session)
         and validCardList(session.collection)
         and integer(session.collectionSelection, 1)
         and type(session.cardChosenThisDay) == "boolean"
+        and integer(session.finalRapport, 0)
+        and validEndingId(session.endingId)
         and type(session.complete) == "boolean"
         and plain(session)
 end
@@ -95,6 +107,8 @@ function GameSession.new(options)
         collection = {},
         collectionSelection = 1,
         cardChosenThisDay = false,
+        finalRapport = options.finalRapport == nil and 0 or options.finalRapport,
+        endingId = options.endingId,
         complete = false,
     }
     if options.stats then session.stats = copyTable(options.stats) end

@@ -17,11 +17,13 @@ function DayAdvanceSystem.install(scheduler)
                     session.cardChosenThisDay = false
                     session.lastActivity = nil
                     if session.day >= session.maxDays then
-                        session.complete = true
-                        session.feedback = "Your academy term is complete."
+                        session.complete = false
+                        session.finalRapport = 0
+                        session.endingId = nil
+                        session.feedback = "Your final academy conversation awaits."
                         world:setResource("gameSession", session)
                         context.emit("sceneRequest", {
-                            to = "arcaneComplete",
+                            to = "finalConversation",
                             payload = { session = session },
                         })
                     else

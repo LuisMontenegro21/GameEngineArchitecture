@@ -1,17 +1,19 @@
--- Converts Training Scene keyboard input into selection and activity events.
+-- Converts Training UI navigation and confirmation input into presentation
+-- selection state and gameplay requests. It never applies activity effects.
 local Activities = require("src.game.progression.Activities")
-local TrainingInputSystem = {}
 
-function TrainingInputSystem.install(scheduler)
+local TrainingUiUpdateSystem = {}
+
+function TrainingUiUpdateSystem.install(scheduler)
     scheduler:addSystem({
-        name = "trainingInput",
+        name = "trainingUiUpdate",
         stage = "fixedUpdate",
         readsResources = { "trainingSelection" },
         writesResources = { "trainingSelection" },
         run = function(context)
             local world = context.world
             local selection = world:requireResource("trainingSelection")
-            local total = #Activities.all()
+            local activities = Activities.all()
             for event in world:events("keyPressed") do
                 local key = event.payload.key
                 if key == "up" or key == "w" then
@@ -19,16 +21,17 @@ function TrainingInputSystem.install(scheduler)
                     world:setResource("trainingSelection", selection)
                     context.emit("trainingSelectionChanged", { index = selection })
                 elseif key == "down" or key == "s" then
-                    selection = math.min(total, selection + 1)
+                    selection = math.min(#activities, selection + 1)
                     world:setResource("trainingSelection", selection)
                     context.emit("trainingSelectionChanged", { index = selection })
                 elseif key == "return" or key == "space" then
-                    local activity = Activities.all()[selection]
-                    context.emit("trainingActivityRequested", { activityId = activity.id })
+                    context.emit("trainingActivityRequested", {
+                        activityId = activities[selection].id,
+                    })
                 end
             end
         end,
     })
 end
 
-return TrainingInputSystem
+return TrainingUiUpdateSystem

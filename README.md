@@ -12,9 +12,11 @@ Train at the academy
     → receive three conversation cards influenced by training
     → acquire one card for a persistent collection
     → begin the next day
+    → use collected cards in a final conversation after day five
 ```
 
-After five academy days, the game shows a completion screen.
+After five academy days, the player uses three collected cards in a final
+conversation before reaching the completion screen.
 
 The Training Scene also opens an optional Academy Garden map. Exploration is a
 physical hub for the academy locations; it does not consume a training action.
@@ -54,6 +56,8 @@ On Windows PowerShell, when LOVE is not on `PATH`:
 | Card Acquisition | Change selected generated card or collection card | `Left`/`Right` or `A`/`D` |
 | Card Acquisition | Switch generated-card / collection focus | `Tab` |
 | Card Acquisition | Acquire selected card; after acquisition, start the next day | `Enter` or `Space` |
+| Final Conversation | Select a collected card | `Left`/`Right` or `A`/`D` |
+| Final Conversation | Play selected card | `Enter` or `Space` |
 | Any scene | Quit | `Escape` |
 
 Training has two actions each day:
@@ -86,6 +90,7 @@ src/engine/scene/               ECS Scene and deferred SceneManager
 src/game/session/GameSession.lua persistent plain-data run state
 src/game/progression/           training definitions and systems
 src/game/cards/                 generation, acquisition, navigation, day flow
+src/game/encounters/            final conversation definitions and systems
 src/game/maps/                  Academy Garden map contracts and systems
 src/game/scenes/                Training, Card Acquisition, completion factories
 src/game/ui/                    read-only LOVE render systems, including the map
@@ -141,6 +146,7 @@ game layer built on it. Wizard Academia is the active LOVE entry point.
 | [src/game/progression/README.md](src/game/progression/README.md) | Existing generic progression-cycle package and its contracts. |
 | [src/game/cards/README.md](src/game/cards/README.md) | Wizard Academia card-data boundary and plain-data rule. |
 | [src/game/ui/README.md](src/game/ui/README.md) | UI-system ownership rules. |
+| [planning_files/ui_planning.md](planning_files/ui_planning.md) | Phased requirements and exit criteria for the three Wizard Academia UI systems. |
 | [src/game/maps/README.md](src/game/maps/README.md) | Academy Garden map contracts, movement, collision, POIs, and transitions. |
 | [planning_files/map_implementation.md](planning_files/map_implementation.md) | Academy Garden map layout, ECS flow, systems, transitions, rendering, and verification. |
 | [tests/README.md](tests/README.md) | Headless test-runner conventions. |

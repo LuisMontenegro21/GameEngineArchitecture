@@ -3,6 +3,7 @@ local FixedStep = require("src.engine.loop.FixedStep")
 local GameSession = require("src.game.session.GameSession")
 local TrainingScene = require("src.game.scenes.TrainingScene")
 local CardAcquisitionScene = require("src.game.scenes.CardAcquisitionScene")
+local FinalConversationScene = require("src.game.scenes.FinalConversationScene")
 local ArcaneCompleteScene = require("src.game.scenes.ArcaneCompleteScene")
 local AcademyMapScene = require("src.game.scenes.AcademyMapScene")
 
@@ -20,6 +21,7 @@ end
 function love.load()
     Game.registerScene("training", TrainingScene)
     Game.registerScene("cardAcquisition", CardAcquisitionScene)
+    Game.registerScene("finalConversation", FinalConversationScene)
     Game.registerScene("arcaneComplete", ArcaneCompleteScene)
     Game.registerScene("academyMap", AcademyMapScene)
 

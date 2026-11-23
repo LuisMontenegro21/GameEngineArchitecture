@@ -2,6 +2,7 @@ local SceneManager = require("src.engine.scene.SceneManager")
 local GameSession = require("src.game.session.GameSession")
 local TrainingScene = require("src.game.scenes.TrainingScene")
 local CardAcquisitionScene = require("src.game.scenes.CardAcquisitionScene")
+local FinalConversationScene = require("src.game.scenes.FinalConversationScene")
 local ArcaneCompleteScene = require("src.game.scenes.ArcaneCompleteScene")
 
 local function tick(manager)
@@ -21,6 +22,7 @@ return function()
     local manager = SceneManager.new()
     manager:register("training", TrainingScene)
     manager:register("cardAcquisition", CardAcquisitionScene)
+    manager:register("finalConversation", FinalConversationScene)
     manager:register("arcaneComplete", ArcaneCompleteScene)
     local session = GameSession.new()
     manager:start("training", { session = session })
@@ -50,9 +52,13 @@ return function()
         end
     end
 
-    assert(manager:current():name() == "arcaneComplete")
-    assert(session.complete and session.day == session.maxDays,
-        "the final day must complete without starting an extra day")
+    assert(manager:current():name() == "finalConversation")
+    assert(not session.complete and session.day == session.maxDays,
+        "the final day must enter the encounter without starting an extra Training day")
+    assert(manager:current():world():requireResource("gameSession") == session,
+        "the final encounter must receive the existing shared session")
+    assert(manager:current():world():requireResource("encounterState").promptIndex == 1,
+        "the final encounter must begin at its first prompt")
     assert(#session.collection == session.maxDays and session.stats.confidence == 10,
         "all daily rewards and training changes must persist through the run")
     manager:quit()

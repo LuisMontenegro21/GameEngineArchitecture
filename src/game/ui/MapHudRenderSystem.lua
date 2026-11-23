@@ -1,5 +1,6 @@
 -- Screen-space map information. It intentionally does not draw world objects.
 local Screen = require("src.game.Screen")
+local UiTheme = require("src.game.ui.UiTheme")
 
 local MapHudRenderSystem = {}
 
@@ -7,30 +8,35 @@ local function graphics()
     return love and love.graphics or nil
 end
 
+local function promptText(location)
+    return location.name .. " - " .. location.subtitle
+end
+
 function MapHudRenderSystem.install(scheduler)
     scheduler:addSystem({
         name = "mapHudRender",
         stage = "render",
-        readsResources = { "nearbyPointOfInterest" },
+        readsResources = { "mapHudLocation" },
         after = { "mapLabelRender" },
         run = function(context)
             local g = graphics()
             if not g then return end
-            local nearby = context.world:requireResource("nearbyPointOfInterest")
+            local location = context.world:requireResource("mapHudLocation")
 
-            g.setColor(0.90, 0.82, 1, 1)
+            UiTheme.setColor(g, UiTheme.colors.title)
             g.printf("WIZARD ACADEMIA - ACADEMY GARDEN", 0, 12, Screen.w, "center")
-            g.setColor(0.92, 0.92, 0.92, 1)
+            UiTheme.drawPanel(g, 100, Screen.h - 36, 760, 26, false)
+            UiTheme.setColor(g, UiTheme.colors.muted)
             g.printf("WASD / ARROWS: explore     BACKSPACE: return to training",
                 0, Screen.h - 22, Screen.w, "center")
-            if nearby then
-                g.setColor(0.06, 0.08, 0.14, 0.88)
-                g.rectangle("fill", 190, 34, 580, 24)
-                g.setColor(0.80, 0.88, 1, 1)
-                g.printf(nearby.name .. " -” " .. nearby.subtitle, 200, 39, 560, "center")
+            if location then
+                UiTheme.drawPanel(g, 170, 34, 620, 34, true)
+                UiTheme.setColor(g, UiTheme.colors.heading)
+                g.printf("LOCATION: " .. promptText(location), 182, 43, 596, "center")
             end
         end,
     })
 end
 
+MapHudRenderSystem.promptText = promptText
 return MapHudRenderSystem
