@@ -23,7 +23,7 @@ return function()
     local activities = Activities.all()
     assert(#activities == 4, "four training activities are required")
     activities[1].effects.confidence = 999
-    assert(Activities.get("practice_illusions").effects.confidence == 2,
+    assert(Activities.get(activities[1].id).effects.confidence == 2,
         "activity callers must receive copies")
     assert(Activities.get("unknown") == nil)
 

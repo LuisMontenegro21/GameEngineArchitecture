@@ -16,6 +16,9 @@ Train at the academy
 
 After five academy days, the game shows a completion screen.
 
+The Training Scene also opens an optional Academy Garden map. Exploration is a
+physical hub for the academy locations; it does not consume a training action.
+
 ![display](assets/demo/demo.gif)
 
 ## Requirements
@@ -45,6 +48,9 @@ On Windows PowerShell, when LOVE is not on `PATH`:
 | --- | --- | --- |
 | Training | Select an activity | `Up`/`Down` or `W`/`S` |
 | Training | Perform selected activity | `Enter` or `Space` |
+| Training | Explore the Academy Garden | `M` |
+| Academy Garden | Move | `W`/`A`/`S`/`D` or arrow keys |
+| Academy Garden | Return to Training | `Backspace` |
 | Card Acquisition | Change selected generated card or collection card | `Left`/`Right` or `A`/`D` |
 | Card Acquisition | Switch generated-card / collection focus | `Tab` |
 | Card Acquisition | Acquire selected card; after acquisition, start the next day | `Enter` or `Space` |
@@ -54,8 +60,8 @@ Training has two actions each day:
 
 | Activity | Cost | Effect |
 | --- | --- | --- |
-| Practice Illusions | 1 energy | Confidence +2 |
-| Care for a Familiar | 1 energy | Empathy +2 |
+| Practice Spells | 1 energy | Confidence +2 |
+| Help a Classmate | 1 energy | Empathy +2 |
 | Study Ancient Runes | 1 energy | Arcane Knowledge +2 |
 | Meditate | 1 action | Energy +2, capped at the maximum |
 
@@ -80,8 +86,9 @@ src/engine/scene/               ECS Scene and deferred SceneManager
 src/game/session/GameSession.lua persistent plain-data run state
 src/game/progression/           training definitions and systems
 src/game/cards/                 generation, acquisition, navigation, day flow
+src/game/maps/                  Academy Garden map contracts and systems
 src/game/scenes/                Training, Card Acquisition, completion factories
-src/game/ui/                    read-only LOVE render systems
+src/game/ui/                    read-only LOVE render systems, including the map
 tests/                          ECS, legacy, and Wizard Academia headless tests
 ```
 
@@ -103,7 +110,8 @@ Run the complete suite from the repository root:
 
 The Wizard Academia coverage includes session isolation, validated events,
 training success/rejection feedback, deterministic card generation, collection
-persistence, navigation bounds, and the complete five-day scene-manager loop.
+persistence, navigation bounds, the complete five-day scene-manager loop, map
+data validation, movement intent, collision, POI proximity, and map transitions.
 
 ## AI assistance disclosure
 
@@ -135,7 +143,8 @@ coverage while the project evolves.
 | [src/game/progression/README.md](src/game/progression/README.md) | Existing generic progression-cycle package and its contracts. |
 | [src/game/cards/README.md](src/game/cards/README.md) | Wizard Academia card-data boundary and plain-data rule. |
 | [src/game/ui/README.md](src/game/ui/README.md) | UI-system ownership rules. |
-| [src/game/maps/README.md](src/game/maps/README.md) | Future map/exploration extension point; not part of the current assignment scope. |
+| [src/game/maps/README.md](src/game/maps/README.md) | Academy Garden map contracts, movement, collision, POIs, and transitions. |
+map layout, ECS flow, systems, transitions, rendering, and verification. |
 | [tests/README.md](tests/README.md) | Headless test-runner conventions. |
 | [PORTFOLIO_EVIDENCE.md](PORTFOLIO_EVIDENCE.md) | Source links and the visual-evidence checklist. |
 | [assets/demo/wizard-academia/README.md](assets/demo/wizard-academia/README.md) | Required screenshot and GIF/video filenames and capture targets. |

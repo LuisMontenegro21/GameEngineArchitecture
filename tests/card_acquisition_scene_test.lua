@@ -24,7 +24,7 @@ return function()
     local confident = GameSession.new({
         stats = { confidence = 4, empathy = 1, arcaneKnowledge = 0 },
     })
-    confident.lastActivity = "care_for_familiar"
+    confident.lastActivity = "help_a_classmate"
     local firstScene = start(confident)
     assert(#confident.generatedCards == 3)
     assert(confident.generatedCards[1].category == "confidence")
@@ -56,7 +56,7 @@ return function()
     local empathic = GameSession.new({
         stats = { confidence = 0, empathy = 4, arcaneKnowledge = 1 },
     })
-    empathic.lastActivity = "practice_illusions"
+    empathic.lastActivity = "practice_spells"
     local secondScene = start(empathic)
     assert(empathic.generatedCards[1].category == "empathy")
     assert(empathic.generatedCards[2].category == "confidence")

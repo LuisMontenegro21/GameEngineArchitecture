@@ -41,7 +41,8 @@ function TrainingRenderSystem.install(scheduler)
             g.setColor(0.8, 0.9, 1, 1)
             g.printf(session.feedback, 100, 420, 760, "center")
             g.setColor(0.7, 0.7, 0.7, 1)
-            g.printf("UP/DOWN or W/S: select     ENTER/SPACE: train", 0, 485, Screen.w, "center")
+            g.printf("UP/DOWN or W/S: select     ENTER/SPACE: train     M: explore academy",
+                0, 485, Screen.w, "center")
         end,
     })
 end

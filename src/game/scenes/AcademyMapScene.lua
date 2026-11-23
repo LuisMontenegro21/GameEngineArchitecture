@@ -1,0 +1,47 @@
+local Scene = require("src.engine.scene.Scene")
+local GameSession = require("src.game.session.GameSession")
+local MapDefinition = require("src.game.maps.MapDefinition")
+local registerMap = require("src.game.maps.register")
+local MapSetupSystem = require("src.game.maps.MapSetupSystem")
+local MapInputSystem = require("src.game.maps.MapInputSystem")
+local PlayerMovementSystem = require("src.game.maps.PlayerMovementSystem")
+local MapCollisionSystem = require("src.game.maps.MapCollisionSystem")
+local PointOfInterestSystem = require("src.game.maps.PointOfInterestSystem")
+local MapTransitionSystem = require("src.game.maps.MapTransitionSystem")
+local MapTerrainRenderSystem = require("src.game.ui.MapTerrainRenderSystem")
+local MapSpriteRenderSystem = require("src.game.ui.MapSpriteRenderSystem")
+local MapLabelRenderSystem = require("src.game.ui.MapLabelRenderSystem")
+local MapHudRenderSystem = require("src.game.ui.MapHudRenderSystem")
+
+-- The `returnTo` payload is reserved for Phase M5 scene round trips.
+return function(payload)
+    payload = payload or {}
+    local session = payload.session or GameSession.new()
+    local returnTo = payload.returnTo or "training"
+    assert(GameSession.validate(session), "AcademyMapScene requires a valid game session")
+    assert(type(returnTo) == "string" and returnTo ~= "",
+        "AcademyMapScene requires a non-empty return target")
+
+    local scene = Scene.new({ name = "academyMap" })
+    local world = scene:world()
+    local map = MapDefinition.get()
+    registerMap(world)
+    world:setResource("gameSession", session)
+    world:setResource("mapDefinition", map)
+    world:setResource("mapBounds", map.bounds)
+    world:setResource("mapInput", { up = false, down = false, left = false, right = false })
+    world:setResource("mapReturnTarget", returnTo)
+    world:setResource("nearbyPointOfInterest", false)
+    world:setResource("mapTransitionQueued", false)
+    MapSetupSystem.install(scene:scheduler())
+    MapInputSystem.install(scene:scheduler())
+    PlayerMovementSystem.install(scene:scheduler())
+    MapCollisionSystem.install(scene:scheduler())
+    PointOfInterestSystem.install(scene:scheduler())
+    MapTransitionSystem.install(scene:scheduler())
+    MapTerrainRenderSystem.install(scene:scheduler())
+    MapSpriteRenderSystem.install(scene:scheduler())
+    MapLabelRenderSystem.install(scene:scheduler())
+    MapHudRenderSystem.install(scene:scheduler())
+    return scene
+end

@@ -6,6 +6,7 @@ local TrainingInputSystem = require("src.game.progression.TrainingInputSystem")
 local TrainingActivitySystem = require("src.game.progression.TrainingActivitySystem")
 local TrainingFeedbackSystem = require("src.game.progression.TrainingFeedbackSystem")
 local TrainingTransitionSystem = require("src.game.progression.TrainingTransitionSystem")
+local MapEntrySystem = require("src.game.maps.MapEntrySystem")
 local TrainingRenderSystem = require("src.game.ui.TrainingRenderSystem")
 
 -- Factory payload is `{ session = GameSession }`; a fresh session also makes
@@ -25,6 +26,7 @@ return function(payload)
     TrainingActivitySystem.install(scene:scheduler())
     TrainingFeedbackSystem.install(scene:scheduler())
     TrainingTransitionSystem.install(scene:scheduler())
+    MapEntrySystem.install(scene:scheduler())
     TrainingRenderSystem.install(scene:scheduler())
     return scene
 end

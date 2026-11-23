@@ -33,6 +33,17 @@ local tests = {
     "tests.training_scene_test",
     "tests.card_acquisition_scene_test",
     "tests.arcane_daily_cycle_test",
+    "tests.map_data_test",
+    "tests.map_tile_foundation_test",
+    "tests.map_terrain_paths_test",
+    "tests.map_asset_pipeline_test",
+    "tests.map_sprite_conversion_test",
+    "tests.academy_map_scene_test",
+    "tests.map_movement_test",
+    "tests.map_collision_test",
+    "tests.map_point_of_interest_test",
+    "tests.map_scene_integration_test",
+    "tests.map_render_test",
 }
 
 local passed = 0
