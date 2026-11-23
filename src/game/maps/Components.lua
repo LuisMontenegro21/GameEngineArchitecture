@@ -1,5 +1,5 @@
--- Map-specific ECS components. These contracts remain independent from the
--- legacy Breakout component definitions.
+-- Map-specific ECS components. These contracts remain independent from other
+-- game features and from LOVE presentation objects.
 local Components = {}
 local SpriteCatalog = require("src.game.maps.SpriteCatalog")
 

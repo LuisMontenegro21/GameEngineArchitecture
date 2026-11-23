@@ -1,8 +1,7 @@
 # ECS Phase 0 contracts
 
-This file defines the boundaries that the new ECS implementation must preserve.
-It is intentionally independent of Breakout and must remain valid when the
-legacy Registry/Scene implementation is removed.
+This file defines the boundaries that the ECS implementation must preserve. It
+is intentionally independent of game-specific modules and legacy scene code.
 
 ## Public import
 
@@ -62,7 +61,7 @@ not gameplay state, and must not change valid simulation results.
 
 ## Dependency boundaries
 
-- `src.engine.ecs` must not require `love`, Breakout modules, scenes, or the
+- `src.engine.ecs` must not require `love`, game-specific modules, scenes, or the
   legacy Registry/Scene implementation.
 - Engine modules may depend on other engine modules only through documented
   interfaces.

@@ -89,7 +89,7 @@ src/game/cards/                 generation, acquisition, navigation, day flow
 src/game/maps/                  Academy Garden map contracts and systems
 src/game/scenes/                Training, Card Acquisition, completion factories
 src/game/ui/                    read-only LOVE render systems, including the map
-tests/                          ECS, legacy, and Wizard Academia headless tests
+tests/                          ECS and Wizard Academia headless tests
 ```
 
 The shared `GameSession` exists above individual scene Worlds. Each scene owns
@@ -130,10 +130,8 @@ their own portfolio explanation of the design and implementation.
 
 ## Repository information and documentation index
 
-This repository contains both a reusable, custom ECS engine and game-layer
-examples built on it. Wizard Academia is the active LOVE entry point; older
-Breakout and generic-progression materials remain useful as engine and test
-coverage while the project evolves.
+This repository contains a reusable custom ECS engine and the Wizard Academia
+game layer built on it. Wizard Academia is the active LOVE entry point.
 
 | Documentation | Contents |
 | --- | --- |
@@ -144,7 +142,7 @@ coverage while the project evolves.
 | [src/game/cards/README.md](src/game/cards/README.md) | Wizard Academia card-data boundary and plain-data rule. |
 | [src/game/ui/README.md](src/game/ui/README.md) | UI-system ownership rules. |
 | [src/game/maps/README.md](src/game/maps/README.md) | Academy Garden map contracts, movement, collision, POIs, and transitions. |
-map layout, ECS flow, systems, transitions, rendering, and verification. |
+| [planning_files/map_implementation.md](planning_files/map_implementation.md) | Academy Garden map layout, ECS flow, systems, transitions, rendering, and verification. |
 | [tests/README.md](tests/README.md) | Headless test-runner conventions. |
 | [PORTFOLIO_EVIDENCE.md](PORTFOLIO_EVIDENCE.md) | Source links and the visual-evidence checklist. |
 | [assets/demo/wizard-academia/README.md](assets/demo/wizard-academia/README.md) | Required screenshot and GIF/video filenames and capture targets. |
