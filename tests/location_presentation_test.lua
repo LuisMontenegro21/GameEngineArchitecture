@@ -2,7 +2,6 @@ local AcademyLocationScene = require("src.game.scenes.AcademyLocationScene")
 local GameSession = require("src.game.session.GameSession")
 local ImageManager = require("src.game.graphics.ImageManager")
 local LocationCatalog = require("src.game.locations.LocationCatalog")
-local LocationInputSystem = require("src.game.locations.LocationInputSystem")
 local LocationRenderSystem = require("src.game.ui.LocationRenderSystem")
 local SceneBackground = require("src.game.graphics.SceneBackground")
 
@@ -19,22 +18,13 @@ return function()
     local scene = AcademyLocationScene(payload("astral_court"))
     scene:initialize()
     local world = scene:world()
-    local state = world:requireResource("locationState")
-    assert(state.focusKind == "activity"
-        and LocationRenderSystem.focusPrompt(state) == "FOCUS: Activity Station")
-    world:emit("keyPressed", { key = "right" })
-    scene:preUpdate(0)
-    scene:fixedUpdate(1 / 60)
-    state = world:requireResource("locationState")
-    assert(state.focusKind == "character"
-        and LocationRenderSystem.focusPrompt(state) == "FOCUS: Character",
-        "navigation must make the current location target unambiguous")
-    world:emit("keyPressed", { key = "tab" })
-    scene:preUpdate(0)
-    scene:fixedUpdate(1 / 60)
-    assert(world:requireResource("locationState").focusKind == "exit",
-        "keyboard focus must safely cycle through available character targets")
-    assert(LocationInputSystem.promptFor({ focusKind = "activity" }):find("practice", 1, true))
+    assert(LocationRenderSystem.promptFor(false):find("Move near", 1, true),
+        "room rendering must explain proximity interaction when nothing is nearby")
+    assert(LocationRenderSystem.promptFor({ prompt = "E: Talk to Professor Elian" })
+        == "E: Talk to Professor Elian", "room rendering must show a nearby interaction prompt")
+    local characters = LocationRenderSystem.collectCharacters(world)
+    assert(#characters == 1 and characters[1].character.id == "mentor",
+        "room render data must retain scheduled characters")
     scene:dispose()
 
     local previousLove = love

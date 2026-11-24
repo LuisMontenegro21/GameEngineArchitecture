@@ -1,4 +1,4 @@
--- Read-only placeholder presentation for the reusable Academy location Scene.
+-- Read-only fixed-camera presentation for reusable Academy location scenes.
 local Screen = require("src.game.Screen")
 local Activities = require("src.game.progression.Activities")
 local SceneBackground = require("src.game.graphics.SceneBackground")
@@ -7,27 +7,8 @@ local MapSpriteRenderSystem = require("src.game.ui.MapSpriteRenderSystem")
 
 local LocationRenderSystem = {}
 
-local function focusPrompt(state)
-    return state.focusKind == "exit"
-        and "FOCUS: Exit to Academy Garden"
-        or (state.focusKind == "character" and "FOCUS: Character" or "FOCUS: Activity Station")
-end
-
--- Interaction information lives in screen-space side panels so it never
--- obscures room scenery or characters. World positions remain available for
--- later interior movement/sprite work, but are not used as placeholder UI.
-local function drawActivityPanel(g, location, state)
-    local activity = assert(Activities.get(location.activityId))
-    local x, y, width, height = 18, 112, 214, 102
-    UiTheme.drawPanel(g, x, y, width, height, state.focusKind == "activity")
-    g.setColor(location.fallbackColor.r, location.fallbackColor.g,
-        location.fallbackColor.b, location.fallbackColor.a)
-    g.rectangle("fill", x, y, width, 20)
-    UiTheme.setColor(g, UiTheme.colors.heading)
-    g.printf("ACTIVITY", x + 8, y + 5, width - 16, "center")
-    UiTheme.setColor(g, UiTheme.colors.text)
-    g.printf(activity.name, x + 12, y + 38, width - 24, "center")
-    g.printf("E / ENTER: practice", x + 12, y + 68, width - 24, "center")
+local function promptFor(nearby)
+    return nearby and nearby.prompt or "Move near an activity, character, or exit."
 end
 
 local function collectCharacters(world)
@@ -37,10 +18,7 @@ local function collectCharacters(world)
     })
     for _, position, size, character, sprite in query:each() do
         result[#result + 1] = {
-            position = position,
-            size = size,
-            character = character,
-            sprite = sprite,
+            position = position, size = size, character = character, sprite = sprite,
         }
     end
     query:close()
@@ -48,21 +26,61 @@ local function collectCharacters(world)
     return result
 end
 
-local function drawCharacters(g, characters, state)
-    for index, entry in ipairs(characters) do
-        local position, size = entry.position, entry.size
-        if state.focusKind == "character" and state.focusIndex == index then
+local function drawPlayer(g, world)
+    local query = world:query({ all = { "locationPlayer", "locationPosition", "locationSize", "locationSprite" } })
+    for _, _, position, size, sprite in query:each() do
+        MapSpriteRenderSystem.drawSpriteOrFallback(g, position, size, sprite)
+    end
+    query:close()
+end
+
+local function drawCharacters(g, characters, nearby)
+    for _, entry in ipairs(characters) do
+        if nearby and nearby.kind == "character" and nearby.id == entry.character.id then
             UiTheme.setColor(g, UiTheme.colors.selection)
-            g.rectangle("line", position.x - 6, position.y - 8, size.w + 12, size.h + 12)
+            g.rectangle("line", entry.position.x - 6, entry.position.y - 8,
+                entry.size.w + 12, entry.size.h + 12)
         end
-        MapSpriteRenderSystem.drawSpriteOrFallback(g, position, size, entry.sprite)
+        MapSpriteRenderSystem.drawSpriteOrFallback(g, entry.position, entry.size, entry.sprite)
     end
 end
 
-local function drawCharacterPanel(g, characters, state)
+local function drawWorldTargets(g, world, nearby)
+    local query = world:query({ all = { "locationPosition", "locationSize", "locationInteractable" } })
+    for _, position, size, target in query:each() do
+        if target.kind == "activity" then
+            UiTheme.setColor(g, nearby and nearby.id == target.id and UiTheme.colors.selection or UiTheme.colors.heading)
+            g.rectangle("line", position.x - 4, position.y - 4, size.w + 8, size.h + 8)
+            g.rectangle("fill", position.x, position.y, size.w, size.h)
+            UiTheme.setColor(g, UiTheme.colors.background)
+            g.printf("*", position.x, position.y + 7, size.w, "center")
+        elseif target.kind == "exit" then
+            UiTheme.setColor(g, nearby and nearby.kind == "exit" and UiTheme.colors.selection or UiTheme.colors.muted)
+            g.rectangle("line", position.x, position.y, size.w, size.h)
+        end
+    end
+    query:close()
+end
+
+local function drawActivityPanel(g, location, nearby)
+    local activity = assert(Activities.get(location.activityId))
+    local x, y, width, height = 18, 112, 214, 102
+    UiTheme.drawPanel(g, x, y, width, height, nearby and nearby.kind == "activity")
+    g.setColor(location.fallbackColor.r, location.fallbackColor.g, location.fallbackColor.b, location.fallbackColor.a)
+    g.rectangle("fill", x, y, width, 20)
+    UiTheme.setColor(g, UiTheme.colors.heading)
+    g.printf("ACTIVITY", x + 8, y + 5, width - 16, "center")
+    UiTheme.setColor(g, UiTheme.colors.text)
+    g.printf(activity.name, x + 12, y + 38, width - 24, "center")
+    UiTheme.setColor(g, UiTheme.colors.muted)
+    g.printf(nearby and nearby.kind == "activity" and "E / ENTER: practice" or "Approach the marker",
+        x + 12, y + 68, width - 24, "center")
+end
+
+local function drawCharacterPanel(g, characters, nearby)
     local x, y, width = 728, 112, 214
     local height = math.max(66, 30 + #characters * 58)
-    UiTheme.drawPanel(g, x, y, width, height, state.focusKind == "character")
+    UiTheme.drawPanel(g, x, y, width, height, nearby and nearby.kind == "character")
     UiTheme.setColor(g, UiTheme.colors.heading)
     g.printf("PEOPLE HERE", x + 8, y + 6, width - 16, "center")
     if #characters == 0 then
@@ -72,31 +90,29 @@ local function drawCharacterPanel(g, characters, state)
     end
     for index, entry in ipairs(characters) do
         local rowY = y + 30 + (index - 1) * 58
-        local selected = state.focusKind == "character" and state.focusIndex == index
+        local selected = nearby and nearby.kind == "character" and nearby.id == entry.character.id
         UiTheme.drawPanel(g, x + 8, rowY, width - 16, 48, selected)
         UiTheme.setColor(g, UiTheme.colors.text)
         g.printf(entry.character.displayName, x + 16, rowY + 7, width - 32, "center")
         UiTheme.setColor(g, UiTheme.colors.muted)
-        g.printf(selected and "E / ENTER: speak" or "available", x + 16, rowY + 27, width - 32, "center")
+        g.printf(selected and "E / ENTER: speak" or "approach", x + 16, rowY + 27, width - 32, "center")
     end
 end
 
 local function drawDailyConversation(g, session, state, selection)
-    local collection = session.collection
-    local card = collection[selection]
+    local card = session.collection[selection]
     UiTheme.drawPanel(g, 86, 320, 788, 154, true)
     UiTheme.setColor(g, UiTheme.colors.heading)
     g.printf("CONVERSATION: " .. state.targetName, 106, 332, 748, "center")
     UiTheme.setColor(g, UiTheme.colors.text)
     g.printf(state.prompt, 116, 358, 728, "center")
-
     if card then
         local color = UiTheme.categoryColor(card.category)
         g.setColor(color.r, color.g, color.b, color.a)
         g.rectangle("fill", 128, 394, 704, 26)
         UiTheme.setColor(g, UiTheme.colors.background)
         g.printf(("[%d/%d] %s  |  %s  |  Power %d  |  Cost %d"):format(
-            selection, #collection, card.name, card.category, card.power, card.cost),
+            selection, #session.collection, card.name, card.category, card.power, card.cost),
             140, 400, 680, "center")
     else
         UiTheme.setColor(g, UiTheme.colors.warning)
@@ -105,40 +121,46 @@ local function drawDailyConversation(g, session, state, selection)
     UiTheme.setColor(g, state.resolved and UiTheme.colors.positive or UiTheme.colors.feedback)
     g.printf(state.feedback, 116, 430, 728, "center")
     UiTheme.setColor(g, UiTheme.colors.muted)
-    local controls = state.resolved and "Resolving the next day..."
-        or "LEFT / RIGHT: select card     E / ENTER: play card     ESC: close"
-    g.printf(controls, 0, 452, Screen.w, "center")
+    g.printf(state.resolved and "Resolving the next day..."
+        or "LEFT / RIGHT: select card     E / ENTER: play card     ESC: close", 0, 452, Screen.w, "center")
 end
 
 function LocationRenderSystem.install(scheduler)
     scheduler:addSystem({
         name = "locationRender",
         stage = "render",
-        reads = { "locationPosition", "locationSize", "locationCharacter", "locationSprite" },
-        readsResources = { "gameSession", "locationDefinition", "locationState", "dailyConversationState", "dailyConversationSelection" },
+        reads = { "locationPosition", "locationSize", "locationCharacter", "locationSprite", "locationInteractable" },
+        readsResources = {
+            "gameSession", "locationDefinition", "locationState", "dailyConversationState",
+            "dailyConversationSelection", "nearbyLocationInteraction",
+        },
         run = function(context)
             local g = love and love.graphics or nil
             if not g then return end
-            local location = context.world:requireResource("locationDefinition")
-            local state = context.world:requireResource("locationState")
-            local daily = context.world:requireResource("dailyConversationState")
+            local world = context.world
+            local location = world:requireResource("locationDefinition")
+            local state = world:requireResource("locationState")
+            local daily = world:requireResource("dailyConversationState")
+            local nearby = world:requireResource("nearbyLocationInteraction")
             SceneBackground.draw(g, location.backgroundId)
             UiTheme.setColor(g, UiTheme.colors.title)
             g.printf(location.name, 0, 34, Screen.w, "center")
             UiTheme.setColor(g, UiTheme.colors.muted)
-            g.printf(focusPrompt(state), 0, 70, Screen.w, "center")
-            local characters = collectCharacters(context.world)
-            drawCharacters(g, characters, state)
-            drawActivityPanel(g, location, state)
-            drawCharacterPanel(g, characters, state)
-            UiTheme.drawPanel(g, 18, 385, 214, 54, state.focusKind == "exit")
+            g.printf(promptFor(nearby), 0, 70, Screen.w, "center")
+            local characters = collectCharacters(world)
+            drawWorldTargets(g, world, nearby)
+            drawCharacters(g, characters, nearby)
+            drawPlayer(g, world)
+            drawActivityPanel(g, location, nearby)
+            drawCharacterPanel(g, characters, nearby)
+            UiTheme.drawPanel(g, 18, 385, 214, 54, nearby and nearby.kind == "exit")
             UiTheme.setColor(g, UiTheme.colors.heading)
             g.printf("EXIT: Academy Garden", 26, 395, 198, "center")
             UiTheme.setColor(g, UiTheme.colors.text)
             g.printf(state.feedback, 130, 457, 700, "center")
             if daily and daily.open then
-                drawDailyConversation(g, context.world:requireResource("gameSession"), daily,
-                    context.world:requireResource("dailyConversationSelection"))
+                drawDailyConversation(g, world:requireResource("gameSession"), daily,
+                    world:requireResource("dailyConversationSelection"))
             elseif state.dialogue then
                 UiTheme.drawPanel(g, 110, 350, 740, 102, true)
                 UiTheme.setColor(g, UiTheme.colors.heading)
@@ -150,12 +172,12 @@ function LocationRenderSystem.install(scheduler)
             end
             UiTheme.drawPanel(g, 80, 496, 800, 32, false)
             UiTheme.setColor(g, UiTheme.colors.muted)
-            g.printf("ARROWS / TAB: change focus     BACKSPACE: return to Academy Garden",
+            g.printf("WASD / ARROWS: move     E: interact     BACKSPACE: return to Academy Garden",
                 0, 505, Screen.w, "center")
         end,
     })
 end
 
-LocationRenderSystem.focusPrompt = focusPrompt
-
+LocationRenderSystem.promptFor = promptFor
+LocationRenderSystem.collectCharacters = collectCharacters
 return LocationRenderSystem

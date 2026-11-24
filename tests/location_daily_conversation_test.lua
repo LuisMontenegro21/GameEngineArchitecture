@@ -26,6 +26,21 @@ local function press(scene, key)
     fixed(scene)
 end
 
+local function moveToTarget(scene, id)
+    local world = scene:world()
+    local position, size, target
+    local playerQuery = world:query({ all = { "locationPlayer", "locationPosition", "locationSize" } })
+    for _, _, currentPosition, currentSize in playerQuery:each() do position, size = currentPosition, currentSize break end
+    playerQuery:close()
+    local targetQuery = world:query({ all = { "locationInteractable" } })
+    for _, candidate in targetQuery:each() do if candidate.id == id then target = candidate break end end
+    targetQuery:close()
+    assert(position and target, "missing proximity target: " .. tostring(id))
+    position.x = target.trigger.x + (target.trigger.w - size.w) / 2
+    position.y = target.trigger.y + (target.trigger.h - size.h) / 2
+    fixed(scene)
+end
+
 local function tick(manager)
     manager:preUpdate(0)
     manager:fixedUpdate(1 / 60)
@@ -53,7 +68,7 @@ return function()
         and state.targetLocationName == "Student Commons",
         "the daily objective must identify the target's scheduled room")
 
-    press(scene, "right")
+    moveToTarget(scene, "outgoing_peer")
     press(scene, "e")
     state = world:requireResource("dailyConversationState")
     assert(state.open and not world:requireResource("locationState").dialogue,
@@ -85,7 +100,7 @@ return function()
     wrongRoom.collection = { matching }
     local wrongScene = AcademyLocationScene(payload(wrongRoom, "astral_court"))
     wrongScene:initialize()
-    press(wrongScene, "right")
+    moveToTarget(wrongScene, "mentor")
     press(wrongScene, "e")
     assert(not wrongScene:world():requireResource("dailyConversationState").open
         and wrongScene:world():requireResource("locationState").dialogue,
@@ -98,7 +113,7 @@ return function()
     local persisted = GameSession.new({ day = 1, dayPhase = "socialConversation" })
     persisted.collection = { matching }
     manager:start("academyLocation", payload(persisted, "student_commons"))
-    pressManager(manager, "right")
+    moveToTarget(manager:current(), "outgoing_peer")
     pressManager(manager, "e")
     pressManager(manager, "return")
     assert(manager:current():name() == "academyMap" and persisted.day == 2

@@ -19,6 +19,22 @@ local function pressScene(scene, key)
     scene:postFixedUpdate(1 / 60)
 end
 
+local function moveToTarget(scene, id)
+    local world = scene:world()
+    local playerPosition, playerSize, target = nil, nil, nil
+    local playerQuery = world:query({ all = { "locationPlayer", "locationPosition", "locationSize" } })
+    for _, _, position, size in playerQuery:each() do playerPosition, playerSize = position, size break end
+    playerQuery:close()
+    local targetQuery = world:query({ all = { "locationInteractable" } })
+    for _, candidate in targetQuery:each() do if candidate.id == id then target = candidate break end end
+    targetQuery:close()
+    assert(playerPosition and target, "location target is missing: " .. tostring(id))
+    playerPosition.x = target.trigger.x + (target.trigger.w - playerSize.w) / 2
+    playerPosition.y = target.trigger.y + (target.trigger.h - playerSize.h) / 2
+    scene:preUpdate(0)
+    scene:fixedUpdate(1 / 60)
+end
+
 local function tick(manager)
     manager:preUpdate(0)
     manager:fixedUpdate(1 / 60)
@@ -43,6 +59,7 @@ return function()
         local session = GameSession.new()
         local scene = AcademyLocationScene(payload(session, case.locationId))
         scene:initialize()
+        moveToTarget(scene, scene:world():requireResource("locationDefinition").activityId)
         pressScene(scene, "e")
         assert(session.actionsRemaining == 1,
             "a successful room activity must consume exactly one action")
@@ -60,6 +77,7 @@ return function()
     rejected.energy = 0
     local rejectedScene = AcademyLocationScene(payload(rejected, "astral_court"))
     rejectedScene:initialize()
+    moveToTarget(rejectedScene, "practice_spells")
     pressScene(rejectedScene, "e")
     assert(rejected.actionsRemaining == 2 and rejected.stats.confidence == 0
         and rejected.feedback:find("enough energy", 1, true),
@@ -68,7 +86,7 @@ return function()
 
     local dialogueScene = AcademyLocationScene(payload(GameSession.new(), "astral_court"))
     dialogueScene:initialize()
-    pressScene(dialogueScene, "right")
+    moveToTarget(dialogueScene, "mentor")
     pressScene(dialogueScene, "e")
     local state = dialogueScene:world():requireResource("locationState")
     assert(state.dialogue and state.dialogue.characterId == "mentor" and state.dialogue.lineIndex == 1,
@@ -86,9 +104,11 @@ return function()
     manager:register("cardAcquisition", CardAcquisitionScene)
     local session = GameSession.new()
     manager:start("academyLocation", payload(session, "astral_court"))
+    moveToTarget(manager:current(), "practice_spells")
     pressManager(manager, "e")
     assert(manager:current():name() == "academyLocation" and session.actionsRemaining == 1,
         "one successful room activity must remain in the room")
+    moveToTarget(manager:current(), "practice_spells")
     pressManager(manager, "e")
     assert(manager:current():name() == "cardAcquisition"
         and session.dayPhase == "cardAcquisition" and session.actionsRemaining == 0,

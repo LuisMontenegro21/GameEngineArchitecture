@@ -13,8 +13,10 @@ local entries = {
         backgroundId = "astralCourtInterior",
         activityId = "practice_spells",
         fallbackColor = { r = 0.20, g = 0.12, b = 0.34, a = 1 },
-        entrance = { x = 480, y = 486 },
-        activitySlot = { x = 680, y = 300 },
+        bounds = { x = 248, y = 96, w = 464, h = 384 },
+        entrance = { x = 480, y = 420 },
+        exitSlot = { x = 480, y = 460 },
+        activitySlot = { x = 650, y = 300 },
         characterSlots = {
             { id = "primary", x = 330, y = 315 },
             { id = "secondary", x = 450, y = 315 },
@@ -26,8 +28,10 @@ local entries = {
         backgroundId = "studentCommonsInterior",
         activityId = "help_a_classmate",
         fallbackColor = { r = 0.31, g = 0.19, b = 0.10, a = 1 },
-        entrance = { x = 480, y = 486 },
-        activitySlot = { x = 680, y = 300 },
+        bounds = { x = 248, y = 96, w = 464, h = 384 },
+        entrance = { x = 480, y = 420 },
+        exitSlot = { x = 480, y = 460 },
+        activitySlot = { x = 650, y = 300 },
         characterSlots = {
             { id = "primary", x = 330, y = 315 },
             { id = "secondary", x = 450, y = 315 },
@@ -39,8 +43,10 @@ local entries = {
         backgroundId = "ancientLibraryInterior",
         activityId = "study_ancient_runes",
         fallbackColor = { r = 0.12, g = 0.15, b = 0.28, a = 1 },
-        entrance = { x = 480, y = 486 },
-        activitySlot = { x = 680, y = 300 },
+        bounds = { x = 248, y = 96, w = 464, h = 384 },
+        entrance = { x = 480, y = 420 },
+        exitSlot = { x = 480, y = 460 },
+        activitySlot = { x = 650, y = 300 },
         characterSlots = {
             { id = "primary", x = 330, y = 315 },
             { id = "secondary", x = 450, y = 315 },
@@ -52,8 +58,10 @@ local entries = {
         backgroundId = "quietGardenInterior",
         activityId = "meditate",
         fallbackColor = { r = 0.10, g = 0.25, b = 0.16, a = 1 },
-        entrance = { x = 480, y = 486 },
-        activitySlot = { x = 680, y = 300 },
+        bounds = { x = 248, y = 96, w = 464, h = 384 },
+        entrance = { x = 480, y = 420 },
+        exitSlot = { x = 480, y = 460 },
+        activitySlot = { x = 650, y = 300 },
         characterSlots = {
             { id = "primary", x = 330, y = 315 },
             { id = "secondary", x = 450, y = 315 },
@@ -104,7 +112,10 @@ local function validEntry(entry)
         and nonEmptyString(entry.activityId)
         and Activities.get(entry.activityId) ~= nil
         and color(entry.fallbackColor)
+        and type(entry.bounds) == "table" and finite(entry.bounds.x) and finite(entry.bounds.y)
+        and finite(entry.bounds.w) and entry.bounds.w > 0 and finite(entry.bounds.h) and entry.bounds.h > 0
         and point(entry.entrance)
+        and point(entry.exitSlot)
         and point(entry.activitySlot)
         and slots(entry.characterSlots)
 end

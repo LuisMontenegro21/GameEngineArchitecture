@@ -21,10 +21,12 @@ return function()
     end, "daily room state must include its complete plain-data contract")
     invalid(function()
         world:setResource("locationState", {
-            focusKind = "invalid", focusIndex = 1, dialogue = false,
-            feedback = "", transitionQueued = false,
+            dialogue = { characterId = "x" }, feedback = "", transitionQueued = false,
         })
-    end, "location focus kinds must remain constrained")
+    end, "location dialogue state must remain complete and valid")
+    invalid(function()
+        world:setResource("locationInput", { up = false, down = false, left = false })
+    end, "location movement input must include every direction")
 
     world:emit("locationDailyConversationOpenRequested", { characterId = "outgoing_peer" })
     world:emit("dailyCardPlayRequested", { collectionIndex = 1 })

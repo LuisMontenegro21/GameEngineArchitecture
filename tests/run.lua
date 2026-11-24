@@ -61,6 +61,7 @@ local tests = {
     "tests.location_entry_return_test",
     "tests.location_activity_dialogue_test",
     "tests.location_daily_conversation_test",
+    "tests.location_movement_interaction_test",
     "tests.location_contract_test",
     "tests.location_cycle_integration_test",
 }

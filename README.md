@@ -62,8 +62,8 @@ On Windows PowerShell, when LOVE is not on `PATH`:
 | Academy Garden | Move | `W`/`A`/`S`/`D` or arrow keys |
 | Academy Garden | Enter a nearby location | `E` |
 | Academy Garden | Return to Training (only when entered from Training) | `Backspace` |
-| Academy Location | Change focus between activity, characters, and exit | arrows or `Tab` |
-| Academy Location | Use the focused activity or speak to a character | `E` / `Enter` / `Space` |
+| Academy Location | Move inside the fixed-camera room | `W`/`A`/`S`/`D` or arrow keys |
+| Academy Location | Interact with a nearby activity, character, or exit | `E` / `Enter` / `Space` |
 | Academy Location | Return to the Academy Garden | `Backspace` |
 | Daily room conversation | Select/play a collected card | arrows, then `E` / `Enter` / `Space` |
 | Card Acquisition | Change selected generated card or collection card | `Left`/`Right` or `A`/`D` |

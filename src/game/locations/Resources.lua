@@ -13,6 +13,32 @@ local function point(value)
     return type(value) == "table" and finite(value.x) and finite(value.y)
 end
 
+local function bounds(value)
+    return type(value) == "table" and finite(value.x) and finite(value.y)
+        and finite(value.w) and value.w > 0 and finite(value.h) and value.h > 0
+end
+
+local function locationInput(value)
+    if type(value) ~= "table" then return false end
+    for _, key in ipairs({ "up", "down", "left", "right" }) do
+        if type(value[key]) ~= "boolean" then return false end
+    end
+    if value.keys ~= nil then
+        if type(value.keys) ~= "table" then return false end
+        for _, pressed in pairs(value.keys) do if type(pressed) ~= "boolean" then return false end end
+    end
+    return true
+end
+
+local function nearbyInteraction(value)
+    return value == false or (type(value) == "table"
+        and type(value.id) == "string" and value.id ~= ""
+        and (value.kind == "activity" or value.kind == "character" or value.kind == "exit")
+        and type(value.name) == "string" and value.name ~= ""
+        and type(value.prompt) == "string" and value.prompt ~= ""
+        and (value.activityId == nil or (type(value.activityId) == "string" and value.activityId ~= "")))
+end
+
 local function locationState(value)
     local dialogue = value and value.dialogue
     local validDialogue = dialogue == false or (type(dialogue) == "table"
@@ -22,8 +48,6 @@ local function locationState(value)
         and type(dialogue.lineIndex) == "number" and dialogue.lineIndex % 1 == 0
         and dialogue.lineIndex >= 1 and dialogue.lineIndex <= #dialogue.lines)
     return type(value) == "table"
-        and (value.focusKind == "activity" or value.focusKind == "character" or value.focusKind == "exit")
-        and type(value.focusIndex) == "number" and value.focusIndex % 1 == 0 and value.focusIndex >= 1
         and validDialogue
         and type(value.feedback) == "string"
         and type(value.transitionQueued) == "boolean"
@@ -56,6 +80,12 @@ function Resources.register(world)
         validate = function(value) return type(value) == "string" and value ~= "" end,
     })
     world:registerResource("mapReturnPosition", { transient = true, validate = point })
+    world:registerResource("locationBounds", { transient = true, validate = bounds })
+    world:registerResource("locationInput", { transient = true, validate = locationInput })
+    world:registerResource("nearbyLocationInteraction", {
+        transient = true,
+        validate = nearbyInteraction,
+    })
     world:registerResource("locationState", { transient = true, validate = locationState })
     world:registerResource("dailyConversationState", {
         transient = true,

@@ -37,8 +37,8 @@ Build one vertical slice first:
 `AcademyMapScene` is the navigation hub. Pressing `E` at one of its four POIs
 opens `AcademyLocationScene` with a location ID, the exact shared
 `GameSession`, and a safe map return position. The reusable location factory
-installs setup, input, activity, dialogue, daily-card-conversation, transition,
-and render systems. It never owns persistent rules: activity resolution,
+installs setup, delta-time movement, bounds, proximity interaction, activity,
+dialogue, daily-card-conversation, transition, and render systems. It never owns persistent rules: activity resolution,
 card scoring, and day advancement remain in their existing game packages.
 
 Location components, resources, events, and catalog data are plain Lua data.

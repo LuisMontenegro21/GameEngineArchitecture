@@ -50,31 +50,37 @@ local function enterLocation(manager, locationId)
     assert(manager:current():name() == "academyLocation")
 end
 
+local moveToLocationTarget
+
 local function performActivity(manager, locationId)
     enterLocation(manager, locationId)
+    moveToLocationTarget(manager:current(), manager:current():world():requireResource("locationDefinition").activityId)
     press(manager, "e")
 end
 
-local function roomCharacterIndex(world, characterId)
-    local characters = {}
-    local query = world:query({ all = { "locationCharacter" } })
-    for _, character in query:each() do characters[#characters + 1] = character end
-    query:close()
-    table.sort(characters, function(left, right) return left.id < right.id end)
-    for index, character in ipairs(characters) do
-        if character.id == characterId then return index end
-    end
-    error("scheduled conversation target is absent from its location")
+moveToLocationTarget = function(scene, id)
+    local world = scene:world()
+    local position, size, target
+    local playerQuery = world:query({ all = { "locationPlayer", "locationPosition", "locationSize" } })
+    for _, _, currentPosition, currentSize in playerQuery:each() do position, size = currentPosition, currentSize break end
+    playerQuery:close()
+    local targetQuery = world:query({ all = { "locationInteractable" } })
+    for _, candidate in targetQuery:each() do if candidate.id == id then target = candidate break end end
+    targetQuery:close()
+    assert(position and target, "scheduled proximity target is missing: " .. tostring(id))
+    position.x = target.trigger.x + (target.trigger.w - size.w) / 2
+    position.y = target.trigger.y + (target.trigger.h - size.h) / 2
+    scene:preUpdate(0)
+    scene:fixedUpdate(1 / 60)
 end
 
 local function resolveRoomConversation(manager)
     local mapWorld = manager:current():world()
     local state = mapWorld:requireResource("dailyConversationState")
     enterLocation(manager, state.targetLocationId)
-    local roomWorld = manager:current():world()
-    for _ = 1, roomCharacterIndex(roomWorld, state.targetCharacterId) do press(manager, "right") end
+    moveToLocationTarget(manager:current(), state.targetCharacterId)
     press(manager, "e")
-    assert(roomWorld:requireResource("dailyConversationState").open,
+    assert(manager:current():world():requireResource("dailyConversationState").open,
         "the scheduled character must open the room card conversation")
     press(manager, "return")
 end

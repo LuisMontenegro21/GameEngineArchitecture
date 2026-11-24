@@ -30,7 +30,13 @@ return function()
         assert(world:requireResource("gameSession") == session,
             "location scenes must preserve the provided session object")
         assert(world:requireResource("locationDefinition").id == locationId)
-        assert(world:requireResource("locationState").focusKind == "activity")
+        assert(world:requireResource("nearbyLocationInteraction") == false,
+            "room setup must start with no nearby interaction")
+        local players = 0
+        local query = world:query({ all = { "locationPlayer", "locationPosition", "locationDesiredMovement" } })
+        for _ in query:each() do players = players + 1 end
+        query:close()
+        assert(players == 1, "each fixed-camera room must create one player")
         scene:draw(0)
         assert(world:validate(), "location scenes must draw safely without LOVE")
         scene:dispose()
