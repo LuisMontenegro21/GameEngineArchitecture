@@ -54,6 +54,15 @@ local tests = {
     "tests.map_scene_integration_test",
     "tests.map_render_test",
     "tests.love_render_smoke_test",
+    "tests.location_payload_test",
+    "tests.location_catalog_test",
+    "tests.academy_location_scene_test",
+    "tests.location_presentation_test",
+    "tests.location_entry_return_test",
+    "tests.location_activity_dialogue_test",
+    "tests.location_daily_conversation_test",
+    "tests.location_contract_test",
+    "tests.location_cycle_integration_test",
 }
 
 local passed = 0

@@ -41,25 +41,28 @@ local function player(world)
     return position, size
 end
 
-local function interactionFor(world, characterId)
-    local query = world:query({ all = { "mapCharacter", "mapInteractable" } })
-    local result = nil
-    for _, _, interaction in query:each() do
-        if interaction.id == characterId then
-            result = interaction
-            break
-        end
-    end
-    query:close()
-    assert(result, "missing scheduled character: " .. characterId)
-    return result
-end
-
 local function approach(world, characterId)
     local position, size = player(world)
-    local interaction = interactionFor(world, characterId)
-    position.x = interaction.trigger.x + (interaction.trigger.w - size.w) / 2
-    position.y = interaction.trigger.y + (interaction.trigger.h - size.h) / 2
+    local character = assert(CharacterCatalog.get(characterId))
+    local index = characterId == "mentor" and 1
+        or characterId == "crush" and 2
+        or characterId == "outgoing_peer" and 3 or 4
+    local trigger = { x = 80 + index * 110, y = 450, w = 60, h = 30 }
+    -- Beta 5 moves production NPCs into location Scenes. This isolated map
+    -- fixture keeps the pre-existing daily-card rule test focused on input and
+    -- resolution until Beta 7 wires that UI into location scenes.
+    world:create({
+        mapInteractable = {
+            id = character.id,
+            kind = "character",
+            name = character.displayName,
+            prompt = "Press E to talk",
+            trigger = trigger,
+            dialogue = character.dialogue,
+        },
+    })
+    position.x = trigger.x + (trigger.w - size.w) / 2
+    position.y = trigger.y + (trigger.h - size.h) / 2
 end
 
 local function socialSession(day, collection)

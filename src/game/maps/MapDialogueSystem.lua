@@ -57,6 +57,10 @@ function MapDialogueSystem.install(scheduler)
             end
             for event in world:events("keyPressed") do
                 if event.payload.key == "e" then
+                    if target.kind == "location" then
+                        context.emit("locationEnterRequested", { locationId = target.id })
+                        return
+                    end
                     world:setResource("dialogueState", {
                         targetId = target.id,
                         targetName = target.name,

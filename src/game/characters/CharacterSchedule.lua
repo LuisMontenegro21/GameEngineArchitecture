@@ -13,11 +13,11 @@ local days = {
     },
     [3] = {
         mentor = "astral_court", crush = "student_commons",
-        outgoing_peer = "astral_court_entrance", studious_peer = "ancient_library",
+        outgoing_peer = "astral_court", studious_peer = "ancient_library",
     },
     [4] = {
         mentor = "astral_court", crush = "quiet_garden",
-        outgoing_peer = "student_commons", studious_peer = "astral_court_entrance",
+        outgoing_peer = "student_commons", studious_peer = "astral_court",
     },
     [5] = {
         mentor = "astral_court", crush = "student_commons",

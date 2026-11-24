@@ -1,9 +1,6 @@
 -- Builds the static Academy Garden entities from the validated map definition.
 local AcademyGardenTiles = require("src.game.maps.AcademyGardenTiles")
 local TerrainDefinition = require("src.game.maps.TerrainDefinition")
-local CharacterCatalog = require("src.game.characters.CharacterCatalog")
-local CharacterSchedule = require("src.game.characters.CharacterSchedule")
-local CharacterPlacement = require("src.game.maps.CharacterPlacement")
 
 local MapSetupSystem = {}
 
@@ -48,32 +45,11 @@ local function copyInteraction(point)
     }
 end
 
-local function copyFallback(fallback)
-    return {
-        shape = fallback.shape,
-        color = {
-            r = fallback.color.r,
-            g = fallback.color.g,
-            b = fallback.color.b,
-            a = fallback.color.a,
-        },
-    }
-end
-
-local function characterTrigger(placement)
-    return {
-        x = placement.x - 5,
-        y = placement.y - 4,
-        w = placement.w + 10,
-        h = placement.h + 8,
-    }
-end
-
 function MapSetupSystem.install(scheduler)
     scheduler:addSystem({
         name = "mapSetup",
         stage = "startup",
-        readsResources = { "gameSession", "mapDefinition", "mapBounds" },
+        readsResources = { "gameSession", "mapDefinition", "mapBounds", "mapReturnPosition" },
         writesResources = { "mapTerrain" },
         run = function(context)
             local world = context.world
@@ -93,8 +69,10 @@ function MapSetupSystem.install(scheduler)
                 oy = AcademyGardenTiles.origin.y,
             })
 
+            local returnPosition = world:requireResource("mapReturnPosition")
+            local playerPosition = returnPosition or map.spawn
             world:create({
-                mapPosition = { x = map.spawn.x, y = map.spawn.y },
+                mapPosition = { x = playerPosition.x, y = playerPosition.y },
                 mapSize = { w = map.playerFootprint.w, h = map.playerFootprint.h },
                 mapPlayer = true,
                 mapCollider = { solid = true },
@@ -131,44 +109,6 @@ function MapSetupSystem.install(scheduler)
                     components.mapInteractable = copyInteraction(point)
                 end
                 world:create(components)
-            end
-
-            local schedule = CharacterSchedule.forDay(
-                world:requireResource("gameSession").day)
-            for _, character in ipairs(CharacterCatalog.all()) do
-                local locationId = assert(schedule[character.id],
-                    "character schedule is missing " .. character.id)
-                local placement = CharacterPlacement.get(locationId, "primary")
-                world:create({
-                    mapPosition = { x = placement.x, y = placement.y },
-                    mapSize = { w = placement.w, h = placement.h },
-                    mapCharacter = {
-                        id = character.id,
-                        displayName = character.displayName,
-                        role = character.role,
-                        locationId = locationId,
-                        interactionId = character.interactionId,
-                    },
-                    mapInteractable = {
-                        id = character.id,
-                        kind = "character",
-                        name = character.displayName,
-                        prompt = "Press E to talk",
-                        trigger = characterTrigger(placement),
-                        dialogue = character.dialogue,
-                    },
-                    mapSprite = {
-                        key = character.spriteKey,
-                        frame = 1,
-                        row = 1,
-                        scaleX = 1,
-                        scaleY = 1,
-                        offsetX = -7,
-                        offsetY = -24,
-                        layer = "actors",
-                        fallback = copyFallback(character.fallback),
-                    },
-                })
             end
         end,
     })

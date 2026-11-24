@@ -25,4 +25,13 @@ Explicit setup systems initialize UI state for each assignment interface:
 - `EncounterRenderSystem.lua` renders prompt, Focus, rapport, card
   availability, feedback, and controls from encounter state.
 
+- `LocationRenderSystem.lua` renders reusable room backgrounds/fallbacks,
+  activity and character focus, dialogue, and the daily card-conversation
+  panel. It reads location and session data only; activity effects, daily-card
+  scoring, and scene transitions remain gameplay-system responsibilities.
+
+Optional scene backgrounds and character sprites resolve through renderer-side
+image and sprite-sheet caches. The UI stays functional with no PNG files: each
+room and character has a validated fallback presentation.
+
 The existing render systems remain read-only and safely no-op outside LOVE.

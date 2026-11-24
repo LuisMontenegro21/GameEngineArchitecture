@@ -45,9 +45,14 @@ local function performMapActivity(manager, pointId)
     position.x = point.trigger.x + (point.trigger.w - size.w) / 2
     position.y = point.trigger.y + (point.trigger.h - size.h) / 2
     tick(manager)
-    press(manager, "e")
-    press(manager, "e")
-    press(manager, "e")
+    -- Beta 4 sends player POI input to a room Scene. This integration test
+    -- keeps exercising the shared activity/card/day loop until Beta 6 adds
+    -- room activity controls that delegate to this same event.
+    world:emit("mapActivityRequested", { activityId = point.interaction.activityId })
+    manager:preUpdate(1 / 60)
+    manager:postFixedUpdate(1 / 60)
+    manager:update(1 / 60)
+    manager:postUpdate(1 / 60)
 end
 
 local function resolveDailyConversation(manager)
@@ -56,17 +61,22 @@ local function resolveDailyConversation(manager)
     local world = scene:world()
     local state = world:requireResource("dailyConversationState")
     local playerPosition, playerSize = player(world)
-    local target = nil
-    local characterQuery = world:query({
-        all = { "mapCharacter", "mapInteractable" },
+    local trigger = { x = 190, y = 450, w = 60, h = 30 }
+    -- Beta 5 moves production NPCs into location Scenes. Keep this complete
+    -- card/day-cycle test focused on its existing resolver until Beta 7 moves
+    -- daily conversation input into those rooms.
+    world:create({
+        mapInteractable = {
+            id = state.targetCharacterId,
+            kind = "character",
+            name = state.targetName,
+            prompt = "Press E to talk",
+            trigger = trigger,
+            dialogue = { "Test conversation target." },
+        },
     })
-    for _, _, interaction in characterQuery:each() do
-        if interaction.id == state.targetCharacterId then target = interaction break end
-    end
-    characterQuery:close()
-    assert(target, "scheduled daily target must exist on the map")
-    playerPosition.x = target.trigger.x + (target.trigger.w - playerSize.w) / 2
-    playerPosition.y = target.trigger.y + (target.trigger.h - playerSize.h) / 2
+    playerPosition.x = trigger.x + (trigger.w - playerSize.w) / 2
+    playerPosition.y = trigger.y + (trigger.h - playerSize.h) / 2
     tick(manager)
     press(manager, "e")
     assert(world:requireResource("dailyConversationState").open,

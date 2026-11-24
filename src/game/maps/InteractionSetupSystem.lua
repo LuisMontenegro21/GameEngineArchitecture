@@ -13,6 +13,7 @@ function InteractionSetupSystem.install(scheduler)
             context.world:setResource("dialogueState", false)
             context.world:setResource("mapActivityFeedback", "")
             context.world:setResource("mapActivityTransitionQueued", false)
+            context.world:setResource("locationTransitionQueued", false)
         end,
     })
 end

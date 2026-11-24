@@ -23,6 +23,26 @@ local entries = {
         nativeW = 960, nativeH = 540,
         fallback = { r = 0.06, g = 0.04, b = 0.12, a = 1 },
     },
+    astralCourtInterior = {
+        id = "astralCourtInterior", path = "assets/wizard_academia/locations/astral-practice-court.png",
+        nativeW = 960, nativeH = 540,
+        fallback = { r = 0.20, g = 0.12, b = 0.34, a = 1 },
+    },
+    studentCommonsInterior = {
+        id = "studentCommonsInterior", path = "assets/wizard_academia/locations/student-commons.png",
+        nativeW = 960, nativeH = 540,
+        fallback = { r = 0.31, g = 0.19, b = 0.10, a = 1 },
+    },
+    ancientLibraryInterior = {
+        id = "ancientLibraryInterior", path = "assets/wizard_academia/locations/ancient-library.png",
+        nativeW = 960, nativeH = 540,
+        fallback = { r = 0.12, g = 0.15, b = 0.28, a = 1 },
+    },
+    quietGardenInterior = {
+        id = "quietGardenInterior", path = "assets/wizard_academia/locations/quiet-garden.png",
+        nativeW = 960, nativeH = 540,
+        fallback = { r = 0.10, g = 0.25, b = 0.16, a = 1 },
+    },
 }
 
 local function positiveInteger(value)

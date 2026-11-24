@@ -1,5 +1,7 @@
 -- Builds transient map conversation state from the persistent social phase.
 local CharacterCatalog = require("src.game.characters.CharacterCatalog")
+local CharacterSchedule = require("src.game.characters.CharacterSchedule")
+local LocationCatalog = require("src.game.locations.LocationCatalog")
 local DailyConversationDefinitions = require("src.game.conversations.DailyConversationDefinitions")
 
 local DailyConversationSetupSystem = {}
@@ -25,10 +27,16 @@ function DailyConversationSetupSystem.install(scheduler)
 
             local target = assert(CharacterCatalog.get(definition.targetCharacterId),
                 "daily conversation target is missing from the character catalog")
+            local targetLocationId = assert(CharacterSchedule.locationFor(session.day, target.id),
+                "daily conversation target has no scheduled location")
+            local targetLocation = assert(LocationCatalog.get(targetLocationId),
+                "daily conversation target has an unknown location")
             world:setResource("dailyConversationState", {
                 day = definition.day,
                 targetCharacterId = definition.targetCharacterId,
                 targetName = target.displayName,
+                targetLocationId = targetLocationId,
+                targetLocationName = targetLocation.name,
                 preferredCategory = definition.preferredCategory,
                 prompt = definition.prompt,
                 open = false,

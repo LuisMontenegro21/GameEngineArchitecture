@@ -74,10 +74,10 @@ end
 local function drawSocialTargetHighlight(g, world, state)
     if not state or state.resolved then return end
     local query = world:query({
-        all = { "mapPosition", "mapSize", "mapCharacter" },
+        all = { "mapPosition", "mapSize", "pointOfInterest" },
     })
-    for _, position, size, character in query:each() do
-        if character.id == state.targetCharacterId then
+    for _, position, size, point in query:each() do
+        if point.id == state.targetLocationId then
             g.setColor(0.95, 0.82, 0.30, 1)
             g.rectangle("line", position.x - 4, position.y - 4, size.w + 8, size.h + 8)
             query:close()
@@ -91,7 +91,7 @@ function MapSpriteRenderSystem.install(scheduler)
     scheduler:addSystem({
         name = "mapSpriteRender",
         stage = "render",
-        reads = { "mapPosition", "mapSize", "mapSprite", "mapCharacter" },
+        reads = { "mapPosition", "mapSize", "mapSprite", "pointOfInterest" },
         readsResources = { "dailyConversationState" },
         after = { "mapTerrainRender" },
         before = { "mapLabelRender" },

@@ -28,6 +28,10 @@ local function objectiveText(session, dailyConversation)
             session.actionsRemaining)
     end
     if session.dayPhase == "socialConversation" and dailyConversation then
+        if dailyConversation.targetLocationName then
+            return "OBJECTIVE: Visit " .. dailyConversation.targetLocationName
+                .. " to find " .. dailyConversation.targetName .. "."
+        end
         return "OBJECTIVE: Find and talk with " .. dailyConversation.targetName .. "."
     end
     return "OBJECTIVE: Continue your academy day."

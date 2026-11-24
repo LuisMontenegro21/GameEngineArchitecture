@@ -9,6 +9,7 @@ Recommended model:
 game/
 |-- progression/   objectives, rewards, unlocks, and persistent cycle state
 |-- maps/          map data, terrain, navigation, encounters, and exits
+|-- locations/     reusable room definitions, interaction state, and systems
 |-- cards/         card catalog, generation, and collection behavior
 |-- graphics/      renderer-side image and sprite-sheet caches
 |-- ui/            HUD and menu presentation
@@ -30,3 +31,16 @@ Build one vertical slice first:
 5. Grant one reward.
 6. Show the state in a minimal UI.
 7. Snapshot or save the progression resource.
+
+## Wizard Academia scene flow
+
+`AcademyMapScene` is the navigation hub. Pressing `E` at one of its four POIs
+opens `AcademyLocationScene` with a location ID, the exact shared
+`GameSession`, and a safe map return position. The reusable location factory
+installs setup, input, activity, dialogue, daily-card-conversation, transition,
+and render systems. It never owns persistent rules: activity resolution,
+card scoring, and day advancement remain in their existing game packages.
+
+Location components, resources, events, and catalog data are plain Lua data.
+LOVE images and sprite sheets remain in `graphics/` renderer-side caches, so
+optional pixel art can be inserted or removed without affecting gameplay.

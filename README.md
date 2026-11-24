@@ -24,6 +24,11 @@ activity and conversation loop; exploration itself does not consume an action.
 The Training Scene remains a separate development-facing presentation of the
 same activity rules.
 
+The four Academy Garden points of interest open reusable location scenes:
+Astral Practice Court, Student Commons, Ancient Library, and Quiet Garden.
+Activities and scheduled NPC conversations occur inside those rooms; travel
+itself never consumes an action.
+
 ![display](assets/demo/demo.gif)
 
 ## Requirements
@@ -55,9 +60,12 @@ On Windows PowerShell, when LOVE is not on `PATH`:
 | Training | Perform selected activity | `Enter` or `Space` |
 | Training | Explore the Academy Garden | `M` |
 | Academy Garden | Move | `W`/`A`/`S`/`D` or arrow keys |
-| Academy Garden | Interact with locations or characters | `E` |
+| Academy Garden | Enter a nearby location | `E` |
 | Academy Garden | Return to Training (only when entered from Training) | `Backspace` |
-| Academy Garden | Choose/respond in a daily conversation | `Left`/`Right`, then `Enter` |
+| Academy Location | Change focus between activity, characters, and exit | arrows or `Tab` |
+| Academy Location | Use the focused activity or speak to a character | `E` / `Enter` / `Space` |
+| Academy Location | Return to the Academy Garden | `Backspace` |
+| Daily room conversation | Select/play a collected card | arrows, then `E` / `Enter` / `Space` |
 | Card Acquisition | Change selected generated card or collection card | `Left`/`Right` or `A`/`D` |
 | Card Acquisition | Switch generated-card / collection focus | `Tab` |
 | Card Acquisition | Acquire selected card; after acquisition, start the next day | `Enter` or `Space` |
@@ -97,6 +105,7 @@ src/game/progression/           training definitions and systems
 src/game/cards/                 generation, acquisition, navigation, day flow
 src/game/encounters/            final conversation definitions and systems
 src/game/maps/                  Academy Garden map contracts and systems
+src/game/locations/             reusable room contracts and location systems
 src/game/scenes/                Training, Card Acquisition, completion factories
 src/game/ui/                    read-only LOVE render systems, including the map
 tests/                          ECS and Wizard Academia headless tests
@@ -120,8 +129,9 @@ Run the complete suite from the repository root:
 
 The Wizard Academia coverage includes session isolation, validated events,
 training success/rejection feedback, deterministic card generation, collection
-persistence, navigation bounds, the complete five-day scene-manager loop, map
-data validation, movement intent, collision, POI proximity, and map transitions.
+persistence, map movement/collision/POI transitions, location contracts,
+activity/dialogue behavior, safe map returns, optional-art fallbacks, and a
+complete five-day route through dedicated location scenes to the final ending.
 
 ## AI assistance disclosure
 
@@ -153,6 +163,7 @@ game layer built on it. Wizard Academia is the active LOVE entry point.
 | [src/game/ui/README.md](src/game/ui/README.md) | UI-system ownership rules. |
 | [planning_files/ui_planning.md](planning_files/ui_planning.md) | Phased requirements and exit criteria for the three Wizard Academia UI systems. |
 | [src/game/maps/README.md](src/game/maps/README.md) | Academy Garden map contracts, movement, collision, POIs, and transitions. |
+| [planning_files/gameplay_implementation_beta.md](planning_files/gameplay_implementation_beta.md) | Dedicated location-scene architecture, phased implementation, and acceptance criteria. |
 | [planning_files/map_implementation.md](planning_files/map_implementation.md) | Academy Garden map layout, ECS flow, systems, transitions, rendering, and verification. |
 | [tests/README.md](tests/README.md) | Headless test-runner conventions. |
 | [PORTFOLIO_EVIDENCE.md](PORTFOLIO_EVIDENCE.md) | Source links and the visual-evidence checklist. |

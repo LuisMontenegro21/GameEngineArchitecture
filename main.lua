@@ -6,6 +6,7 @@ local CardAcquisitionScene = require("src.game.scenes.CardAcquisitionScene")
 local FinalConversationScene = require("src.game.scenes.FinalConversationScene")
 local ArcaneCompleteScene = require("src.game.scenes.ArcaneCompleteScene")
 local AcademyMapScene = require("src.game.scenes.AcademyMapScene")
+local AcademyLocationScene = require("src.game.scenes.AcademyLocationScene")
 
 local PHYSICS_STEP = 1 / 120
 local MAXIMUM_FRAME_DELTA = 0.25
@@ -24,6 +25,7 @@ function love.load()
     Game.registerScene("finalConversation", FinalConversationScene)
     Game.registerScene("arcaneComplete", ArcaneCompleteScene)
     Game.registerScene("academyMap", AcademyMapScene)
+    Game.registerScene("academyLocation", AcademyLocationScene)
 
     Game.start("academyMap", { session = GameSession.new() })
 

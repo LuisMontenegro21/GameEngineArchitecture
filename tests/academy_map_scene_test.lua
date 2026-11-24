@@ -1,6 +1,5 @@
 local GameSession = require("src.game.session.GameSession")
 local AcademyMapScene = require("src.game.scenes.AcademyMapScene")
-local CharacterCatalog = require("src.game.characters.CharacterCatalog")
 
 local function count(query)
     local total = 0
@@ -41,8 +40,10 @@ return function()
         == #map.pointsOfInterest, "each POI must share its structure's one visible entity")
     assert(not world:hasComponentType("mapRenderable"),
         "the transitional mapRenderable contract must be removed after conversion")
-    assert(world:count() == 1 + #map.obstacles + #CharacterCatalog.all(),
-        "terrain, POIs, and scheduled characters must each have one visible entity")
+    assert(world:count() == 1 + #map.obstacles,
+        "the overworld must own only its player and visible static map entities")
+    assert(count(world:query({ all = { "mapCharacter" } })) == 0,
+        "scheduled characters must be owned by dedicated location scenes")
 
     scene:draw(0)
     assert(world:validate(), "headless map scene must remain valid after render")

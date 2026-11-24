@@ -72,6 +72,8 @@ local function dailyConversationState(value)
         and type(value.day) == "number" and value.day % 1 == 0 and value.day >= 1
         and type(value.targetCharacterId) == "string" and value.targetCharacterId ~= ""
         and type(value.targetName) == "string" and value.targetName ~= ""
+        and type(value.targetLocationId) == "string" and value.targetLocationId ~= ""
+        and type(value.targetLocationName) == "string" and value.targetLocationName ~= ""
         and (value.preferredCategory == "confidence" or value.preferredCategory == "empathy"
             or value.preferredCategory == "knowledge" or value.preferredCategory == "balanced")
         and type(value.prompt) == "string" and value.prompt ~= ""
@@ -87,6 +89,10 @@ local function mapTerrain(value)
         and finite(value.ox) and finite(value.oy)
 end
 
+local function mapReturnPosition(value)
+    return value == false or (type(value) == "table" and finite(value.x) and finite(value.y))
+end
+
 function Resources.register(world)
     world:registerResource("gameSession", { validate = GameSession.validate })
     world:registerResource("mapDefinition", { validate = MapDefinition.validate })
@@ -100,6 +106,7 @@ function Resources.register(world)
         transient = true,
         validate = function(value) return type(value) == "boolean" end,
     })
+    world:registerResource("mapReturnPosition", { transient = true, validate = mapReturnPosition })
     world:registerResource("nearbyPointOfInterest", {
         transient = true,
         validate = nearbyPointOfInterest,
@@ -135,6 +142,10 @@ function Resources.register(world)
         validate = nearbyPointOfInterest,
     })
     world:registerResource("mapTransitionQueued", {
+        transient = true,
+        validate = function(value) return type(value) == "boolean" end,
+    })
+    world:registerResource("locationTransitionQueued", {
         transient = true,
         validate = function(value) return type(value) == "boolean" end,
     })

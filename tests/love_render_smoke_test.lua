@@ -2,6 +2,7 @@
 -- graphics surface. This catches render-time API errors while keeping the
 -- suite asset-free and deterministic.
 local AcademyMapScene = require("src.game.scenes.AcademyMapScene")
+local AcademyLocationScene = require("src.game.scenes.AcademyLocationScene")
 local ArcaneCompleteScene = require("src.game.scenes.ArcaneCompleteScene")
 local CardAcquisitionScene = require("src.game.scenes.CardAcquisitionScene")
 local FinalConversationScene = require("src.game.scenes.FinalConversationScene")
@@ -10,6 +11,7 @@ local CardCatalog = require("src.game.cards.CardCatalog")
 local ImageManager = require("src.game.graphics.ImageManager")
 local SpriteSheet = require("src.game.graphics.SpriteSheet")
 local GameSession = require("src.game.session.GameSession")
+local LocationCatalog = require("src.game.locations.LocationCatalog")
 
 local function completedSession()
     local session = GameSession.new({ dayPhase = "complete" })
@@ -54,6 +56,14 @@ return function()
         FinalConversationScene({ session = finalSession() }),
         ArcaneCompleteScene({ session = completedSession() }),
     }
+    for _, locationId in ipairs(LocationCatalog.ids()) do
+        scenes[#scenes + 1] = AcademyLocationScene({
+            session = GameSession.new(),
+            locationId = locationId,
+            returnTo = "academyMap",
+            mapReturnPosition = { x = 220, y = 235 },
+        })
+    end
     for _, scene in ipairs(scenes) do
         scene:initialize()
         scene:draw(0)

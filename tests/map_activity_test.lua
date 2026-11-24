@@ -48,10 +48,13 @@ local function approach(scene, pointId)
     error("unknown point of interest: " .. pointId)
 end
 
-local function completeLocationDialogue(scene)
-    press(scene, "e")
-    press(scene, "e")
-    press(scene, "e")
+-- Beta 4 moves player-facing POI entry to location scenes. Keep this test
+-- focused on the existing authoritative map activity resolver until Beta 6
+-- delegates room activity input to the same request boundary.
+local function requestMapActivity(scene, activityId)
+    scene:world():emit("mapActivityRequested", { activityId = activityId })
+    scene:preUpdate(0)
+    scene:postFixedUpdate(1 / 60)
 end
 
 local function freshScene()
@@ -103,7 +106,7 @@ return function()
         local target = approach(scene, case.pointId)
         assert(target.activityId == case.activityId,
             "each POI must declare its intended existing activity")
-        completeLocationDialogue(scene)
+        requestMapActivity(scene, case.activityId)
         assert(session.actionsRemaining == 1 and session.lastActivity == case.activityId
             and case.verify(session),
         "map activity results must match the shared Training rules for " .. case.pointId)
@@ -118,7 +121,7 @@ return function()
     rejectedSession.energy = 0
     rejectedScene:world():setResource("gameSession", rejectedSession)
     approach(rejectedScene, "astral_court")
-    completeLocationDialogue(rejectedScene)
+    requestMapActivity(rejectedScene, "practice_spells")
     assert(rejectedSession.actionsRemaining == 2 and rejectedSession.stats.confidence == 0,
         "insufficient energy must not consume an action or modify stats")
     assert(rejectedSession.feedback:find("enough energy", 1, true),
@@ -127,9 +130,9 @@ return function()
 
     local transitionScene, transitionSession = freshScene()
     approach(transitionScene, "astral_court")
-    completeLocationDialogue(transitionScene)
+    requestMapActivity(transitionScene, "practice_spells")
     approach(transitionScene, "ancient_library")
-    completeLocationDialogue(transitionScene)
+    requestMapActivity(transitionScene, "study_ancient_runes")
     local transitionWorld = transitionScene:world()
     assert(transitionSession.actionsRemaining == 0
         and transitionSession.dayPhase == "cardAcquisition",
@@ -151,12 +154,9 @@ return function()
     guardedScene:initialize()
     local guardedWorld = guardedScene:world()
     approach(guardedScene, "astral_court")
-    press(guardedScene, "e")
-    press(guardedScene, "e")
-    guardedWorld:emit("keyPressed", { key = "e" })
-    guardedWorld:emit("keyPressed", { key = "backspace" })
+    guardedWorld:emit("mapActivityRequested", { activityId = "practice_spells" })
+    guardedWorld:emit("mapExitRequested")
     guardedScene:preUpdate(0)
-    guardedScene:fixedUpdate(1 / 60)
     guardedScene:postFixedUpdate(1 / 60)
     assert(guardedSession.dayPhase == "cardAcquisition"
         and guardedWorld:requireResource("mapTransitionQueued")

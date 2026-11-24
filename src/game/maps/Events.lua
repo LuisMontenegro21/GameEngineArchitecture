@@ -72,6 +72,13 @@ function Events.register(world)
         validate = function(value) return value == nil end,
         maxQueue = 2,
     })
+    world:registerEvent("locationEnterRequested", {
+        validate = function(value)
+            return type(value) == "table" and type(value.locationId) == "string"
+                and value.locationId ~= "" and plain(value)
+        end,
+        maxQueue = 2,
+    })
     world:registerEvent("mapActivityRequested", { validate = activityRequest, maxQueue = 4 })
     world:registerEvent("mapActivityResolved", { validate = activityResult, maxQueue = 4 })
     world:registerEvent("dailyCardPlayRequested", { validate = positiveIndex, maxQueue = 4 })

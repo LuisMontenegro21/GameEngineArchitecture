@@ -1,8 +1,9 @@
 # Academy Garden map systems
 
 This directory contains Wizard Academia's static Academy Garden map data and
-focused map systems. The current map supports keyboard movement, boundaries,
-solid obstacles, points of interest, and safe return to the Training Scene.
+focused map systems. The map supports keyboard movement, boundaries, solid
+obstacles, points of interest, and safe transitions into dedicated academy
+location scenes.
 
 The map remains separate from progression rules:
 
@@ -21,6 +22,10 @@ The map remains separate from progression rules:
   enter map components, resources, events, or sessions.
 - Input, movement, collision, proximity, and transitions live in independent
   systems.
-- Map exploration does not consume training actions or modify `GameSession`.
-- Future location interactions should emit requests or progression facts rather
-  than directly owning training/card rules.
+- Map exploration and entering a room do not consume training actions.
+- `LocationEntrySystem.lua` turns POI interaction into a deferred
+  `academyLocation` request with a safe return position.
+- Scheduled NPCs live in location Scenes, not on the overworld. During the
+  social phase, map HUD guidance highlights the room containing the target.
+- Room activity, dialogue, and card scoring stay outside map systems; the map
+  only provides navigation and transition context.
