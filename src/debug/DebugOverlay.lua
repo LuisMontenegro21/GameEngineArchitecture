@@ -124,7 +124,7 @@ local function buildUi(scene)
         local world = scene:world()
         if imlove.CollapsingHeader("entities", true) then
             -- a fixed-height scrolling region: the list must stay usable
-            -- when a scene holds hundreds of entities, not just pong's
+            -- when a scene holds hundreds of entities, not just a small game's
             -- dozen. (BeginChild must ALWAYS be matched by EndChild,
             -- even when it reports itself as not visible.)
             if imlove.BeginChild("entityList", 0, 150, true) then

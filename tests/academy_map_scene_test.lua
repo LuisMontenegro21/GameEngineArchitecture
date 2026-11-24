@@ -41,7 +41,9 @@ return function()
     assert(not world:hasComponentType("mapRenderable"),
         "the transitional mapRenderable contract must be removed after conversion")
     assert(world:count() == 1 + #map.obstacles,
-        "terrain and POI triggers must not create duplicate drawable entities")
+        "the overworld must own only its player and visible static map entities")
+    assert(count(world:query({ all = { "mapCharacter" } })) == 0,
+        "scheduled characters must be owned by dedicated location scenes")
 
     scene:draw(0)
     assert(world:validate(), "headless map scene must remain valid after render")

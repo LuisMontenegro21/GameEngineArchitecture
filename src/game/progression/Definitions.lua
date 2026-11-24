@@ -3,6 +3,7 @@
 local Definitions = {}
 local GameSession = require("src.game.session.GameSession")
 local CardCatalog = require("src.game.cards.CardCatalog")
+local EncounterDefinitions = require("src.game.encounters.EncounterDefinitions")
 
 local VALID_STATES = {
     available = true,
@@ -152,6 +153,87 @@ local function sceneRequest(value)
         and plain(value)
 end
 
+local function dayPhaseChanged(value)
+    return type(value) == "table"
+        and GameSession.isDayPhase(value.from)
+        and GameSession.isDayPhase(value.to)
+        and value.from ~= value.to
+        and integer(value.day) and value.day >= 1
+        and plain(value)
+end
+
+local function knownPromptId(promptId)
+    if type(promptId) ~= "string" or promptId == "" then return false end
+    for _, prompt in ipairs(EncounterDefinitions.get().prompts) do
+        if prompt.id == promptId then return true end
+    end
+    return false
+end
+
+local function knownEndingId(endingId)
+    if type(endingId) ~= "string" or endingId == "" then return false end
+    for _, ending in ipairs(EncounterDefinitions.get().endings) do
+        if ending.id == endingId then return true end
+    end
+    return false
+end
+
+local function cardPlayRequest(value)
+    return type(value) == "table" and positiveIndex(value.collectionIndex) and plain(value)
+end
+
+local function cardPlayed(value)
+    return type(value) == "table"
+        and positiveIndex(value.collectionIndex)
+        and type(value.cardId) == "string" and value.cardId ~= ""
+        and knownPromptId(value.promptId)
+        and type(value.categoryMatched) == "boolean"
+        and integer(value.focusSpent)
+        and integer(value.focusRemaining)
+        and integer(value.rapportGained)
+        and integer(value.rapport)
+        and plain(value)
+end
+
+local function cardPlayRejected(value)
+    return type(value) == "table"
+        and positiveIndex(value.collectionIndex)
+        and type(value.reason) == "string" and value.reason ~= ""
+        and plain(value)
+end
+
+local function promptAdvanced(value)
+    return type(value) == "table"
+        and positiveIndex(value.round)
+        and knownPromptId(value.promptId)
+        and plain(value)
+end
+
+local function conversationCompleted(value)
+    return type(value) == "table"
+        and integer(value.finalRapport)
+        and knownEndingId(value.endingId)
+        and plain(value)
+end
+
+local function encounterState(value)
+    if type(value) ~= "table"
+        or not positiveIndex(value.promptIndex)
+        or not integer(value.focus)
+        or not integer(value.rapport)
+        or not integer(value.startingRapportBonus)
+        or type(value.usedCollectionIndexes) ~= "table"
+        or type(value.feedback) ~= "string"
+        or type(value.complete) ~= "boolean"
+        or type(value.transitionQueued) ~= "boolean" then
+        return false
+    end
+    for index, used in pairs(value.usedCollectionIndexes) do
+        if not positiveIndex(index) or used ~= true then return false end
+    end
+    return plain(value)
+end
+
 function Definitions.registerArcaneHearts(world)
     assert(not world:hasResourceDefinition("gameSession"),
         "Arcane Hearts resources already registered")
@@ -165,6 +247,18 @@ function Definitions.registerArcaneHearts(world)
     world:registerResource("generatedCardSelection", { validate = positiveIndex })
     world:registerResource("collectionSelection", { validate = positiveIndex })
     world:registerResource("cardFocus", { validate = cardFocus })
+    world:registerResource("encounterDefinition", {
+        transient = true,
+        validate = EncounterDefinitions.validate,
+    })
+    world:registerResource("encounterState", {
+        transient = true,
+        validate = encounterState,
+    })
+    world:registerResource("encounterCollectionSelection", {
+        transient = true,
+        validate = positiveIndex,
+    })
 
     world:registerEvent("keyPressed", {
         validate = function(value)
@@ -188,6 +282,12 @@ function Definitions.registerArcaneHearts(world)
         validate = function(value) return value == nil end,
         maxQueue = 2,
     })
+    world:registerEvent("cardPlayRequested", { validate = cardPlayRequest, maxQueue = 4 })
+    world:registerEvent("cardPlayed", { validate = cardPlayed, maxQueue = 4 })
+    world:registerEvent("cardPlayRejected", { validate = cardPlayRejected, maxQueue = 4 })
+    world:registerEvent("conversationPromptAdvanced", { validate = promptAdvanced, maxQueue = 4 })
+    world:registerEvent("conversationCompleted", { validate = conversationCompleted, maxQueue = 1 })
+    world:registerEvent("dayPhaseChanged", { validate = dayPhaseChanged, maxQueue = 4 })
     world:registerEvent("sceneRequest", { validate = sceneRequest, maxQueue = 2 })
 end
 

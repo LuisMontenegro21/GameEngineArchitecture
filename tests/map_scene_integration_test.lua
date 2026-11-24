@@ -59,6 +59,16 @@ return function()
         "a map round trip must not mutate progression data")
     manager:quit()
 
+    local normal = SceneManager.new()
+    normal:register("academyMap", AcademyMapScene)
+    normal:start("academyMap", { session = GameSession.new() })
+    assert(not normal:current():world():requireResource("mapReturnEnabled"),
+        "normal map entry must not expose the legacy Training return route")
+    press(normal, "backspace")
+    assert(normal:current():name() == "academyMap",
+        "Backspace must not accidentally restart the Training-first loop")
+    normal:quit()
+
     local direct = AcademyMapScene({ session = GameSession.new(), returnTo = "training" })
     direct:initialize()
     local world = direct:world()

@@ -6,7 +6,7 @@ function MapEntrySystem.install(scheduler)
     scheduler:addSystem({
         name = "mapEntry",
         stage = "fixedUpdate",
-        after = { "trainingInput" },
+        after = { "trainingUiUpdate" },
         readsResources = { "gameSession" },
         run = function(context)
             local world = context.world

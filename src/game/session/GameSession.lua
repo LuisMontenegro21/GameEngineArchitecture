@@ -2,6 +2,7 @@
 -- owned by the application layer, not by a Scene-local ECS World.
 local GameSession = {}
 local CardCatalog = require("src.game.cards.CardCatalog")
+local EncounterDefinitions = require("src.game.encounters.EncounterDefinitions")
 
 local DEFAULTS = {
     day = 1,
@@ -10,6 +11,18 @@ local DEFAULTS = {
     actionsPerDay = 2,
     energy = 3,
     maxEnergy = 5,
+    runSeed = 1,
+    dayPhase = "activities",
+    homecomingReadiness = 0,
+    dailyConversationCompleted = false,
+}
+
+local DAY_PHASES = {
+    activities = true,
+    cardAcquisition = true,
+    socialConversation = true,
+    finalConversation = true,
+    complete = true,
 }
 
 local function integer(value, minimum)
@@ -22,6 +35,12 @@ local function copyTable(value)
         result[key] = type(item) == "table" and copyTable(item) or item
     end
     return result
+end
+
+local function optionOrDefault(options, name, default)
+    local value = options[name]
+    if value == nil then return default end
+    return value
 end
 
 local function plain(value, seen)
@@ -51,6 +70,19 @@ local function validCardList(cards, expectedCount, uniqueIds)
     return true
 end
 
+local function validEndingId(endingId)
+    if endingId == nil then return true end
+    if type(endingId) ~= "string" then return false end
+    for _, ending in ipairs(EncounterDefinitions.get().endings) do
+        if ending.id == endingId then return true end
+    end
+    return false
+end
+
+function GameSession.isDayPhase(value)
+    return type(value) == "string" and DAY_PHASES[value] == true
+end
+
 function GameSession.validate(session)
     return type(session) == "table"
         and integer(session.day, 1)
@@ -62,6 +94,10 @@ function GameSession.validate(session)
         and integer(session.energy, 0)
         and integer(session.maxEnergy, 1)
         and session.energy <= session.maxEnergy
+        and integer(session.runSeed, 0)
+        and GameSession.isDayPhase(session.dayPhase)
+        and integer(session.homecomingReadiness, 0)
+        and type(session.dailyConversationCompleted) == "boolean"
         and type(session.stats) == "table"
         and integer(session.stats.confidence, 0)
         and integer(session.stats.empathy, 0)
@@ -73,6 +109,8 @@ function GameSession.validate(session)
         and validCardList(session.collection)
         and integer(session.collectionSelection, 1)
         and type(session.cardChosenThisDay) == "boolean"
+        and integer(session.finalRapport, 0)
+        and validEndingId(session.endingId)
         and type(session.complete) == "boolean"
         and plain(session)
 end
@@ -87,6 +125,12 @@ function GameSession.new(options)
         actionsPerDay = options.actionsPerDay or DEFAULTS.actionsPerDay,
         energy = options.energy or DEFAULTS.energy,
         maxEnergy = options.maxEnergy or DEFAULTS.maxEnergy,
+        runSeed = optionOrDefault(options, "runSeed", DEFAULTS.runSeed),
+        dayPhase = optionOrDefault(options, "dayPhase", DEFAULTS.dayPhase),
+        homecomingReadiness = optionOrDefault(options, "homecomingReadiness",
+            DEFAULTS.homecomingReadiness),
+        dailyConversationCompleted = optionOrDefault(options, "dailyConversationCompleted",
+            DEFAULTS.dailyConversationCompleted),
         stats = { confidence = 0, empathy = 0, arcaneKnowledge = 0 },
         lastActivity = nil,
         feedback = "Choose a magical training activity.",
@@ -95,6 +139,8 @@ function GameSession.new(options)
         collection = {},
         collectionSelection = 1,
         cardChosenThisDay = false,
+        finalRapport = options.finalRapport == nil and 0 or options.finalRapport,
+        endingId = options.endingId,
         complete = false,
     }
     if options.stats then session.stats = copyTable(options.stats) end

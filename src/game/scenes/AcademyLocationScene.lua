@@ -1,0 +1,41 @@
+-- Reusable factory for all dedicated Academy locations. Beta 2 establishes
+-- lifecycle and return behavior before adding location mechanics.
+local Scene = require("src.engine.scene.Scene")
+local LocationCatalog = require("src.game.locations.LocationCatalog")
+local LocationInputSystem = require("src.game.locations.LocationInputSystem")
+local LocationDialogueSystem = require("src.game.locations.LocationDialogueSystem")
+local LocationActivitySystem = require("src.game.locations.LocationActivitySystem")
+local LocationPayload = require("src.game.locations.LocationPayload")
+local LocationSetupSystem = require("src.game.locations.LocationSetupSystem")
+local LocationTransitionSystem = require("src.game.locations.LocationTransitionSystem")
+local LocationDailyConversationSetupSystem = require("src.game.locations.LocationDailyConversationSetupSystem")
+local LocationDailyConversationSystem = require("src.game.locations.LocationDailyConversationSystem")
+local DailyConversationResolutionSystem = require("src.game.conversations.DailyConversationResolutionSystem")
+local DailyConversationAdvanceSystem = require("src.game.conversations.DailyConversationAdvanceSystem")
+local LocationRenderSystem = require("src.game.ui.LocationRenderSystem")
+local registerLocation = require("src.game.locations.register")
+
+return function(payload)
+    LocationPayload.assertValid(payload)
+    local scene = Scene.new({ name = "academyLocation" })
+    local world = scene:world()
+    registerLocation(world)
+    world:setResource("gameSession", payload.session)
+    world:setResource("locationDefinition", assert(LocationCatalog.get(payload.locationId)))
+    world:setResource("locationReturnTarget", payload.returnTo)
+    world:setResource("mapReturnPosition", {
+        x = payload.mapReturnPosition.x,
+        y = payload.mapReturnPosition.y,
+    })
+    LocationSetupSystem.install(scene:scheduler())
+    LocationDailyConversationSetupSystem.install(scene:scheduler())
+    LocationInputSystem.install(scene:scheduler())
+    LocationDialogueSystem.install(scene:scheduler())
+    LocationActivitySystem.install(scene:scheduler())
+    LocationDailyConversationSystem.install(scene:scheduler())
+    DailyConversationResolutionSystem.install(scene:scheduler())
+    LocationTransitionSystem.install(scene:scheduler())
+    DailyConversationAdvanceSystem.install(scene:scheduler())
+    LocationRenderSystem.install(scene:scheduler())
+    return scene
+end

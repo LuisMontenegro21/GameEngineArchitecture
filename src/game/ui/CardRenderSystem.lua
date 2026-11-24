@@ -1,12 +1,54 @@
--- Rendering is intentionally separate from generation, selection, and storage.
+-- Presentation only: generation, acquisition, and collection storage remain
+-- in dedicated gameplay systems.
 local Screen = require("src.game.Screen")
+local UiTheme = require("src.game.ui.UiTheme")
+local SceneBackground = require("src.game.graphics.SceneBackground")
 
 local CardRenderSystem = {}
 
+local function categoryColor(category)
+    return UiTheme.categoryColor(category)
+end
+
+local SOURCE_LABELS = {
+    dominantStat = "Dominant stat",
+    lastActivity = "Last activity",
+    balanced = "Balanced option",
+}
+
+local function sourceText(card)
+    local source = card and card.generationSource
+    if not source then return nil end
+    return ("Draft source: %s (%s)"):format(
+        SOURCE_LABELS[source.kind] or "Daily option", source.category)
+end
+
 local function cardText(card)
-    if not card then return "No card selected." end
-    return ("%s [%s]\n%s\nPower %d  Cost %d"):format(
-        card.name, card.category, card.description, card.power, card.cost)
+    if not card then
+        return "No cards acquired yet.\nChoose a generated card to begin your collection."
+    end
+    local text = ("%s\n%s\n%s\nPower %d   Cost %d"):format(
+        card.name, string.upper(card.symbol), card.description, card.power, card.cost)
+    local source = sourceText(card)
+    return source and (text .. "\n" .. source) or text
+end
+
+local function drawCard(g, card, x, y, width, height, selected)
+    local color = categoryColor(card.category)
+    if selected then
+        UiTheme.setColor(g, UiTheme.colors.selection)
+        g.rectangle("fill", x - 8, y - 8, width + 16, height + 16)
+    end
+    UiTheme.setColor(g, UiTheme.colors.panel)
+    g.rectangle("fill", x, y, width, height)
+    g.setColor(color.r, color.g, color.b, 1)
+    g.rectangle("fill", x, y, width, 28)
+    UiTheme.setColor(g, UiTheme.colors.background)
+    g.printf(string.upper(card.category), x + 10, y + 7, width - 20, "left")
+    UiTheme.setColor(g, UiTheme.colors.panelBorder)
+    g.rectangle("line", x, y, width, height)
+    UiTheme.setColor(g, UiTheme.colors.text)
+    g.printf(cardText(card), x + 12, y + 40, width - 24, "left")
 end
 
 function CardRenderSystem.install(scheduler)
@@ -22,42 +64,67 @@ function CardRenderSystem.install(scheduler)
             local generated = world:requireResource("generatedCardSelection")
             local collection = world:requireResource("collectionSelection")
             local focus = world:requireResource("cardFocus")
-            g.clear(0.06, 0.04, 0.12, 1)
-            g.setColor(0.9, 0.82, 1, 1)
+
+            SceneBackground.draw(g, "cardAcquisition")
+            UiTheme.setColor(g, UiTheme.colors.title)
             g.printf("Choose a Conversation Card", 0, 24, Screen.w, "center")
-            g.setColor(0.75, 0.84, 1, 1)
-            g.printf(("Choices reflect your current training: Confidence %d, Empathy %d, Knowledge %d"):format(
+            UiTheme.drawPanel(g, 90, 50, 780, 30, false)
+            UiTheme.setColor(g, UiTheme.colors.heading)
+            g.printf(("Choices reflect your training: Confidence %d, Empathy %d, Knowledge %d"):format(
                 session.stats.confidence, session.stats.empathy, session.stats.arcaneKnowledge),
-                0, 52, Screen.w, "center")
+                0, 57, Screen.w, "center")
+            UiTheme.setColor(g, UiTheme.colors.muted)
+            g.printf(("Day %d draft: seeded from your run and rotated for today."):format(
+                session.day), 0, 80, Screen.w, "center")
+
             for index, card in ipairs(session.generatedCards) do
-                local x = 80 + (index - 1) * 290
-                if focus == "generated" and index == generated then
-                    g.setColor(0.38, 0.24, 0.6, 1)
-                    g.rectangle("fill", x - 8, 94, 266, 192)
-                end
-                g.setColor(1, 1, 1, 1)
-                g.rectangle("line", x - 8, 94, 266, 192)
-                g.printf(cardText(card), x, 112, 250, "left")
+                local x = 70 + (index - 1) * 300
+                drawCard(g, card, x, 104, 260, 190,
+                    focus == "generated" and index == generated)
             end
+
             local selected = session.generatedCards[generated]
-            g.setColor(0.8, 0.9, 1, 1)
-            g.printf(selected and ("Selected: " .. selected.name) or "Generating cards...",
-                0, 305, Screen.w, "center")
-            g.setColor(1, 1, 1, 1)
-            g.printf(("Collection  %d card(s)  —  %d / %d"):format(
-                #session.collection, collection, math.max(1, #session.collection)), 80, 350, 360, "left")
+            UiTheme.setColor(g, UiTheme.colors.heading)
+            g.printf(focus == "generated" and "FOCUS: GENERATED CHOICES" or "FOCUS: COLLECTION",
+                0, 308, Screen.w, "center")
+            UiTheme.setColor(g, UiTheme.colors.text)
+            g.printf(selected and ("Selected choice: " .. selected.name) or "Generating cards...",
+                0, 330, Screen.w, "center")
+
+            UiTheme.setColor(g, UiTheme.colors.heading)
+            g.printf(("YOUR COLLECTION: %d card(s)   %d / %d"):format(
+                #session.collection, collection, math.max(1, #session.collection)), 90, 365, 430, "left")
             local owned = session.collection[collection]
-            if focus == "collection" then g.setColor(0.38, 0.24, 0.6, 1); g.rectangle("fill", 72, 377, 360, 86) end
-            g.setColor(1, 1, 1, 1)
-            g.rectangle("line", 72, 377, 360, 86)
-            g.printf(cardText(owned), 86, 388, 335, "left")
-            g.setColor(0.7, 0.7, 0.7, 1)
+            if owned then
+                drawCard(g, owned, 90, 390, 390, 92, focus == "collection")
+            else
+                UiTheme.drawPanel(g, 90, 390, 390, 92, focus == "collection")
+                UiTheme.setColor(g, UiTheme.colors.text)
+                g.printf(cardText(nil), 102, 404, 366, "left")
+            end
+
+            UiTheme.drawPanel(g, 510, 380, 360, 105, false)
+            if session.cardChosenThisDay then
+                local acquired = session.collection[#session.collection]
+                UiTheme.setColor(g, UiTheme.colors.positive)
+                g.printf("Acquired: " .. (acquired and acquired.name or "card") .. ".",
+                    522, 400, 336, "center")
+            else
+                UiTheme.setColor(g, UiTheme.colors.muted)
+                g.printf("Choose one generated card\nto add it to your collection.",
+                    522, 400, 336, "center")
+            end
+            UiTheme.drawPanel(g, 80, 496, 800, 32, false)
+            UiTheme.setColor(g, UiTheme.colors.muted)
             g.printf(session.cardChosenThisDay
                 and "ENTER: begin the next day"
-                or "LEFT/RIGHT: navigate     TAB: collection     ENTER: acquire selected card",
-                0, 500, Screen.w, "center")
+                or "LEFT/RIGHT or A/D: navigate     TAB: switch focus     ENTER: acquire",
+                0, 505, Screen.w, "center")
         end,
     })
 end
 
+CardRenderSystem.cardText = cardText
+CardRenderSystem.categoryColor = categoryColor
+CardRenderSystem.sourceText = sourceText
 return CardRenderSystem

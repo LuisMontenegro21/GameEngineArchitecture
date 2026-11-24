@@ -9,9 +9,8 @@
   double-buffered event channels, plus the Scheduler and Runtime execution
   layers. Phase 9 adds `loop/FixedStep`, a `Time` resource and `LoveRunner`:
   simulation ticks are fixed-rate and capped while rendering remains variable.
-- `legacy/`: the current Registry/Scene implementation retained temporarily so
-  Breakout remains playable during migration. New engine code must not depend on
-  it.
+- `legacy/`: the original Registry/Scene implementation retained only for
+  historical reference. New engine code must not depend on it.
 - `loop/`: timing and application-loop utilities that do not depend on game
   modules or LOVE.
 - `scene/`: application-level `Scene` and `SceneManager` composition. A Scene

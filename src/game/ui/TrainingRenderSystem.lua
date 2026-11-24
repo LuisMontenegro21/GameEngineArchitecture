@@ -1,8 +1,25 @@
 -- LOVE presentation for the Training Scene. Game state is read-only here.
 local Activities = require("src.game.progression.Activities")
 local Screen = require("src.game.Screen")
+local UiTheme = require("src.game.ui.UiTheme")
+local SceneBackground = require("src.game.graphics.SceneBackground")
 
 local TrainingRenderSystem = {}
+
+local function effectText(activity)
+    local effects = {}
+    if activity.effects.confidence then effects[#effects + 1] = "Confidence +" .. activity.effects.confidence end
+    if activity.effects.empathy then effects[#effects + 1] = "Empathy +" .. activity.effects.empathy end
+    if activity.effects.arcaneKnowledge then
+        effects[#effects + 1] = "Knowledge +" .. activity.effects.arcaneKnowledge
+    end
+    if activity.effects.energy then effects[#effects + 1] = "Energy +" .. activity.effects.energy end
+    return table.concat(effects, "   ")
+end
+
+local function costText(activity)
+    return activity.energyCost == 0 and "No energy cost" or (activity.energyCost .. " energy")
+end
 
 function TrainingRenderSystem.install(scheduler)
     scheduler:addSystem({
@@ -16,35 +33,42 @@ function TrainingRenderSystem.install(scheduler)
             local selected = context.world:requireResource("trainingSelection")
             local activities = Activities.all()
 
-            g.clear(0.06, 0.04, 0.12, 1)
-            g.setColor(0.9, 0.82, 1, 1)
+            SceneBackground.draw(g, "training")
+            UiTheme.setColor(g, UiTheme.colors.title)
             g.printf("WIZARD ACADEMIA", 0, 28, Screen.w, "center")
-            g.setColor(1, 1, 1, 1)
+            UiTheme.drawPanel(g, 120, 62, 720, 58, false)
+            UiTheme.setColor(g, UiTheme.colors.text)
             g.printf(("Day %d / %d    Actions: %d    Energy: %d / %d"):format(
                 session.day, session.maxDays, session.actionsRemaining,
-                session.energy, session.maxEnergy), 0, 70, Screen.w, "center")
+                session.energy, session.maxEnergy), 0, 72, Screen.w, "center")
+            UiTheme.setColor(g, UiTheme.colors.heading)
             g.printf(("Confidence: %d    Empathy: %d    Arcane Knowledge: %d"):format(
                 session.stats.confidence, session.stats.empathy,
-                session.stats.arcaneKnowledge), 0, 100, Screen.w, "center")
+                session.stats.arcaneKnowledge), 0, 96, Screen.w, "center")
 
             for index, activity in ipairs(activities) do
-                local y = 150 + (index - 1) * 62
-                if index == selected then
-                    g.setColor(0.36, 0.22, 0.56, 1)
-                    g.rectangle("fill", 170, y - 6, 620, 46)
-                end
-                g.setColor(1, 1, 1, 1)
-                local cost = activity.energyCost == 0 and "no energy" or (activity.energyCost .. " energy")
+                local y = 145 + (index - 1) * 64
+                local unavailable = session.actionsRemaining <= 0 or session.energy < activity.energyCost
+                UiTheme.drawPanel(g, 150, y - 6, 660, 56, index == selected)
+                UiTheme.setColor(g, unavailable and UiTheme.colors.unavailable or UiTheme.colors.text)
                 local marker = index == selected and ">" or " "
-                g.printf(("%s %s  [%s]"):format(marker, activity.name, cost), 190, y, 580, "left")
+                g.printf(("%s %s  [%s]"):format(marker, activity.name, costText(activity)),
+                    175, y, 600, "left")
+                UiTheme.setColor(g, unavailable and UiTheme.colors.unavailable or UiTheme.colors.heading,
+                    unavailable and 0.72 or nil)
+                g.printf(effectText(activity), 195, y + 24, 570, "left")
             end
-            g.setColor(0.8, 0.9, 1, 1)
+            UiTheme.drawPanel(g, 140, 408, 680, 50, false)
+            UiTheme.setColor(g, UiTheme.colors.feedback)
             g.printf(session.feedback, 100, 420, 760, "center")
-            g.setColor(0.7, 0.7, 0.7, 1)
+            UiTheme.drawPanel(g, 80, 476, 800, 36, false)
+            UiTheme.setColor(g, UiTheme.colors.muted)
             g.printf("UP/DOWN or W/S: select     ENTER/SPACE: train     M: explore academy",
-                0, 485, Screen.w, "center")
+                0, 487, Screen.w, "center")
         end,
     })
 end
 
+TrainingRenderSystem.costText = costText
+TrainingRenderSystem.effectText = effectText
 return TrainingRenderSystem

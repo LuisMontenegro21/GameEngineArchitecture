@@ -14,16 +14,24 @@ function MapInputSystem.install(scheduler)
     scheduler:addSystem({
         name = "mapInput",
         stage = "fixedUpdate",
+        readsResources = {
+            "gameSession", "dialogueState", "dailyConversationState", "mapReturnEnabled",
+        },
         writesResources = { "mapInput" },
         run = function(context)
             local world = context.world
             local input = world:requireResource("mapInput")
+            local session = world:requireResource("gameSession")
+            local dailyConversation = world:requireResource("dailyConversationState")
+            local returnEnabled = world:requireResource("mapReturnEnabled")
             input.keys = input.keys or {}
             local changed = false
 
             for event in world:events("keyPressed") do
                 local key = event.payload.key
-                if key == "backspace" then
+                if key == "backspace" and not world:requireResource("dialogueState")
+                    and not (dailyConversation and dailyConversation.open)
+                    and session.dayPhase == "activities" and returnEnabled then
                     context.emit("mapExitRequested")
                 else
                     input.keys[key] = true

@@ -1,5 +1,6 @@
 local TrainingScene = require("src.game.scenes.TrainingScene")
 local GameSession = require("src.game.session.GameSession")
+local TrainingRenderSystem = require("src.game.ui.TrainingRenderSystem")
 
 local function frame(scene)
     scene:preUpdate(1 / 60)
@@ -27,6 +28,9 @@ return function()
     local world = scene:world()
 
     assert(world:requireResource("trainingSelection") == 1)
+    press(scene, "up")
+    assert(world:requireResource("trainingSelection") == 1,
+        "training selection must clamp at the first activity")
     press(scene, "down")
     press(scene, "down")
     press(scene, "down")
@@ -35,6 +39,17 @@ return function()
     press(scene, "up")
     press(scene, "up")
     press(scene, "up")
+    press(scene, "w")
+    assert(world:requireResource("trainingSelection") == 1,
+        "W must be an alias for upward training selection")
+    press(scene, "s")
+    assert(world:requireResource("trainingSelection") == 2,
+        "S must be an alias for downward training selection")
+    press(scene, "w")
+
+    assert(TrainingRenderSystem.costText(require("src.game.progression.Activities").all()[1]) == "1 energy")
+    assert(TrainingRenderSystem.effectText(require("src.game.progression.Activities").all()[1])
+        :find("Confidence +2", 1, true), "Training UI must describe each activity effect")
 
     press(scene, "return")
     resolveDecision(scene)
@@ -67,5 +82,7 @@ return function()
     frame(scene)
     assert(world:eventCount("sceneRequest") == 0,
         "the transition system must not request a second transition")
+    scene:draw(0)
+    assert(world:validate(), "training UI render must remain read-only and headless-safe")
     scene:dispose()
 end

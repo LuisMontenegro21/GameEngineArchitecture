@@ -3,8 +3,10 @@ local FixedStep = require("src.engine.loop.FixedStep")
 local GameSession = require("src.game.session.GameSession")
 local TrainingScene = require("src.game.scenes.TrainingScene")
 local CardAcquisitionScene = require("src.game.scenes.CardAcquisitionScene")
+local FinalConversationScene = require("src.game.scenes.FinalConversationScene")
 local ArcaneCompleteScene = require("src.game.scenes.ArcaneCompleteScene")
 local AcademyMapScene = require("src.game.scenes.AcademyMapScene")
+local AcademyLocationScene = require("src.game.scenes.AcademyLocationScene")
 
 local PHYSICS_STEP = 1 / 120
 local MAXIMUM_FRAME_DELTA = 0.25
@@ -20,10 +22,12 @@ end
 function love.load()
     Game.registerScene("training", TrainingScene)
     Game.registerScene("cardAcquisition", CardAcquisitionScene)
+    Game.registerScene("finalConversation", FinalConversationScene)
     Game.registerScene("arcaneComplete", ArcaneCompleteScene)
     Game.registerScene("academyMap", AcademyMapScene)
+    Game.registerScene("academyLocation", AcademyLocationScene)
 
-    Game.start("training", { session = GameSession.new() })
+    Game.start("academyMap", { session = GameSession.new() })
 
     if hasGameArgument("--debug") then
         require("src.debug.attach")(Game)

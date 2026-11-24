@@ -26,11 +26,30 @@ local function copySprite(sprite)
     }
 end
 
+local function copyInteraction(point)
+    local dialogue = {}
+    for index, line in ipairs(point.interaction.dialogue) do dialogue[index] = line end
+    return {
+        id = point.id,
+        kind = "location",
+        name = point.name,
+        prompt = point.interaction.prompt,
+        activityId = point.interaction.activityId,
+        trigger = {
+            x = point.trigger.x,
+            y = point.trigger.y,
+            w = point.trigger.w,
+            h = point.trigger.h,
+        },
+        dialogue = dialogue,
+    }
+end
+
 function MapSetupSystem.install(scheduler)
     scheduler:addSystem({
         name = "mapSetup",
         stage = "startup",
-        readsResources = { "mapDefinition", "mapBounds" },
+        readsResources = { "gameSession", "mapDefinition", "mapBounds", "mapReturnPosition" },
         writesResources = { "mapTerrain" },
         run = function(context)
             local world = context.world
@@ -50,8 +69,10 @@ function MapSetupSystem.install(scheduler)
                 oy = AcademyGardenTiles.origin.y,
             })
 
+            local returnPosition = world:requireResource("mapReturnPosition")
+            local playerPosition = returnPosition or map.spawn
             world:create({
-                mapPosition = { x = map.spawn.x, y = map.spawn.y },
+                mapPosition = { x = playerPosition.x, y = playerPosition.y },
                 mapSize = { w = map.playerFootprint.w, h = map.playerFootprint.h },
                 mapPlayer = true,
                 mapCollider = { solid = true },
@@ -85,6 +106,7 @@ function MapSetupSystem.install(scheduler)
                             h = point.trigger.h,
                         },
                     }
+                    components.mapInteractable = copyInteraction(point)
                 end
                 world:create(components)
             end

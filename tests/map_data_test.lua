@@ -46,6 +46,10 @@ return function()
     invalid.obstacles[2].pointOfInterestId = "missing_location"
     assert(not MapDefinition.validate(invalid),
         "visible POI structures must reference an existing point of interest")
+    invalid = MapDefinition.get()
+    invalid.pointsOfInterest[1].interaction.activityId = "unknown_activity"
+    assert(not MapDefinition.validate(invalid),
+        "POI activities must reference the shared activity catalog")
 
     local world = ECS.World.new({ identity = "map-data" })
     registerMap(world)

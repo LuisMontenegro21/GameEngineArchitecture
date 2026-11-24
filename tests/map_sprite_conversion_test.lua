@@ -35,10 +35,12 @@ return function()
         if point then points[point.id] = point end
     end
     assert(sprites == 1 + #map.obstacles,
-        "every player or obstacle must have exactly one drawable sprite owner")
+        "every player or obstacle needs one drawable sprite owner on the overworld")
     assert(points.ancient_library and points.student_commons
         and points.astral_court and points.quiet_garden,
         "POI metadata must live on their matching visible structures")
+    assert(world:query({ all = { "mapCharacter" } }):count() == 0,
+        "scheduled characters must render inside dedicated location scenes, not on the overworld")
 
     local triggerOnly = world:query({
         all = { "pointOfInterest" },
