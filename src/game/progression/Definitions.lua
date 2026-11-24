@@ -153,6 +153,15 @@ local function sceneRequest(value)
         and plain(value)
 end
 
+local function dayPhaseChanged(value)
+    return type(value) == "table"
+        and GameSession.isDayPhase(value.from)
+        and GameSession.isDayPhase(value.to)
+        and value.from ~= value.to
+        and integer(value.day) and value.day >= 1
+        and plain(value)
+end
+
 local function knownPromptId(promptId)
     if type(promptId) ~= "string" or promptId == "" then return false end
     for _, prompt in ipairs(EncounterDefinitions.get().prompts) do
@@ -212,6 +221,7 @@ local function encounterState(value)
         or not positiveIndex(value.promptIndex)
         or not integer(value.focus)
         or not integer(value.rapport)
+        or not integer(value.startingRapportBonus)
         or type(value.usedCollectionIndexes) ~= "table"
         or type(value.feedback) ~= "string"
         or type(value.complete) ~= "boolean"
@@ -277,6 +287,7 @@ function Definitions.registerArcaneHearts(world)
     world:registerEvent("cardPlayRejected", { validate = cardPlayRejected, maxQueue = 4 })
     world:registerEvent("conversationPromptAdvanced", { validate = promptAdvanced, maxQueue = 4 })
     world:registerEvent("conversationCompleted", { validate = conversationCompleted, maxQueue = 1 })
+    world:registerEvent("dayPhaseChanged", { validate = dayPhaseChanged, maxQueue = 4 })
     world:registerEvent("sceneRequest", { validate = sceneRequest, maxQueue = 2 })
 end
 

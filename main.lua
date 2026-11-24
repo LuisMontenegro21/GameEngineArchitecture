@@ -25,7 +25,7 @@ function love.load()
     Game.registerScene("arcaneComplete", ArcaneCompleteScene)
     Game.registerScene("academyMap", AcademyMapScene)
 
-    Game.start("training", { session = GameSession.new() })
+    Game.start("academyMap", { session = GameSession.new() })
 
     if hasGameArgument("--debug") then
         require("src.debug.attach")(Game)

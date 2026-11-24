@@ -2,6 +2,7 @@
 -- state into panels and card states without resolving any gameplay rules.
 local Screen = require("src.game.Screen")
 local UiTheme = require("src.game.ui.UiTheme")
+local SceneBackground = require("src.game.graphics.SceneBackground")
 
 local EncounterRenderSystem = {}
 
@@ -80,10 +81,9 @@ function EncounterRenderSystem.install(scheduler)
             local selected = world:requireResource("encounterCollectionSelection")
             local prompt = definition.prompts[state.promptIndex]
 
-            graphics.clear(UiTheme.colors.background.r, UiTheme.colors.background.g,
-                UiTheme.colors.background.b, UiTheme.colors.background.a)
+            SceneBackground.draw(graphics, "finalConversation")
             UiTheme.setColor(graphics, UiTheme.colors.title)
-            graphics.printf("FINAL CONVERSATION", 0, 14, Screen.w, "center")
+            graphics.printf("HOMECOMING INVITATION", 0, 14, Screen.w, "center")
 
             UiTheme.drawPanel(graphics, 100, 44, 760, 82, false)
             UiTheme.setColor(graphics, UiTheme.colors.heading)
@@ -94,8 +94,9 @@ function EncounterRenderSystem.install(scheduler)
 
             UiTheme.drawPanel(graphics, 160, 138, 640, 34, false)
             UiTheme.setColor(graphics, UiTheme.colors.heading)
-            graphics.printf(("FOCUS: %d     RAPPORT: %d     CARDS: %d"):format(
-                state.focus, state.rapport, #session.collection), 0, 148, Screen.w, "center")
+            graphics.printf(("FOCUS: %d     RAPPORT: %d     PREPARATION: +%d     CARDS: %d"):format(
+                state.focus, state.rapport, state.startingRapportBonus,
+                #session.collection), 0, 148, Screen.w, "center")
 
             local width = cardWidth(#session.collection)
             local totalWidth = #session.collection * width + math.max(0, #session.collection - 1) * 10

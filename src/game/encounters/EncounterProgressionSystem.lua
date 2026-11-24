@@ -31,13 +31,22 @@ function EncounterProgressionSystem.install(scheduler)
                         local ending = EncounterDefinitions.endingForRapport(state.rapport)
                         state.complete = true
                         state.transitionQueued = true
-                        state.feedback = "Conversation complete: " .. ending.title .. "."
+                        state.feedback = "Homecoming invitation complete: " .. ending.title .. "."
+                        local previousPhase = session.dayPhase
+                        session.dayPhase = "complete"
                         session.finalRapport = state.rapport
                         session.endingId = ending.id
                         session.complete = true
                         session.feedback = state.feedback
                         world:setResource("encounterState", state)
                         world:setResource("gameSession", session)
+                        if previousPhase ~= session.dayPhase then
+                            context.emit("dayPhaseChanged", {
+                                from = previousPhase,
+                                to = session.dayPhase,
+                                day = session.day,
+                            })
+                        end
                         context.emit("conversationCompleted", {
                             finalRapport = session.finalRapport,
                             endingId = session.endingId,

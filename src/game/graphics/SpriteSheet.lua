@@ -53,6 +53,10 @@ function SpriteSheet:quad(col, row)
         return nil
     end
     local imageW, imageH = self.image:getDimensions()
+    if (col + 1) * self.frameW > imageW or (row + 1) * self.frameH > imageH then
+        self.quads[key] = false
+        return nil
+    end
     local quad = g.newQuad(col * self.frameW, row * self.frameH,
         self.frameW, self.frameH, imageW, imageH)
     self.quads[key] = quad

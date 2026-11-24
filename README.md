@@ -19,8 +19,10 @@ After five academy days, the player uses three collected cards in a final
 conversation before reaching a completion screen whose ending reflects final
 rapport.
 
-The Training Scene also opens an optional Academy Garden map. Exploration is a
-physical hub for the academy locations; it does not consume a training action.
+The Academy Garden is the normal starting hub. Its locations are the physical
+activity and conversation loop; exploration itself does not consume an action.
+The Training Scene remains a separate development-facing presentation of the
+same activity rules.
 
 ![display](assets/demo/demo.gif)
 
@@ -53,7 +55,9 @@ On Windows PowerShell, when LOVE is not on `PATH`:
 | Training | Perform selected activity | `Enter` or `Space` |
 | Training | Explore the Academy Garden | `M` |
 | Academy Garden | Move | `W`/`A`/`S`/`D` or arrow keys |
-| Academy Garden | Return to Training | `Backspace` |
+| Academy Garden | Interact with locations or characters | `E` |
+| Academy Garden | Return to Training (only when entered from Training) | `Backspace` |
+| Academy Garden | Choose/respond in a daily conversation | `Left`/`Right`, then `Enter` |
 | Card Acquisition | Change selected generated card or collection card | `Left`/`Right` or `A`/`D` |
 | Card Acquisition | Switch generated-card / collection focus | `Tab` |
 | Card Acquisition | Acquire selected card; after acquisition, start the next day | `Enter` or `Space` |

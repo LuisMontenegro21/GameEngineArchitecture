@@ -2,6 +2,7 @@
 local Activities = require("src.game.progression.Activities")
 local Screen = require("src.game.Screen")
 local UiTheme = require("src.game.ui.UiTheme")
+local SceneBackground = require("src.game.graphics.SceneBackground")
 
 local TrainingRenderSystem = {}
 
@@ -32,9 +33,7 @@ function TrainingRenderSystem.install(scheduler)
             local selected = context.world:requireResource("trainingSelection")
             local activities = Activities.all()
 
-            UiTheme.setColor(g, UiTheme.colors.background)
-            g.clear(UiTheme.colors.background.r, UiTheme.colors.background.g,
-                UiTheme.colors.background.b, UiTheme.colors.background.a)
+            SceneBackground.draw(g, "training")
             UiTheme.setColor(g, UiTheme.colors.title)
             g.printf("WIZARD ACADEMIA", 0, 28, Screen.w, "center")
             UiTheme.drawPanel(g, 120, 62, 720, 58, false)

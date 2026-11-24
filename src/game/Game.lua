@@ -33,7 +33,19 @@ end
 
 function Game.draw(alpha) return manager:draw(alpha or 0) end
 function Game.keypressed(key)
-    if key == "escape" then if love and love.event then love.event.quit() end; return end
+    if key == "escape" then
+        local scene = manager:current()
+        local world = scene and scene:world() or nil
+        local dialogueOpen = world and world:hasResource("dialogueState")
+            and world:requireResource("dialogueState")
+        local dailyConversationOpen = world and world:hasResource("dailyConversationState")
+            and world:requireResource("dailyConversationState")
+        dailyConversationOpen = dailyConversationOpen and dailyConversationOpen.open
+        if not dialogueOpen and not dailyConversationOpen then
+            if love and love.event then love.event.quit() end
+            return
+        end
+    end
     inputQueue[#inputQueue + 1] = { kind = "keypressed", key = key }
 end
 function Game.keyreleased(key) inputQueue[#inputQueue + 1] = { kind = "keyreleased", key = key } end

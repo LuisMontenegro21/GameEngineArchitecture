@@ -71,16 +71,35 @@ local function collectDrawables(world)
     return sortDrawables(drawables)
 end
 
+local function drawSocialTargetHighlight(g, world, state)
+    if not state or state.resolved then return end
+    local query = world:query({
+        all = { "mapPosition", "mapSize", "mapCharacter" },
+    })
+    for _, position, size, character in query:each() do
+        if character.id == state.targetCharacterId then
+            g.setColor(0.95, 0.82, 0.30, 1)
+            g.rectangle("line", position.x - 4, position.y - 4, size.w + 8, size.h + 8)
+            query:close()
+            return
+        end
+    end
+    query:close()
+end
+
 function MapSpriteRenderSystem.install(scheduler)
     scheduler:addSystem({
         name = "mapSpriteRender",
         stage = "render",
-        reads = { "mapPosition", "mapSize", "mapSprite" },
+        reads = { "mapPosition", "mapSize", "mapSprite", "mapCharacter" },
+        readsResources = { "dailyConversationState" },
         after = { "mapTerrainRender" },
         before = { "mapLabelRender" },
         run = function(context)
             local g = graphics()
             if not g then return end
+            drawSocialTargetHighlight(g, context.world,
+                context.world:requireResource("dailyConversationState"))
             for _, drawable in ipairs(collectDrawables(context.world)) do
                 drawSpriteOrFallback(g, drawable.position, drawable.size, drawable.sprite)
             end
@@ -90,6 +109,7 @@ end
 
 MapSpriteRenderSystem.collectDrawables = collectDrawables
 MapSpriteRenderSystem.drawSpriteOrFallback = drawSpriteOrFallback
+MapSpriteRenderSystem.drawSocialTargetHighlight = drawSocialTargetHighlight
 MapSpriteRenderSystem.layerRank = layerRank
 MapSpriteRenderSystem.sortDrawables = sortDrawables
 return MapSpriteRenderSystem

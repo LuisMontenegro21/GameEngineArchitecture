@@ -40,6 +40,14 @@ return function()
     assert(location.id == point.id)
     assert(MapHudRenderSystem.promptText(location) == point.name .. " - " .. point.subtitle,
         "HUD text must use a clean ASCII separator")
+    local session = world:requireResource("gameSession")
+    assert(MapHudRenderSystem.objectiveText(session, false):find("Spend 2", 1, true),
+        "activity-phase HUD objectives must derive from remaining actions")
+    session.dayPhase = "socialConversation"
+    assert(MapHudRenderSystem.objectiveText(session, { targetName = "Mira" })
+        == "OBJECTIVE: Find and talk with Mira.",
+        "social-phase HUD objectives must derive from the scheduled target")
+    session.dayPhase = "activities"
 
     scene:draw(0)
     assert(world:validate(), "map HUD render must remain read-only and headless-safe")

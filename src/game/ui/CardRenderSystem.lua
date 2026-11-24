@@ -2,6 +2,7 @@
 -- in dedicated gameplay systems.
 local Screen = require("src.game.Screen")
 local UiTheme = require("src.game.ui.UiTheme")
+local SceneBackground = require("src.game.graphics.SceneBackground")
 
 local CardRenderSystem = {}
 
@@ -9,12 +10,27 @@ local function categoryColor(category)
     return UiTheme.categoryColor(category)
 end
 
+local SOURCE_LABELS = {
+    dominantStat = "Dominant stat",
+    lastActivity = "Last activity",
+    balanced = "Balanced option",
+}
+
+local function sourceText(card)
+    local source = card and card.generationSource
+    if not source then return nil end
+    return ("Draft source: %s (%s)"):format(
+        SOURCE_LABELS[source.kind] or "Daily option", source.category)
+end
+
 local function cardText(card)
     if not card then
         return "No cards acquired yet.\nChoose a generated card to begin your collection."
     end
-    return ("%s\n%s\n%s\nPower %d   Cost %d"):format(
+    local text = ("%s\n%s\n%s\nPower %d   Cost %d"):format(
         card.name, string.upper(card.symbol), card.description, card.power, card.cost)
+    local source = sourceText(card)
+    return source and (text .. "\n" .. source) or text
 end
 
 local function drawCard(g, card, x, y, width, height, selected)
@@ -49,8 +65,7 @@ function CardRenderSystem.install(scheduler)
             local collection = world:requireResource("collectionSelection")
             local focus = world:requireResource("cardFocus")
 
-            g.clear(UiTheme.colors.background.r, UiTheme.colors.background.g,
-                UiTheme.colors.background.b, UiTheme.colors.background.a)
+            SceneBackground.draw(g, "cardAcquisition")
             UiTheme.setColor(g, UiTheme.colors.title)
             g.printf("Choose a Conversation Card", 0, 24, Screen.w, "center")
             UiTheme.drawPanel(g, 90, 50, 780, 30, false)
@@ -58,10 +73,13 @@ function CardRenderSystem.install(scheduler)
             g.printf(("Choices reflect your training: Confidence %d, Empathy %d, Knowledge %d"):format(
                 session.stats.confidence, session.stats.empathy, session.stats.arcaneKnowledge),
                 0, 57, Screen.w, "center")
+            UiTheme.setColor(g, UiTheme.colors.muted)
+            g.printf(("Day %d draft: seeded from your run and rotated for today."):format(
+                session.day), 0, 80, Screen.w, "center")
 
             for index, card in ipairs(session.generatedCards) do
                 local x = 70 + (index - 1) * 300
-                drawCard(g, card, x, 100, 260, 190,
+                drawCard(g, card, x, 104, 260, 190,
                     focus == "generated" and index == generated)
             end
 
@@ -108,4 +126,5 @@ end
 
 CardRenderSystem.cardText = cardText
 CardRenderSystem.categoryColor = categoryColor
+CardRenderSystem.sourceText = sourceText
 return CardRenderSystem

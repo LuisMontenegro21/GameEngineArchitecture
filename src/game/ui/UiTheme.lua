@@ -19,10 +19,10 @@ UiTheme.colors = {
 }
 
 UiTheme.categoryColors = {
-    confidence = { r = 0.74, g = 0.44, b = 0.95, a = 1 },
-    empathy = { r = 0.42, g = 0.78, b = 0.67, a = 1 },
-    knowledge = { r = 0.38, g = 0.63, b = 0.96, a = 1 },
-    balanced = { r = 0.76, g = 0.70, b = 0.44, a = 1 },
+    confidence = { r = 0.9059, g = 0.7255, b = 0.2941, a = 1 }, -- #E7B94B
+    empathy = { r = 0.3098, g = 0.6627, b = 0.8471, a = 1 }, -- #4FA9D8
+    knowledge = { r = 0.6078, g = 0.4196, b = 0.8275, a = 1 }, -- #9B6BD3
+    balanced = { r = 0.3961, g = 0.7216, b = 0.4745, a = 1 }, -- #65B879
 }
 
 UiTheme.spacing = 12

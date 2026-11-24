@@ -9,12 +9,17 @@ function PlayerMovementSystem.install(scheduler)
         name = "playerMovement",
         stage = "fixedUpdate",
         after = { "mapInput" },
-        readsResources = { "mapInput" },
+        readsResources = { "mapInput", "dialogueState", "dailyConversationState" },
         writes = { "desiredMovement" },
         run = function(context)
             local input = context.world:requireResource("mapInput")
             local horizontal = (input.right and 1 or 0) - (input.left and 1 or 0)
             local vertical = (input.down and 1 or 0) - (input.up and 1 or 0)
+            local dailyConversation = context.world:requireResource("dailyConversationState")
+            if context.world:requireResource("dialogueState")
+                or (dailyConversation and dailyConversation.open) then
+                horizontal, vertical = 0, 0
+            end
             local length = math.sqrt(horizontal * horizontal + vertical * vertical)
             if length > 0 then
                 horizontal = horizontal / length

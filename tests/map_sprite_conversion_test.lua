@@ -24,21 +24,25 @@ return function()
         and playerSprite.offsetX == -7 and playerSprite.offsetY == -34,
         "player art must be anchored above the feet collider")
 
-    local sprites, points = 0, {}
-    for _, _, _, sprite, point in world:query({
+    local sprites, points, characters = 0, {}, {}
+    for _, _, _, sprite, point, character in world:query({
         all = { "mapPosition", "mapSize", "mapSprite" },
-        optional = { "pointOfInterest" },
+        optional = { "pointOfInterest", "mapCharacter" },
     }):each() do
         sprites = sprites + 1
         assert(sprite.fallback and sprite.fallback.shape and sprite.fallback.color,
             "every production sprite must retain an intentional fallback")
         if point then points[point.id] = point end
+        if character then characters[character.id] = character end
     end
-    assert(sprites == 1 + #map.obstacles,
-        "every player or obstacle must have exactly one drawable sprite owner")
+    assert(sprites == 1 + #map.obstacles + 4,
+        "every player, obstacle, or scheduled character needs one drawable sprite owner")
     assert(points.ancient_library and points.student_commons
         and points.astral_court and points.quiet_garden,
         "POI metadata must live on their matching visible structures")
+    assert(characters.mentor and characters.crush and characters.outgoing_peer
+        and characters.studious_peer,
+        "scheduled characters must own their distinct sprite presentation entities")
 
     local triggerOnly = world:query({
         all = { "pointOfInterest" },

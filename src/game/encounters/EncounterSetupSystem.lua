@@ -17,14 +17,19 @@ function EncounterSetupSystem.install(scheduler)
         run = function(context)
             local world = context.world
             local definition = EncounterDefinitions.get()
-            world:requireResource("gameSession")
+            local session = world:requireResource("gameSession")
+            local readinessBonus = EncounterDefinitions.readinessBonus(session.homecomingReadiness)
             world:setResource("encounterDefinition", definition)
             world:setResource("encounterState", {
                 promptIndex = 1,
                 focus = definition.startingFocus,
-                rapport = 0,
+                rapport = readinessBonus,
+                startingRapportBonus = readinessBonus,
                 usedCollectionIndexes = {},
-                feedback = "Choose a conversation card.",
+                feedback = readinessBonus > 0
+                    and ("Your preparation adds +%d starting rapport. Choose a conversation card.")
+                        :format(readinessBonus)
+                    or "Choose a conversation card.",
                 complete = false,
                 transitionQueued = false,
             })

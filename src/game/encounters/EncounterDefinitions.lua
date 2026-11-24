@@ -11,23 +11,24 @@ local VALID_CATEGORIES = {
 }
 
 local definition = {
-    partnerName = "A Fellow Academy Student",
+    partnerName = "Rowan",
     startingFocus = 5,
     categoryMatchBonus = 2,
+    maximumReadinessBonus = 3,
     prompts = {
         {
             id = "astral_theory",
-            text = "They ask what you discovered while studying the academy's oldest constellations.",
+            text = "Before the homecoming lanterns are lit, Rowan asks what gave you the courage to come over.",
             preferredCategory = "knowledge",
         },
         {
             id = "quiet_confession",
-            text = "A difficult pause invites you to listen carefully and respond with kindness.",
+            text = "Rowan admits feeling nervous about the evening. How do you answer with care?",
             preferredCategory = "empathy",
         },
         {
             id = "moonlit_invitation",
-            text = "The conversation reaches its close. Can you share what you truly hope for?",
+            text = "The music begins in the distance. Can you ask Rowan to attend homecoming with you?",
             preferredCategory = "confidence",
         },
     },
@@ -35,20 +36,20 @@ local definition = {
         {
             id = "promising_friendship",
             minimumRapport = 0,
-            title = "A Promising Friendship",
-            text = "You leave the conversation with a warmer understanding of each other.",
+            title = "A Gentle Promise",
+            text = "Rowan appreciates your honesty. It was not the answer you hoped for, but you leave with a warmer understanding of one another.",
         },
         {
             id = "growing_connection",
             minimumRapport = 8,
-            title = "A Growing Connection",
-            text = "Your thoughtful words turn a quiet evening into a meaningful connection.",
+            title = "A Hopeful Yes",
+            text = "Rowan smiles and agrees to spend homecoming with you. The evening begins with an excited, meaningful connection.",
         },
         {
             id = "arcane_hearts",
             minimumRapport = 12,
-            title = "Arcane Hearts",
-            text = "Your shared courage, care, and curiosity kindle something extraordinary.",
+            title = "Homecoming Hearts",
+            text = "Your courage, care, and curiosity make the invitation unforgettable. Rowan happily takes your hand as the celebration begins.",
         },
     },
 }
@@ -87,6 +88,7 @@ function EncounterDefinitions.validate(value)
         or not nonEmptyString(value.partnerName)
         or not integer(value.startingFocus, 0)
         or not integer(value.categoryMatchBonus, 0)
+        or not integer(value.maximumReadinessBonus, 0)
         or type(value.prompts) ~= "table" or #value.prompts ~= 3
         or type(value.endings) ~= "table" or #value.endings < 2 then
         return false
@@ -137,6 +139,11 @@ function EncounterDefinitions.endingForRapport(rapport)
         if rapport >= ending.minimumRapport then selected = ending end
     end
     return copy(selected)
+end
+
+function EncounterDefinitions.readinessBonus(readiness)
+    assert(integer(readiness, 0), "homecoming readiness must be a non-negative integer")
+    return math.min(definition.maximumReadinessBonus, math.floor(readiness / 5))
 end
 
 return EncounterDefinitions

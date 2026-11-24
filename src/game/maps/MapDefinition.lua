@@ -2,6 +2,7 @@
 -- consume this data later; this module has no ECS or LOVE dependency.
 local MapDefinition = {}
 local SpriteCatalog = require("src.game.maps.SpriteCatalog")
+local Activities = require("src.game.progression.Activities")
 
 local function finite(value)
     return type(value) == "number" and value == value
@@ -80,12 +81,29 @@ local function validObstacle(value)
         and (value.pointOfInterestId == nil or nonEmptyString(value.pointOfInterestId))
 end
 
+local function validDialogue(value)
+    if type(value) ~= "table" or #value == 0 then return false end
+    for _, line in ipairs(value) do
+        if not nonEmptyString(line) then return false end
+    end
+    return true
+end
+
+local function validInteraction(value)
+    return type(value) == "table"
+        and nonEmptyString(value.prompt)
+        and validDialogue(value.dialogue)
+        and nonEmptyString(value.activityId)
+        and Activities.get(value.activityId) ~= nil
+end
+
 local function validPointOfInterest(value)
     return type(value) == "table"
         and nonEmptyString(value.id)
         and nonEmptyString(value.name)
         and nonEmptyString(value.subtitle)
         and rectangle(value.trigger)
+        and validInteraction(value.interaction)
 end
 
 local layout = {
@@ -145,21 +163,53 @@ local layout = {
             id = "ancient_library", name = "Ancient Library",
             subtitle = "Rune studies are held here.",
             trigger = { x = 275, y = 345, w = 60, h = 60 },
+            interaction = {
+                prompt = "Press E to inspect",
+                activityId = "study_ancient_runes",
+                dialogue = {
+                    "Shelves of annotated runes rise above the reading tables.",
+                    "A focused study session could sharpen your magical knowledge.",
+                },
+            },
         },
         {
             id = "student_commons", name = "Student Commons",
             subtitle = "A place to help classmates and connect.",
             trigger = { x = 635, y = 285, w = 55, h = 55 },
+            interaction = {
+                prompt = "Press E to inspect",
+                activityId = "help_a_classmate",
+                dialogue = {
+                    "Students trade stories and compare notes between lessons.",
+                    "There may be someone here who could use a little help.",
+                },
+            },
         },
         {
             id = "astral_court", name = "Astral Practice Court",
             subtitle = "Spell rehearsal takes place here.",
             trigger = { x = 185, y = 190, w = 70, h = 32 },
+            interaction = {
+                prompt = "Press E to inspect",
+                activityId = "practice_spells",
+                dialogue = {
+                    "The practice sigils hum softly beneath your feet.",
+                    "A careful rehearsal here could build your confidence.",
+                },
+            },
         },
         {
             id = "quiet_garden", name = "Quiet Garden",
             subtitle = "A peaceful place for meditation.",
             trigger = { x = 700, y = 205, w = 65, h = 32 },
+            interaction = {
+                prompt = "Press E to inspect",
+                activityId = "meditate",
+                dialogue = {
+                    "The garden is quiet enough to hear the leaves shift overhead.",
+                    "A calm moment here could help you regain your balance.",
+                },
+            },
         },
     },
 }
