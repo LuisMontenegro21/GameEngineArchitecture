@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Course portfolio for Wizard Academia and its custom Lua ECS engine.">
+  <title>Wizard Academia | Game Engine Portfolio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top">WIZARD ACADEMIA</a>
+    <nav aria-label="Primary navigation">
+      <a href="#features">Features</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#reflection">Reflection</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <p class="eyebrow">COURSE PORTFOLIO · GAME ENGINE DEVELOPMENT</p>
+      <h1>Wizard Academia</h1>
+      <p class="hero-copy">
+        <span class="fill-inline">[Write a two-to-three sentence introduction to your game, its goal, and your role in the project.]</span>
+      </p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="[REPLACE-WITH-PUBLIC-REPOSITORY-URL]">Repository</a>
+        <a class="button button-secondary" href="[REPLACE-WITH-PLAYABLE-BUILD-OR-VIDEO-URL]">Play / Watch</a>
+      </div>
+      <div class="media-placeholder hero-media">
+        <strong>Gameplay GIF or video goes here</strong>
+        <span>Replace this box with an <code>&lt;img&gt;</code> or <code>&lt;video&gt;</code> element.</span>
+      </div>
+    </section>
+
+    <section class="section" id="overview">
+      <p class="eyebrow">PROJECT OVERVIEW</p>
+      <h2>Game premise and core loop</h2>
+      <div class="two-column">
+        <div>
+          <h3>Narrative premise</h3>
+          <p class="fill-in">[Explain the Wizard Academia premise, the homecoming goal, and why the player trains, explores, and speaks with characters.]</p>
+        </div>
+        <div>
+          <h3>Playable loop</h3>
+          <ol class="loop">
+            <li>Explore the Academy Garden.</li>
+            <li>Enter a location and complete activities.</li>
+            <li>Acquire a card shaped by the player's progress.</li>
+            <li>Use a collected card in a daily conversation.</li>
+            <li>Reach the homecoming conversation after day five.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <p class="eyebrow">ENGINE FEATURES</p>
+      <h2>Implementation evidence</h2>
+      <p class="section-intro">Complete every card below with your own explanation, source links, and visual evidence. Duplicate a card if your course includes another main feature.</p>
+
+      <article class="feature-card" id="ecs">
+        <div class="feature-heading">
+          <p class="feature-number">01</p>
+          <div>
+            <h3>Custom ECS and engine architecture</h3>
+            <p>Entities, components, resources, events, systems, scheduling, and scenes.</p>
+          </div>
+        </div>
+        <div class="feature-grid">
+          <section>
+            <h4>How I implemented it</h4>
+            <p class="fill-in">[Describe the specific engine contracts and systems you implemented. Explain data flow instead of listing files only.]</p>
+          </section>
+          <section>
+            <h4>Connection to the game narrative</h4>
+            <p class="fill-in">[Explain how this architecture supports Wizard Academia's characters, locations, cards, or progression.]</p>
+          </section>
+          <section>
+            <h4>Technical evidence</h4>
+            <ul class="evidence-list">
+              <li><a href="[REPLACE-WITH-ENGINE-CODE-LINK]">Engine source code</a></li>
+              <li><a href="[REPLACE-WITH-ENGINE-TEST-LINK]">Relevant tests or debug evidence</a></li>
+              <li>[Add a screenshot, diagram, GIF, or short video here.]</li>
+            </ul>
+          </section>
+          <section class="reflection-box">
+            <h4>My personal reflection</h4>
+            <p class="reflection-warning">Write this section yourself. Do not use AI-generated reflection text.</p>
+            <p class="fill-in">[In your own words: what did you learn, what challenged you, and how could this apply to your future game-development career?]</p>
+          </section>
+        </div>
+      </article>
+
+      <article class="feature-card" id="progression">
+        <div class="feature-heading">
+          <p class="feature-number">02</p>
+          <div>
+            <h3>Progression cycle and card collection</h3>
+            <p>Persistent session state, activities, generated cards, and card use.</p>
+          </div>
+        </div>
+        <div class="feature-grid">
+          <section>
+            <h4>How I implemented it</h4>
+            <p class="fill-in">[Explain the shared GameSession, the activity-to-card relationship, deterministic card rule, and scene transitions.]</p>
+          </section>
+          <section>
+            <h4>Connection to the game narrative</h4>
+            <p class="fill-in">[Explain why confidence, empathy, knowledge, and balanced cards fit the player's homecoming objective.]</p>
+          </section>
+          <section>
+            <h4>Technical evidence</h4>
+            <ul class="evidence-list">
+              <li><a href="[REPLACE-WITH-PROGRESSION-BRANCH-OR-CODE-LINK]">Progression source code</a></li>
+              <li><a href="[REPLACE-WITH-CARD-CODE-OR-TEST-LINK]">Card generation / collection code</a></li>
+              <li>[Add progression and card-acquisition screenshots or video.]</li>
+            </ul>
+          </section>
+          <section class="reflection-box">
+            <h4>My personal reflection</h4>
+            <p class="reflection-warning">Write this section yourself. Do not use AI-generated reflection text.</p>
+            <p class="fill-in">[Your own reflection on progression systems, shared state, and player feedback.]</p>
+          </section>
+        </div>
+      </article>
+
+      <article class="feature-card" id="map">
+        <div class="feature-heading">
+          <p class="feature-number">03</p>
+          <div>
+            <h3>Map exploration and location scenes</h3>
+            <p>Movement, collision, points of interest, room transitions, and scheduled characters.</p>
+          </div>
+        </div>
+        <div class="feature-grid">
+          <section>
+            <h4>How I implemented it</h4>
+            <p class="fill-in">[Explain map input, delta-time movement, collision, POI detection, safe returns, and reusable location scenes.]</p>
+          </section>
+          <section>
+            <h4>Connection to the game narrative</h4>
+            <p class="fill-in">[Explain how locations and daily character schedules make the academy feel like a place rather than a menu.]</p>
+          </section>
+          <section>
+            <h4>Technical evidence</h4>
+            <ul class="evidence-list">
+              <li><a href="[REPLACE-WITH-MAP-EXPLORATION-BRANCH-LINK]">Map Exploration branch</a></li>
+              <li><a href="[REPLACE-WITH-MAP-OR-LOCATION-CODE-LINK]">Map / location source code</a></li>
+              <li>[Add map movement, room-entry, and return screenshots or video.]</li>
+            </ul>
+          </section>
+          <section class="reflection-box">
+            <h4>My personal reflection</h4>
+            <p class="reflection-warning">Write this section yourself. Do not use AI-generated reflection text.</p>
+            <p class="fill-in">[Your own reflection on spatial design, collision, scenes, and debugging interactions.]</p>
+          </section>
+        </div>
+      </article>
+
+      <article class="feature-card" id="ui">
+        <div class="feature-heading">
+          <p class="feature-number">04</p>
+          <div>
+            <h3>UI systems and player feedback</h3>
+            <p>Training, card acquisition, Academy Map HUD, room interactions, and final conversation UI.</p>
+          </div>
+        </div>
+        <div class="feature-grid">
+          <section>
+            <h4>How I implemented it</h4>
+            <p class="fill-in">[Explain each UI's Setup → Update → Render responsibilities and how it stays separate from game rules.]</p>
+          </section>
+          <section>
+            <h4>Connection to the game narrative</h4>
+            <p class="fill-in">[Explain how interface feedback helps the player understand progress toward homecoming.]</p>
+          </section>
+          <section>
+            <h4>Technical evidence</h4>
+            <ul class="evidence-list">
+              <li><a href="[REPLACE-WITH-UI-SYSTEMS-BRANCH-LINK]">UI Systems branch</a></li>
+              <li><a href="[REPLACE-WITH-UI-CODE-OR-TEST-LINK]">UI source code and tests</a></li>
+              <li>[Add UI navigation, card, and final-conversation screenshots or video.]</li>
+            </ul>
+          </section>
+          <section class="reflection-box">
+            <h4>My personal reflection</h4>
+            <p class="reflection-warning">Write this section yourself. Do not use AI-generated reflection text.</p>
+            <p class="fill-in">[Your own reflection on usability, visual hierarchy, and separating presentation from gameplay.]</p>
+          </section>
+        </div>
+      </article>
+    </section>
+
+    <section class="section" id="evidence">
+      <p class="eyebrow">PROJECT EVIDENCE</p>
+      <h2>Repository, testing, and original work</h2>
+      <div class="two-column">
+        <div>
+          <h3>Testing and verification</h3>
+          <p class="fill-in">[State how you tested the game: headless tests, manual LOVE testing, bugs found, and how you verified integration.]</p>
+          <p><a href="[REPLACE-WITH-TESTS-LINK]">Link to tests / debugging tools</a></p>
+        </div>
+        <div>
+          <h3>Original mechanics and assets</h3>
+          <p class="fill-in">[Explain which mechanics and assets are original. List any external tools used and confirm that no course-example assets or mechanics were reused.]</p>
+        </div>
+      </div>
+      <div class="team-box">
+        <h3>Team contribution <span>(complete only if applicable)</span></h3>
+        <p class="fill-in">[List each member's concrete responsibility, decisions made together, and how integrated work was verified. Do not divide responsibility only by file names.]</p>
+      </div>
+    </section>
+
+    <section class="section final-reflection" id="reflection">
+      <p class="eyebrow">FINAL REFLECTION</p>
+      <h2>What I learned from the course</h2>
+      <p class="reflection-warning">This reflection must be written individually in your own words. Do not use AI-generated text.</p>
+      <p class="fill-in large-fill">[Write your personal final reflection about low-level game development, engine creation, asset construction, and how these learnings relate to your future career in the video game industry.]</p>
+    </section>
+
+    <section class="section checklist">
+      <p class="eyebrow">BEFORE SUBMISSION</p>
+      <h2>Portfolio checklist</h2>
+      <ul>
+        <li>Each main engine feature has implementation, narrative, evidence, and personal-reflection sections.</li>
+        <li>Every code link points to the correct public repository branch.</li>
+        <li>Every screenshot, GIF, or video loads publicly.</li>
+        <li>Personal and final reflections are written by me, not generated by AI.</li>
+        <li>The repository is populated and the game demonstrates original mechanics and assets.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Wizard Academia · <span class="fill-inline">[Your name] · [Course / semester]</span></p>
+  </footer>
+</body>
+</html>
