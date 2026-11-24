@@ -15,8 +15,10 @@ game/
 └── Game.lua       application and input/scene coordination
 ```
 
-For a new game, keep `src/engine`, replace the Breakout definitions and scenes,
-then define the first progression plan. Install progression systems into the
+For a new game, keep `src/engine`, replace or add a game-specific layer, then
+define the first progression plan. Wizard Academia is the active game layer;
+the older Breakout modules remain as isolated reference code and may be kept
+without affecting the active entry point. Install progression systems into the
 new play scene's Scheduler before Scene initialization.
 
 Build one vertical slice first:
