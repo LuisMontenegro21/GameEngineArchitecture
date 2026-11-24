@@ -109,7 +109,7 @@ lo detecta y por medio de este se despliega su nombre.
 ![proximity](assets/demo/proximity.gif)
 
 ### Integración de escenas
-El bucle comienza con la escena de entrenamiento, presionar la tecla M lleva al jardín de la academia y con 
-la tecla BACKSPACE se regresa a la escena de entrenamiento. Al retornar se preserva la sesión del juego
-por lo que la exploración del mapa no interfiere con el progreso del jugar ni lo reinicia.
+EL bucle comienza con el mapa. Al recorrer el mapa nos lleva a distintos puntos de interés donde se puede encotnrar a distintos
+personajes y tener interacciones con ellos. Al regresar al a la pantalla del mapa o salir de estos no se pierde los
+objetos obtenidos.
 ![conserve state](assets/demo/conserve-state.gif)
