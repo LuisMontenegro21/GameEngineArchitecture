@@ -56,6 +56,12 @@ local function performActivity(manager, locationId)
     enterLocation(manager, locationId)
     moveToLocationTarget(manager:current(), manager:current():world():requireResource("locationDefinition").activityId)
     press(manager, "e")
+    local challenge = manager:current():world():requireResource("activityChallengeState")
+    if challenge.mode == "sequence" then
+        for _, key in ipairs(challenge.steps) do press(manager, key) end
+    else
+        press(manager, "e")
+    end
 end
 
 moveToLocationTarget = function(scene, id)

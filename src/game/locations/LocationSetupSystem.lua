@@ -23,7 +23,10 @@ function LocationSetupSystem.install(scheduler)
         name = "locationSetup",
         stage = "startup",
         readsResources = { "gameSession", "locationDefinition" },
-        writesResources = { "locationState", "locationBounds", "locationInput", "nearbyLocationInteraction" },
+        writesResources = {
+            "locationState", "locationBounds", "locationInput", "nearbyLocationInteraction",
+            "activityChallengeState",
+        },
         run = function(context)
             local world = context.world
             local location = world:requireResource("locationDefinition")
@@ -36,6 +39,7 @@ function LocationSetupSystem.install(scheduler)
                 up = false, down = false, left = false, right = false, keys = {},
             })
             world:setResource("nearbyLocationInteraction", false)
+            world:setResource("activityChallengeState", false)
             world:create({
                 locationPosition = { x = location.entrance.x, y = location.entrance.y },
                 locationSize = { w = 18, h = 24 },

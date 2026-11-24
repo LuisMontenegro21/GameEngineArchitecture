@@ -32,13 +32,17 @@ function LocationInputSystem.install(scheduler)
         stage = "fixedUpdate",
         readsResources = {
             "gameSession", "locationState", "dailyConversationState", "dailyConversationSelection",
-            "nearbyLocationInteraction",
+            "nearbyLocationInteraction", "activityChallengeState",
         },
-        writesResources = { "locationInput", "locationState", "dailyConversationState", "dailyConversationSelection" },
+        writesResources = {
+            "locationInput", "locationState", "dailyConversationState", "dailyConversationSelection",
+            "activityChallengeState",
+        },
         run = function(context)
             local world = context.world
             local state = world:requireResource("locationState")
             local daily = world:requireResource("dailyConversationState")
+            local challenge = world:requireResource("activityChallengeState")
             if state.transitionQueued then return end
             local input = world:requireResource("locationInput")
             input.keys = input.keys or {}
@@ -50,6 +54,48 @@ function LocationInputSystem.install(scheduler)
             end
             for event in world:events("keyPressed") do
                 local key = event.payload.key
+                if challenge then
+                    if key == "escape" or key == "backspace" then
+                        state.feedback = "Activity challenge cancelled."
+                        world:setResource("locationState", state)
+                        world:setResource("activityChallengeState", false)
+                    elseif challenge.mode == "sequence" and (key == "left" or key == "right"
+                        or key == "up" or key == "down") then
+                        if key == challenge.steps[challenge.currentStep] then
+                            challenge.currentStep = challenge.currentStep + 1
+                            if challenge.currentStep > #challenge.steps then
+                                world:setResource("activityChallengeState", false)
+                                context.emit("locationActivityRequested", {
+                                    activityId = challenge.activityId,
+                                    challengeFeedback = challenge.completionFeedback,
+                                })
+                            else
+                                challenge.feedback = "Rune " .. (challenge.currentStep - 1) .. " is correct."
+                                world:setResource("activityChallengeState", challenge)
+                            end
+                        else
+                            challenge.currentStep = 1
+                            challenge.feedback = "The rune fades. Begin the sequence again."
+                            world:setResource("activityChallengeState", challenge)
+                        end
+                    elseif challenge.mode == "choice" and (key == "left" or key == "up"
+                        or key == "right" or key == "down") then
+                        local direction = (key == "left" or key == "up") and -1 or 1
+                        challenge.selection = challenge.selection + direction
+                        if challenge.selection < 1 then challenge.selection = #challenge.options end
+                        if challenge.selection > #challenge.options then challenge.selection = 1 end
+                        world:setResource("activityChallengeState", challenge)
+                    elseif challenge.mode == "choice" and (key == "e" or key == "return"
+                        or key == "enter" or key == "space") then
+                        local choice = challenge.options[challenge.selection]
+                        world:setResource("activityChallengeState", false)
+                        context.emit("locationActivityRequested", {
+                            activityId = challenge.activityId,
+                            challengeFeedback = choice.feedback,
+                        })
+                    end
+                    return
+                end
                 if daily and daily.open then
                     if key == "escape" or key == "backspace" then
                         daily.open = false
@@ -85,7 +131,12 @@ function LocationInputSystem.install(scheduler)
                     context.emit("locationExitRequested")
                     return
                 elseif key == "e" or key == "return" or key == "enter" or key == "space" then
-                    interact(context, world:requireResource("nearbyLocationInteraction"), daily)
+                    local target = world:requireResource("nearbyLocationInteraction")
+                    if target and target.kind == "activity" then
+                        context.emit("locationActivityChallengeRequested", { activityId = target.activityId })
+                    else
+                        interact(context, target, daily)
+                    end
                     return
                 else
                     input.keys[key] = true

@@ -39,6 +39,16 @@ function Events.register(world)
     world:registerEvent("locationActivityRequested", {
         validate = function(value)
             return type(value) == "table" and type(value.activityId) == "string"
+                and value.activityId ~= ""
+                and (value.challengeFeedback == nil or (type(value.challengeFeedback) == "string"
+                    and value.challengeFeedback ~= ""))
+                and plain(value)
+        end,
+        maxQueue = 2,
+    })
+    world:registerEvent("locationActivityChallengeRequested", {
+        validate = function(value)
+            return type(value) == "table" and type(value.activityId) == "string"
                 and value.activityId ~= "" and plain(value)
         end,
         maxQueue = 2,

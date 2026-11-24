@@ -69,6 +69,22 @@ local function dailyConversationState(value)
         and type(value.feedback) == "string")
 end
 
+local function activityChallengeState(value)
+    if value == false then return true end
+    if type(value) ~= "table" or type(value.activityId) ~= "string" or value.activityId == ""
+        or (value.mode ~= "sequence" and value.mode ~= "choice")
+        or type(value.title) ~= "string" or value.title == ""
+        or type(value.prompt) ~= "string" or value.prompt == ""
+        or type(value.currentStep) ~= "number" or value.currentStep % 1 ~= 0 or value.currentStep < 1
+        or type(value.selection) ~= "number" or value.selection % 1 ~= 0 or value.selection < 1
+        or type(value.feedback) ~= "string" then return false end
+    if value.mode == "sequence" then
+        return type(value.steps) == "table" and #value.steps == 3
+            and type(value.completionFeedback) == "string" and value.completionFeedback ~= ""
+    end
+    return type(value.options) == "table" and #value.options >= 2
+end
+
 function Resources.register(world)
     world:registerResource("gameSession", { validate = GameSession.validate })
     world:registerResource("locationDefinition", {
@@ -96,6 +112,10 @@ function Resources.register(world)
         validate = function(value)
             return type(value) == "number" and value % 1 == 0 and value >= 1
         end,
+    })
+    world:registerResource("activityChallengeState", {
+        transient = true,
+        validate = activityChallengeState,
     })
 end
 

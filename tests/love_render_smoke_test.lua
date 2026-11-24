@@ -64,6 +64,23 @@ return function()
             mapReturnPosition = { x = 220, y = 235 },
         })
     end
+    local challengeScene = AcademyLocationScene({
+        session = GameSession.new(),
+        locationId = "astral_court",
+        returnTo = "academyMap",
+        mapReturnPosition = { x = 220, y = 235 },
+    })
+    challengeScene:initialize()
+    challengeScene:world():setResource("activityChallengeState", {
+        activityId = "practice_spells", mode = "sequence", title = "Spell Rehearsal",
+        prompt = "Trace the three runes in order.", steps = { "left", "up", "right" },
+        currentStep = 1, options = nil, selection = 1,
+        completionFeedback = "The final rune clicks into place.", feedback = "Use the arrow keys.",
+    })
+    challengeScene:draw(0)
+    assert(challengeScene:world():validate(),
+        "the activity challenge overlay must remain headless-safe and read-only")
+    challengeScene:dispose()
     for _, scene in ipairs(scenes) do
         scene:initialize()
         scene:draw(0)

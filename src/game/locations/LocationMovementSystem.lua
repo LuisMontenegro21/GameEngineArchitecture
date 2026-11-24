@@ -7,14 +7,15 @@ function LocationMovementSystem.install(scheduler)
         name = "locationMovement",
         stage = "fixedUpdate",
         after = { "locationInput" },
-        readsResources = { "locationInput", "locationState", "dailyConversationState" },
+        readsResources = { "locationInput", "locationState", "dailyConversationState", "activityChallengeState" },
         writes = { "locationDesiredMovement" },
         run = function(context)
             local input = context.world:requireResource("locationInput")
             local horizontal = (input.right and 1 or 0) - (input.left and 1 or 0)
             local vertical = (input.down and 1 or 0) - (input.up and 1 or 0)
             local daily = context.world:requireResource("dailyConversationState")
-            if context.world:requireResource("locationState").dialogue or (daily and daily.open) then
+            if context.world:requireResource("locationState").dialogue or (daily and daily.open)
+                or context.world:requireResource("activityChallengeState") then
                 horizontal, vertical = 0, 0
             end
             local length = math.sqrt(horizontal * horizontal + vertical * vertical)

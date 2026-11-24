@@ -63,7 +63,9 @@ On Windows PowerShell, when LOVE is not on `PATH`:
 | Academy Garden | Enter a nearby location | `E` |
 | Academy Garden | Return to Training (only when entered from Training) | `Backspace` |
 | Academy Location | Move inside the fixed-camera room | `W`/`A`/`S`/`D` or arrow keys |
-| Academy Location | Interact with a nearby activity, character, or exit | `E` / `Enter` / `Space` |
+| Academy Location | Start a nearby activity, speak, or exit | `E` / `Enter` / `Space` |
+| Rune activity challenge | Trace the displayed rune sequence | arrow keys |
+| Choice activity challenge | Change/confirm the selected response | arrows, then `E` / `Enter` / `Space` |
 | Academy Location | Return to the Academy Garden | `Backspace` |
 | Daily room conversation | Select/play a collected card | arrows, then `E` / `Enter` / `Space` |
 | Card Acquisition | Change selected generated card or collection card | `Left`/`Right` or `A`/`D` |
@@ -94,6 +96,15 @@ generates three unique choices:
 
 This makes the effect of player decisions visible both in the session stats and
 in the card choices.
+
+## Activity challenges
+
+Room activities begin with a small interaction challenge before their normal
+cost and effect resolve. Practice Spells and Study Ancient Runes use a
+deterministic three-arrow rune sequence. Help a Classmate and Meditate present
+a short response choice. A failed rune sequence simply restarts; a completed
+challenge delegates to the existing activity rules, so Energy, stats, card
+generation, and scene transitions remain unchanged.
 
 ## Architecture
 

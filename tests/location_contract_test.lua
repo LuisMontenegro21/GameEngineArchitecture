@@ -29,6 +29,7 @@ return function()
     end, "location movement input must include every direction")
 
     world:emit("locationDailyConversationOpenRequested", { characterId = "outgoing_peer" })
+    world:emit("locationActivityChallengeRequested", { activityId = "practice_spells" })
     world:emit("dailyCardPlayRequested", { collectionIndex = 1 })
     world:emit("dailyConversationResolved", {
         targetCharacterId = "outgoing_peer", cardId = "dazzling_introduction",
@@ -37,12 +38,15 @@ return function()
     world:emit("dayPhaseChanged", { from = "socialConversation", to = "activities", day = 2 })
     world:advanceEvents()
     assert(world:eventCount("locationDailyConversationOpenRequested") == 1
+        and world:eventCount("locationActivityChallengeRequested") == 1
         and world:eventCount("dailyCardPlayRequested") == 1
         and world:eventCount("dailyConversationResolved") == 1,
         "valid location conversation events must be accepted")
 
     invalid(function() world:emit("locationDailyConversationOpenRequested", {}) end,
         "daily opening requests require a character ID")
+    invalid(function() world:emit("locationActivityChallengeRequested", {}) end,
+        "activity challenge requests require an activity ID")
     invalid(function() world:emit("dailyCardPlayRequested", { collectionIndex = 0 }) end,
         "daily card requests require a positive selection")
     invalid(function()

@@ -125,6 +125,43 @@ local function drawDailyConversation(g, session, state, selection)
         or "LEFT / RIGHT: select card     E / ENTER: play card     ESC: close", 0, 452, Screen.w, "center")
 end
 
+local function displayKey(key)
+    return string.upper(key)
+end
+
+local function drawActivityChallenge(g, challenge)
+    UiTheme.drawPanel(g, 110, 320, 740, 154, true)
+    UiTheme.setColor(g, UiTheme.colors.heading)
+    g.printf(challenge.title, 130, 332, 700, "center")
+    UiTheme.setColor(g, UiTheme.colors.text)
+    g.printf(challenge.prompt, 142, 358, 676, "center")
+    if challenge.mode == "sequence" then
+        local keys = {}
+        for index, key in ipairs(challenge.steps) do
+            local label = "[" .. displayKey(key) .. "]"
+            if index == challenge.currentStep then label = "> " .. label .. " <" end
+            keys[#keys + 1] = label
+        end
+        UiTheme.setColor(g, UiTheme.colors.title)
+        g.printf(table.concat(keys, "  "), 0, 398, Screen.w, "center")
+        UiTheme.setColor(g, UiTheme.colors.muted)
+        g.printf("Use the arrow keys to trace the rune sequence.", 0, 426, Screen.w, "center")
+    else
+        for index, option in ipairs(challenge.options) do
+            local y = 390 + (index - 1) * 22
+            UiTheme.setColor(g, index == challenge.selection and UiTheme.colors.selection or UiTheme.colors.text)
+            g.printf((index == challenge.selection and "> " or "  ") .. option.label,
+                150, y, 660, "center")
+        end
+        UiTheme.setColor(g, UiTheme.colors.muted)
+        g.printf("LEFT / RIGHT: choose     E / ENTER: confirm", 0, 456, Screen.w, "center")
+    end
+    if challenge.mode == "sequence" then
+        UiTheme.setColor(g, UiTheme.colors.feedback)
+        g.printf(challenge.feedback, 140, 446, 680, "center")
+    end
+end
+
 function LocationRenderSystem.install(scheduler)
     scheduler:addSystem({
         name = "locationRender",
@@ -132,7 +169,7 @@ function LocationRenderSystem.install(scheduler)
         reads = { "locationPosition", "locationSize", "locationCharacter", "locationSprite", "locationInteractable" },
         readsResources = {
             "gameSession", "locationDefinition", "locationState", "dailyConversationState",
-            "dailyConversationSelection", "nearbyLocationInteraction",
+            "dailyConversationSelection", "nearbyLocationInteraction", "activityChallengeState",
         },
         run = function(context)
             local g = love and love.graphics or nil
@@ -142,6 +179,7 @@ function LocationRenderSystem.install(scheduler)
             local state = world:requireResource("locationState")
             local daily = world:requireResource("dailyConversationState")
             local nearby = world:requireResource("nearbyLocationInteraction")
+            local challenge = world:requireResource("activityChallengeState")
             SceneBackground.draw(g, location.backgroundId)
             UiTheme.setColor(g, UiTheme.colors.title)
             g.printf(location.name, 0, 34, Screen.w, "center")
@@ -161,6 +199,8 @@ function LocationRenderSystem.install(scheduler)
             if daily and daily.open then
                 drawDailyConversation(g, world:requireResource("gameSession"), daily,
                     world:requireResource("dailyConversationSelection"))
+            elseif challenge then
+                drawActivityChallenge(g, challenge)
             elseif state.dialogue then
                 UiTheme.drawPanel(g, 110, 350, 740, 102, true)
                 UiTheme.setColor(g, UiTheme.colors.heading)

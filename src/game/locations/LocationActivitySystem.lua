@@ -15,7 +15,7 @@ function LocationActivitySystem.install(scheduler)
     scheduler:addSystem({
         name = "locationActivity",
         stage = "postFixedUpdate",
-        after = { "locationDialogue" },
+        after = { "locationActivityChallenge" },
         readsResources = { "gameSession", "locationDefinition", "locationState" },
         writesResources = { "gameSession", "locationState" },
         run = function(context)
@@ -35,6 +35,9 @@ function LocationActivitySystem.install(scheduler)
                     result = ActivityRules.resolveAndApply(session, activityId)
                 end
                 session.feedback = ActivityRules.feedback(result)
+                if result.success and event.payload.challengeFeedback then
+                    session.feedback = event.payload.challengeFeedback .. " " .. session.feedback
+                end
                 state.feedback = session.feedback
                 world:setResource("gameSession", session)
 

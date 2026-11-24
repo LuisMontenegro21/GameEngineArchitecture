@@ -41,6 +41,11 @@ installs setup, delta-time movement, bounds, proximity interaction, activity,
 dialogue, daily-card-conversation, transition, and render systems. It never owns persistent rules: activity resolution,
 card scoring, and day advancement remain in their existing game packages.
 
+Location activities first open a transient `ActivityChallenge` state. Sequence
+and choice inputs only decide whether/how an activity request is made; the
+shared activity rules still own persistent effects. A future timing challenge
+can use the same boundary without altering `GameSession` or card logic.
+
 Location components, resources, events, and catalog data are plain Lua data.
 LOVE images and sprite sheets remain in `graphics/` renderer-side caches, so
 optional pixel art can be inserted or removed without affecting gameplay.

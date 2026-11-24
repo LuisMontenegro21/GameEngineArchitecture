@@ -35,6 +35,16 @@ local function moveToTarget(scene, id)
     scene:fixedUpdate(1 / 60)
 end
 
+local function completeChallenge(scene)
+    local challenge = scene:world():requireResource("activityChallengeState")
+    assert(challenge, "activity interaction must open a challenge")
+    if challenge.mode == "sequence" then
+        for _, key in ipairs(challenge.steps) do pressScene(scene, key) end
+    else
+        pressScene(scene, "e")
+    end
+end
+
 local function tick(manager)
     manager:preUpdate(0)
     manager:fixedUpdate(1 / 60)
@@ -61,6 +71,7 @@ return function()
         scene:initialize()
         moveToTarget(scene, scene:world():requireResource("locationDefinition").activityId)
         pressScene(scene, "e")
+        completeChallenge(scene)
         assert(session.actionsRemaining == 1,
             "a successful room activity must consume exactly one action")
         if case.stat then
@@ -79,6 +90,7 @@ return function()
     rejectedScene:initialize()
     moveToTarget(rejectedScene, "practice_spells")
     pressScene(rejectedScene, "e")
+    completeChallenge(rejectedScene)
     assert(rejected.actionsRemaining == 2 and rejected.stats.confidence == 0
         and rejected.feedback:find("enough energy", 1, true),
         "insufficient energy must reject safely without consuming a room action")
@@ -106,10 +118,14 @@ return function()
     manager:start("academyLocation", payload(session, "astral_court"))
     moveToTarget(manager:current(), "practice_spells")
     pressManager(manager, "e")
+    local challenge = manager:current():world():requireResource("activityChallengeState")
+    for _, key in ipairs(challenge.steps) do pressManager(manager, key) end
     assert(manager:current():name() == "academyLocation" and session.actionsRemaining == 1,
         "one successful room activity must remain in the room")
     moveToTarget(manager:current(), "practice_spells")
     pressManager(manager, "e")
+    challenge = manager:current():world():requireResource("activityChallengeState")
+    for _, key in ipairs(challenge.steps) do pressManager(manager, key) end
     assert(manager:current():name() == "cardAcquisition"
         and session.dayPhase == "cardAcquisition" and session.actionsRemaining == 0,
         "the second successful room activity must transition once to card acquisition")
