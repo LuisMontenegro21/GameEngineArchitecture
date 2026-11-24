@@ -40,6 +40,10 @@ local function completeChallenge(scene)
     assert(challenge, "activity interaction must open a challenge")
     if challenge.mode == "sequence" then
         for _, key in ipairs(challenge.steps) do pressScene(scene, key) end
+    elseif challenge.mode == "timing" then
+        challenge.timing.markerPosition = (challenge.timing.targetStart + challenge.timing.targetEnd) / 2
+        scene:world():setResource("activityChallengeState", challenge)
+        pressScene(scene, "e")
     else
         pressScene(scene, "e")
     end
@@ -119,13 +123,25 @@ return function()
     moveToTarget(manager:current(), "practice_spells")
     pressManager(manager, "e")
     local challenge = manager:current():world():requireResource("activityChallengeState")
-    for _, key in ipairs(challenge.steps) do pressManager(manager, key) end
+    if challenge.mode == "timing" then
+        challenge.timing.markerPosition = (challenge.timing.targetStart + challenge.timing.targetEnd) / 2
+        manager:current():world():setResource("activityChallengeState", challenge)
+        pressManager(manager, "e")
+    else
+        for _, key in ipairs(challenge.steps) do pressManager(manager, key) end
+    end
     assert(manager:current():name() == "academyLocation" and session.actionsRemaining == 1,
         "one successful room activity must remain in the room")
     moveToTarget(manager:current(), "practice_spells")
     pressManager(manager, "e")
     challenge = manager:current():world():requireResource("activityChallengeState")
-    for _, key in ipairs(challenge.steps) do pressManager(manager, key) end
+    if challenge.mode == "timing" then
+        challenge.timing.markerPosition = (challenge.timing.targetStart + challenge.timing.targetEnd) / 2
+        manager:current():world():setResource("activityChallengeState", challenge)
+        pressManager(manager, "e")
+    else
+        for _, key in ipairs(challenge.steps) do pressManager(manager, key) end
+    end
     assert(manager:current():name() == "cardAcquisition"
         and session.dayPhase == "cardAcquisition" and session.actionsRemaining == 0,
         "the second successful room activity must transition once to card acquisition")

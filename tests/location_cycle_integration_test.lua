@@ -59,6 +59,10 @@ local function performActivity(manager, locationId)
     local challenge = manager:current():world():requireResource("activityChallengeState")
     if challenge.mode == "sequence" then
         for _, key in ipairs(challenge.steps) do press(manager, key) end
+    elseif challenge.mode == "timing" then
+        challenge.timing.markerPosition = (challenge.timing.targetStart + challenge.timing.targetEnd) / 2
+        manager:current():world():setResource("activityChallengeState", challenge)
+        press(manager, "e")
     else
         press(manager, "e")
     end

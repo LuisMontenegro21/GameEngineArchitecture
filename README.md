@@ -64,7 +64,8 @@ On Windows PowerShell, when LOVE is not on `PATH`:
 | Academy Garden | Return to Training (only when entered from Training) | `Backspace` |
 | Academy Location | Move inside the fixed-camera room | `W`/`A`/`S`/`D` or arrow keys |
 | Academy Location | Start a nearby activity, speak, or exit | `E` / `Enter` / `Space` |
-| Rune activity challenge | Trace the displayed rune sequence | arrow keys |
+| Spell Rehearsal | Confirm while the marker is inside the green focus zone | `E` / `Enter` / `Space` |
+| Rune Study challenge | Trace the displayed rune sequence | arrow keys |
 | Choice activity challenge | Change/confirm the selected response | arrows, then `E` / `Enter` / `Space` |
 | Academy Location | Return to the Academy Garden | `Backspace` |
 | Daily room conversation | Select/play a collected card | arrows, then `E` / `Enter` / `Space` |
@@ -100,11 +101,12 @@ in the card choices.
 ## Activity challenges
 
 Room activities begin with a small interaction challenge before their normal
-cost and effect resolve. Practice Spells and Study Ancient Runes use a
-deterministic three-arrow rune sequence. Help a Classmate and Meditate present
-a short response choice. A failed rune sequence simply restarts; a completed
-challenge delegates to the existing activity rules, so Energy, stats, card
-generation, and scene transitions remain unchanged.
+cost and effect resolve. Spell Rehearsal uses a delta-time moving marker and a
+focus zone; Study Ancient Runes uses a deterministic three-arrow sequence.
+Help a Classmate and Meditate present a short response choice. A failed timing
+or rune attempt simply restarts; a completed challenge delegates to the
+existing activity rules, so Energy, stats, card generation, and scene
+transitions remain unchanged.
 
 ## Architecture
 

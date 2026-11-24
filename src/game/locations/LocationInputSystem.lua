@@ -59,6 +59,20 @@ function LocationInputSystem.install(scheduler)
                         state.feedback = "Activity challenge cancelled."
                         world:setResource("locationState", state)
                         world:setResource("activityChallengeState", false)
+                    elseif challenge.mode == "timing" and (key == "e" or key == "return"
+                        or key == "enter" or key == "space") then
+                        local timing = challenge.timing
+                        if timing.markerPosition >= timing.targetStart and timing.markerPosition <= timing.targetEnd then
+                            world:setResource("activityChallengeState", false)
+                            context.emit("locationActivityRequested", {
+                                activityId = challenge.activityId,
+                                challengeFeedback = challenge.completionFeedback,
+                            })
+                        else
+                            timing.markerPosition, timing.direction = 0, 1
+                            challenge.feedback = "The rune slips away. Wait for the focus zone."
+                            world:setResource("activityChallengeState", challenge)
+                        end
                     elseif challenge.mode == "sequence" and (key == "left" or key == "right"
                         or key == "up" or key == "down") then
                         if key == challenge.steps[challenge.currentStep] then

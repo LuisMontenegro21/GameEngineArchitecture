@@ -36,10 +36,12 @@ function LocationActivityChallengeSystem.install(scheduler)
                     currentStep = 1,
                     options = definition.options,
                     selection = 1,
+                    timing = definition.timing,
+                    visualId = definition.visualId,
                     completionFeedback = definition.completionFeedback,
-                    feedback = definition.mode == "sequence"
-                        and "Use the arrow keys to trace the runes."
-                        or "Use Left and Right to choose your response.",
+                    feedback = definition.mode == "sequence" and "Use the arrow keys to trace the runes."
+                        or (definition.mode == "timing" and "Press E inside the highlighted focus zone."
+                            or "Use Left and Right to choose your response."),
                 }
                 world:setResource("activityChallengeState", challenge)
                 return

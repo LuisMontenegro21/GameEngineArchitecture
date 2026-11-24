@@ -72,10 +72,11 @@ return function()
     })
     challengeScene:initialize()
     challengeScene:world():setResource("activityChallengeState", {
-        activityId = "practice_spells", mode = "sequence", title = "Spell Rehearsal",
-        prompt = "Trace the three runes in order.", steps = { "left", "up", "right" },
-        currentStep = 1, options = nil, selection = 1,
-        completionFeedback = "The final rune clicks into place.", feedback = "Use the arrow keys.",
+        activityId = "practice_spells", mode = "timing", title = "Spell Rehearsal",
+        prompt = "Release the spell inside the focus zone.", steps = nil, currentStep = 1,
+        options = nil, selection = 1, visualId = "spellRehearsalTiming",
+        timing = { markerPosition = 0.5, direction = 1, speed = 0.85, targetStart = 0.42, targetEnd = 0.58 },
+        completionFeedback = "Your timing holds the spell perfectly in focus.", feedback = "Press E in the focus zone.",
     })
     challengeScene:draw(0)
     assert(challengeScene:world():validate(),

@@ -2,6 +2,8 @@
 local Screen = require("src.game.Screen")
 local Activities = require("src.game.progression.Activities")
 local SceneBackground = require("src.game.graphics.SceneBackground")
+local ImageManager = require("src.game.graphics.ImageManager")
+local ActivityChallengePresentationCatalog = require("src.game.graphics.ActivityChallengePresentationCatalog")
 local UiTheme = require("src.game.ui.UiTheme")
 local MapSpriteRenderSystem = require("src.game.ui.MapSpriteRenderSystem")
 
@@ -129,13 +131,51 @@ local function displayKey(key)
     return string.upper(key)
 end
 
+local function hasDimensions(image, width, height)
+    if not image or type(image.getDimensions) ~= "function" then return false end
+    local imageWidth, imageHeight = image:getDimensions()
+    return imageWidth == width and imageHeight == height
+end
+
+local function drawTimingTrack(g, challenge)
+    local presentation = ActivityChallengePresentationCatalog.get(challenge.visualId)
+    local x, y, width, height = 200, 401, 560, 24
+    local track = presentation and ImageManager.get(presentation.trackPath) or nil
+    if track and hasDimensions(track, presentation.trackW, presentation.trackH) and type(g.draw) == "function" then
+        g.setColor(1, 1, 1, 1)
+        g.draw(track, x, y)
+    else
+        UiTheme.setColor(g, UiTheme.colors.panel)
+        g.rectangle("fill", x, y, width, height)
+        UiTheme.setColor(g, UiTheme.colors.panelBorder)
+        g.rectangle("line", x, y, width, height)
+    end
+    local timing = challenge.timing
+    UiTheme.setColor(g, UiTheme.colors.positive)
+    g.rectangle("fill", x + timing.targetStart * width, y + 3,
+        (timing.targetEnd - timing.targetStart) * width, height - 6)
+    local markerX = x + timing.markerPosition * width
+    local marker = presentation and ImageManager.get(presentation.markerPath) or nil
+    if marker and hasDimensions(marker, presentation.markerW, presentation.markerH) and type(g.draw) == "function" then
+        g.setColor(1, 1, 1, 1)
+        g.draw(marker, markerX - presentation.markerW / 2, y - 4)
+    else
+        UiTheme.setColor(g, UiTheme.colors.title)
+        g.rectangle("fill", markerX - 5, y - 5, 10, height + 10)
+    end
+end
+
 local function drawActivityChallenge(g, challenge)
     UiTheme.drawPanel(g, 110, 320, 740, 154, true)
     UiTheme.setColor(g, UiTheme.colors.heading)
     g.printf(challenge.title, 130, 332, 700, "center")
     UiTheme.setColor(g, UiTheme.colors.text)
     g.printf(challenge.prompt, 142, 358, 676, "center")
-    if challenge.mode == "sequence" then
+    if challenge.mode == "timing" then
+        drawTimingTrack(g, challenge)
+        UiTheme.setColor(g, UiTheme.colors.muted)
+        g.printf("Press E / ENTER while the rune is in the green focus zone.", 0, 435, Screen.w, "center")
+    elseif challenge.mode == "sequence" then
         local keys = {}
         for index, key in ipairs(challenge.steps) do
             local label = "[" .. displayKey(key) .. "]"
@@ -156,7 +196,7 @@ local function drawActivityChallenge(g, challenge)
         UiTheme.setColor(g, UiTheme.colors.muted)
         g.printf("LEFT / RIGHT: choose     E / ENTER: confirm", 0, 456, Screen.w, "center")
     end
-    if challenge.mode == "sequence" then
+    if challenge.mode == "sequence" or challenge.mode == "timing" then
         UiTheme.setColor(g, UiTheme.colors.feedback)
         g.printf(challenge.feedback, 140, 446, 680, "center")
     end

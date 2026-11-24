@@ -6,11 +6,18 @@ local ActivityChallengeCatalog = {}
 local definitions = {
     practice_spells = {
         activityId = "practice_spells",
-        mode = "sequence",
+        mode = "timing",
         title = "Spell Rehearsal",
-        prompt = "Trace the three runes in order to stabilize your spell.",
-        steps = { "left", "up", "right" },
-        completionFeedback = "The final rune clicks into place.",
+        prompt = "Release the spell when the travelling rune enters the focus zone.",
+        timing = {
+            markerPosition = 0,
+            direction = 1,
+            speed = 0.85,
+            targetStart = 0.42,
+            targetEnd = 0.58,
+        },
+        visualId = "spellRehearsalTiming",
+        completionFeedback = "Your timing holds the spell perfectly in focus.",
     },
     study_ancient_runes = {
         activityId = "study_ancient_runes",
@@ -69,6 +76,16 @@ function ActivityChallengeCatalog.validate(definition)
             or not nonEmpty(definition.completionFeedback) then return false end
         for _, key in ipairs(definition.steps) do if not validKeys[key] then return false end end
         return true
+    end
+    if definition.mode == "timing" then
+        local timing = definition.timing
+        return type(timing) == "table"
+            and type(timing.markerPosition) == "number" and timing.markerPosition >= 0 and timing.markerPosition <= 1
+            and (timing.direction == -1 or timing.direction == 1)
+            and type(timing.speed) == "number" and timing.speed > 0
+            and type(timing.targetStart) == "number" and type(timing.targetEnd) == "number"
+            and timing.targetStart >= 0 and timing.targetEnd <= 1 and timing.targetStart < timing.targetEnd
+            and nonEmpty(definition.visualId) and nonEmpty(definition.completionFeedback)
     end
     return definition.mode == "choice" and validOptions(definition.options)
 end

@@ -72,7 +72,7 @@ end
 local function activityChallengeState(value)
     if value == false then return true end
     if type(value) ~= "table" or type(value.activityId) ~= "string" or value.activityId == ""
-        or (value.mode ~= "sequence" and value.mode ~= "choice")
+        or (value.mode ~= "sequence" and value.mode ~= "choice" and value.mode ~= "timing")
         or type(value.title) ~= "string" or value.title == ""
         or type(value.prompt) ~= "string" or value.prompt == ""
         or type(value.currentStep) ~= "number" or value.currentStep % 1 ~= 0 or value.currentStep < 1
@@ -80,6 +80,17 @@ local function activityChallengeState(value)
         or type(value.feedback) ~= "string" then return false end
     if value.mode == "sequence" then
         return type(value.steps) == "table" and #value.steps == 3
+            and type(value.completionFeedback) == "string" and value.completionFeedback ~= ""
+    end
+    if value.mode == "timing" then
+        local timing = value.timing
+        return type(timing) == "table"
+            and type(timing.markerPosition) == "number" and timing.markerPosition >= 0 and timing.markerPosition <= 1
+            and (timing.direction == -1 or timing.direction == 1)
+            and type(timing.speed) == "number" and timing.speed > 0
+            and type(timing.targetStart) == "number" and type(timing.targetEnd) == "number"
+            and timing.targetStart >= 0 and timing.targetEnd <= 1 and timing.targetStart < timing.targetEnd
+            and type(value.visualId) == "string" and value.visualId ~= ""
             and type(value.completionFeedback) == "string" and value.completionFeedback ~= ""
     end
     return type(value.options) == "table" and #value.options >= 2
