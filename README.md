@@ -149,9 +149,9 @@ complete five-day route through dedicated location scenes to the final ending.
 ## AI assistance disclosure
 
 This repository has used AI-assisted development tools, including OpenAI Codex,
-for planning, code generation, refactoring, testing, documentation, and review.
-All generated changes should be reviewed and manually verified by the project
-owner before submission or release.
+for planning, code generation, refactoring, testing, documentation, review, and
+asset assistance. All generated changes should be reviewed and manually verified 
+by the project owner before submission or release.
 
 ### Wizard Academia progression-cycle disclosure
 
@@ -174,10 +174,7 @@ game layer built on it. Wizard Academia is the active LOVE entry point.
 | [src/game/progression/README.md](src/game/progression/README.md) | Existing generic progression-cycle package and its contracts. |
 | [src/game/cards/README.md](src/game/cards/README.md) | Wizard Academia card-data boundary and plain-data rule. |
 | [src/game/ui/README.md](src/game/ui/README.md) | UI-system ownership rules. |
-| [planning_files/ui_planning.md](planning_files/ui_planning.md) | Phased requirements and exit criteria for the three Wizard Academia UI systems. |
 | [src/game/maps/README.md](src/game/maps/README.md) | Academy Garden map contracts, movement, collision, POIs, and transitions. |
-| [planning_files/gameplay_implementation_beta.md](planning_files/gameplay_implementation_beta.md) | Dedicated location-scene architecture, phased implementation, and acceptance criteria. |
-| [planning_files/map_implementation.md](planning_files/map_implementation.md) | Academy Garden map layout, ECS flow, systems, transitions, rendering, and verification. |
 | [tests/README.md](tests/README.md) | Headless test-runner conventions. |
 | [PORTFOLIO_EVIDENCE.md](PORTFOLIO_EVIDENCE.md) | Source links and the visual-evidence checklist. |
 | [assets/demo/wizard-academia/README.md](assets/demo/wizard-academia/README.md) | Required screenshot and GIF/video filenames and capture targets. |
