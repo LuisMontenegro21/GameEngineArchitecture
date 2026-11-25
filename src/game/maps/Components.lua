@@ -110,6 +110,12 @@ function Components.register(world)
             return type(value) == "table" and finite(value.dx) and finite(value.dy)
         end,
     })
+    world:registerComponent("mapPlayerAnimation", {
+        default = function() return { elapsed = 0 } end,
+        validate = function(value)
+            return type(value) == "table" and finite(value.elapsed) and value.elapsed >= 0
+        end,
+    })
     world:registerComponent("pointOfInterest", { validate = pointOfInterest })
     world:registerComponent("mapInteractable", { validate = mapInteractable })
     world:registerComponent("mapCharacter", { validate = mapCharacter })

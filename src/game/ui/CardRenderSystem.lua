@@ -3,6 +3,8 @@
 local Screen = require("src.game.Screen")
 local UiTheme = require("src.game.ui.UiTheme")
 local SceneBackground = require("src.game.graphics.SceneBackground")
+local CardPresentationCatalog = require("src.game.graphics.CardPresentationCatalog")
+local ImageManager = require("src.game.graphics.ImageManager")
 
 local CardRenderSystem = {}
 
@@ -33,6 +35,29 @@ local function cardText(card)
     return source and (text .. "\n" .. source) or text
 end
 
+local function imageWithDimensions(path, width, height)
+    local image = ImageManager.get(path)
+    if not image or type(image.getDimensions) ~= "function" then return nil end
+    local imageWidth, imageHeight = image:getDimensions()
+    return imageWidth == width and imageHeight == height and image or nil
+end
+
+local function drawCardArt(g, card, x, y, height)
+    local presentation = CardPresentationCatalog.get(card)
+    if not presentation or type(g.draw) ~= "function" then return false, 0 end
+    local base = imageWithDimensions(presentation.base.path, presentation.base.width, presentation.base.height)
+    local icon = imageWithDimensions(presentation.icon.path, presentation.icon.width, presentation.icon.height)
+    if not base or not icon then return false, 0 end
+
+    local size = height >= 150 and 64 or 42
+    local iconSize = height >= 150 and 32 or 22
+    g.setColor(1, 1, 1, 1)
+    g.draw(base, x, y, 0, size / presentation.base.width, size / presentation.base.height)
+    g.draw(icon, x + (size - iconSize) / 2, y + (size - iconSize) / 2,
+        0, iconSize / presentation.icon.width, iconSize / presentation.icon.height)
+    return true, size
+end
+
 local function drawCard(g, card, x, y, width, height, selected)
     local color = categoryColor(card.category)
     if selected then
@@ -47,8 +72,21 @@ local function drawCard(g, card, x, y, width, height, selected)
     g.printf(string.upper(card.category), x + 10, y + 7, width - 20, "left")
     UiTheme.setColor(g, UiTheme.colors.panelBorder)
     g.rectangle("line", x, y, width, height)
+    local hasArt, artSize = drawCardArt(g, card, x + 10, y + 36, height)
+    local textX = x + (hasArt and artSize + 22 or 12)
+    local textWidth = width - (textX - x) - 12
     UiTheme.setColor(g, UiTheme.colors.text)
-    g.printf(cardText(card), x + 12, y + 40, width - 24, "left")
+    g.printf(card.name, textX, y + 40, textWidth, "left")
+    if not hasArt then
+        UiTheme.setColor(g, UiTheme.colors.muted)
+        g.printf(string.upper(card.symbol), textX, y + 62, textWidth, "left")
+    end
+    UiTheme.setColor(g, UiTheme.colors.text)
+    local descriptionY = hasArt and y + 66 or y + 84
+    g.printf(card.description, textX, descriptionY, textWidth, "left")
+    UiTheme.setColor(g, UiTheme.colors.heading)
+    g.printf(("Power %d   Cost %d"):format(card.power, card.cost), textX,
+        height >= 150 and y + height - 30 or y + height - 22, textWidth, "left")
 end
 
 function CardRenderSystem.install(scheduler)
@@ -127,4 +165,5 @@ end
 CardRenderSystem.cardText = cardText
 CardRenderSystem.categoryColor = categoryColor
 CardRenderSystem.sourceText = sourceText
+CardRenderSystem.drawCardArt = drawCardArt
 return CardRenderSystem

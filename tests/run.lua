@@ -27,6 +27,7 @@ local tests = {
     "tests.game_session_alpha_test",
     "tests.training_scene_test",
     "tests.card_acquisition_scene_test",
+    "tests.card_presentation_test",
     "tests.card_generation_alpha_test",
     "tests.arcane_daily_cycle_test",
     "tests.encounter_definitions_test",
@@ -64,6 +65,8 @@ local tests = {
     "tests.location_activity_challenge_test",
     "tests.location_daily_conversation_test",
     "tests.location_movement_interaction_test",
+    "tests.location_character_facing_test",
+    "tests.player_facing_test",
     "tests.location_contract_test",
     "tests.location_cycle_integration_test",
 }

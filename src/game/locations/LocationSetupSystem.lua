@@ -45,6 +45,7 @@ function LocationSetupSystem.install(scheduler)
                 locationSize = { w = 18, h = 24 },
                 locationPlayer = true,
                 locationDesiredMovement = { dx = 0, dy = 0 },
+                locationPlayerAnimation = { elapsed = 0 },
                 locationSprite = {
                     key = "player_idle", frame = 1, row = 1,
                     offsetX = -7, offsetY = -24, scaleX = 1, scaleY = 1,

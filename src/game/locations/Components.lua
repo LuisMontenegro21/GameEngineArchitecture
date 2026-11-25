@@ -72,6 +72,12 @@ function Components.register(world)
             return type(value) == "table" and finite(value.dx) and finite(value.dy)
         end,
     })
+    world:registerComponent("locationPlayerAnimation", {
+        default = function() return { elapsed = 0 } end,
+        validate = function(value)
+            return type(value) == "table" and finite(value.elapsed) and value.elapsed >= 0
+        end,
+    })
     world:registerComponent("locationInteractable", { validate = locationInteractable })
     world:registerComponent("locationActivityStation", { tag = true })
     world:registerComponent("locationExit", { tag = true })

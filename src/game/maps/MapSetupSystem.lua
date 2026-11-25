@@ -77,6 +77,7 @@ function MapSetupSystem.install(scheduler)
                 mapPlayer = true,
                 mapCollider = { solid = true },
                 desiredMovement = { dx = 0, dy = 0 },
+                mapPlayerAnimation = { elapsed = 0 },
                 mapSprite = {
                     key = "player_idle", frame = 1, row = 1,
                     scaleX = 1, scaleY = 1, offsetX = -7, offsetY = -34, layer = "actors",

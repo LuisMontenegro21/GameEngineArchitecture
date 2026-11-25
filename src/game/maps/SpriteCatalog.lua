@@ -2,7 +2,7 @@
 local SpriteCatalog = {}
 
 local entries = {
-    { key = "player_idle", path = "assets/wizard_academia/map/player.png", frameW = 32, frameH = 48 },
+    { key = "player_idle", path = "assets/wizard_academia/characters/main-char-walk.png", frameW = 32, frameH = 48 },
     { key = "academy_tree", path = "assets/wizard_academia/maps/academy-tree.png", frameW = 96, frameH = 112 },
     { key = "ancient_library", path = "assets/wizard_academia/map/ancient-library.png", frameW = 192, frameH = 128 },
     { key = "student_commons", path = "assets/wizard_academia/map/student-commons.png", frameW = 192, frameH = 128 },
@@ -10,10 +10,10 @@ local entries = {
     { key = "quiet_garden", path = "assets/wizard_academia/map/quiet-garden.png", frameW = 224, frameH = 112 },
     { key = "quiet_pond", path = "assets/wizard_academia/map/quiet-pond.png", frameW = 224, frameH = 96 },
     { key = "garden_hedge", path = "assets/wizard_academia/map/garden-hedge.png", frameW = 64, frameH = 64 },
-    { key = "mentor_overworld", path = "assets/wizard_academia/map/characters/mentor.png", frameW = 32, frameH = 48 },
-    { key = "crush_overworld", path = "assets/wizard_academia/map/characters/crush.png", frameW = 32, frameH = 48 },
-    { key = "outgoing_peer_overworld", path = "assets/wizard_academia/map/characters/outgoing-peer.png", frameW = 32, frameH = 48 },
-    { key = "studious_peer_overworld", path = "assets/wizard_academia/map/characters/studious-peer.png", frameW = 32, frameH = 48 },
+    { key = "mentor_overworld", path = "assets/wizard_academia/characters/prof-elian-walk.png", frameW = 32, frameH = 48 },
+    { key = "crush_overworld", path = "assets/wizard_academia/characters/rowan-walk.png", frameW = 32, frameH = 48 },
+    { key = "outgoing_peer_overworld", path = "assets/wizard_academia/characters/mira-walk.png", frameW = 32, frameH = 48 },
+    { key = "studious_peer_overworld", path = "assets/wizard_academia/characters/tomas-walk-32.png", frameW = 32, frameH = 48 },
 }
 
 local function positiveInteger(value)
