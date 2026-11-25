@@ -31,9 +31,10 @@ la escena de entrenamiento, donde maneja el input, las actividades, feedback y l
 
 4. Deterministic card generation: [CardGenerationSystem.lua](src/game/cards/CardGenerationSystem.lua)
 Se crea una creación de cartas determinística para las diferentes cartas que logren aparecer en el juego. 
-De momento el generador no emplea uso de semillas o de contenido pseudo-aleatorio para la generación y elige la 
-primera de cada categoría (12 en total que van en categorías de _confidence_, _empathy_, _knowledge_ y _balanced_,
-como se ve en el [CardCatalog](src/game/cards/CardCatalog.lua)). 
+El generador emplea uso de contenido pseudo-aleatorio para la generación y elige la 
+primera de cada categoría (12 en total que van en categorías de _confidence_, _empathy_, _knowledge_ y _balanced_) 
+haciendo uso del día, semillas, stat dominante, última actividad y las cartas que se tiene en posesión,
+como se ve en el [CardCatalog](src/game/cards/CardCatalog.lua). 
 
 5. Card Acquisition Scene: [CardAcquisitionScene.lua](src/game/scenes/CardAcquisitionScene.lua)
 En esta escena se permite seleccionar 1 de  3 cartas desplegadas. Este se encarga, por medio de 
@@ -113,3 +114,39 @@ El bucle comienza con la escena de entrenamiento, presionar la tecla M lleva al 
 la tecla BACKSPACE se regresa a la escena de entrenamiento. Al retornar se preserva la sesión del juego
 por lo que la exploración del mapa no interfiere con el progreso del jugar ni lo reinicia.
 ![conserve state](assets/demo/conserve-state.gif)
+
+## UI Systems
+En este apartado se finaliza la implementación de los sistemas de UI para visualización. Se adjunta un sistema de visualización
+a cada escenario del mapa y se hace uso de sprites para una mejor visibilidad. En esta parte ya se tiene un producto final
+ya más acabado y mejorado al inicial. Se incluye sprites y mejor visibilidad del mapa, así como nuevas funcionalidades como interacciones y personajes. 
+
+
+## Enlaces de implementación UI Systems
+3 ejemplos de UI systems Setup -> Update -> Render
+### Training Activity
+Para las actividades seleccionadas el Setup toma el índice de la actividad y la conecta a la sesión y la inicializa,
+esto lo hace en [TrainingUiSetupSystem.lua](src/game/ui/TrainingUiSetupSystem.lua).
+Una vez hecho esto el Update se encarga de leer los inputs del teclado para la navegación, la selección de actividades,
+los stats y transiciones. Principalmente usando [TrainingActivitySystem.lua](src/game/ui/TrainingUiSetupSystem.lua). Al hacer esto el Render se encarga de mostrar en pantalla las actualizaciones hechas por el Update, usando [TrainingRenderSystem.lua](src/game/ui/TrainingRenderSystem.lua). 
+
+![small-sliding-game](assets/demo/small-sliding-game.gif)
+
+### Card Acquisiton / Collection 
+Para la adquisición de cartas el setup se hace usando [CardGenerationSystem.lua](src/game/ui/CardUiSetupSystem.lua) y
+[CardGenerationSystem.lua](src/game/cards/CardGenerationSystem.lua). Estas se encargan de crear las cartas a utilizar 
+en esa escena. Luego mediante [CardUiUpdateSystem.lua](src/game/ui/CardUiUpdateSystem.lua) se hace la actualización a las acciones hechas para con las cartas. Esto incluye también [CollectionNavigationSystem.lua](src/game/cards/CollectionNavigationSystem.lua) que permite recorrer la colección de cartas que se tiene. Luego 
+[CardRenderSystem.lua](src/game/ui/CardRenderSystem.lua) se encarga finalmente de desplegar en pantalla las cartas.
+[CardPresentationCatalog.lua](src/game/graphics/CardPresentationCatalog.lua) ayuda a desplegar el catálogo de cartas también.
+
+![card-selection](assets/demo/card-selection.gif)
+
+### Academy Map HUD / Location
+Para mostrar el mapa HUD se tiene [MapSetupSystem.lua](src/game/ui/MapHudSetupSystem.lua) que ayuda a agregar
+al organizador un nuevo sistema que permite desplegar un sistema nuevo con estado vacío. Para los sistemas de update del 
+mapa hay varios, por ejemplo [PointOfInterestSystem.lua](src/game/maps/PointOfInterestSystem.lua) que permite actualizar 
+cuando estamos próximos a algún objeto de interés, [PlayerMovementSystem.lua](src/game/maps/PlayerMovementSystem.lua) permite el
+movimiento del jugador a través del mapa, [MapCollisionSystem.lua](src/game/maps/MapCollisionSystem.lua) que detecta cuando hay un objeto y permite la colisión. Y para desplegar las actualizaciones de dichos sistemas se utiliza: [MapTerrainRenderSystem](src/game/ui/MapTerrainRenderSystem.lua) para desplegar en pantalla el terreno, [MapSpriteRenderSystem.lua](src/game/ui/MapSpriteRenderSystem.lua) para mostrar los sprites en pantalla, [MapHudRenderSystem.lua](src/game/ui/MapHudRenderSystem.lua) que permite el despliegue en pantalla de el panel de ubicación en pantalla, por ejemplo, cuando hay proximidad y 
+me indica el edificio próximo al que estoy. 
+
+![map-exploration](assets/demo/map-exploration.gif)
+
