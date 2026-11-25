@@ -122,7 +122,9 @@ ya más acabado y mejorado al inicial. Se incluye sprites y mejor visibilidad de
 
 
 ## Enlaces de implementación UI Systems
-3 ejemplos de UI systems Setup -> Update -> Render
+3 ejemplos de UI systems Setup -> Update -> Render. Estas UI sirven para darle mejor look al juego. Las actividades sirven 
+para ir ganando más confianza y adquirir cartas que sirven al final del juego y el mapa sirve para poder cambiar de escenas.
+
 ### Training Activity
 Para las actividades seleccionadas el Setup toma el índice de la actividad y la conecta a la sesión y la inicializa,
 esto lo hace en [TrainingUiSetupSystem.lua](src/game/ui/TrainingUiSetupSystem.lua).
