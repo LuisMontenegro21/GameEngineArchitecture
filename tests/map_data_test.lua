@@ -18,7 +18,7 @@ return function()
     assert(terrain:count() == 28 * 14,
         "the Academy Garden ground grid must contain no accidental empty holes")
     assert(#map.pointsOfInterest == 4, "the map requires four planned locations")
-    assert(#map.obstacles >= 6, "the map requires visible collision obstacles")
+    assert(#map.obstacles >= 5, "the map requires visible collision obstacles")
 
     local originalName = MapDefinition.get().pointsOfInterest[1].name
     map.pointsOfInterest[1].name = "changed"

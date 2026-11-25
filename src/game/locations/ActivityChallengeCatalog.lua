@@ -12,7 +12,9 @@ local definitions = {
         timing = {
             markerPosition = 0,
             direction = 1,
-            speed = 0.85,
+            -- Normalized track lengths per second. Faster than the original
+            -- 0.85 while retaining a readable response window.
+            speed = 1.15,
             targetStart = 0.42,
             targetEnd = 0.58,
         },

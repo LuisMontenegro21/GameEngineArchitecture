@@ -94,10 +94,10 @@ return function()
     rejectedScene:initialize()
     moveToTarget(rejectedScene, "practice_spells")
     pressScene(rejectedScene, "e")
-    completeChallenge(rejectedScene)
-    assert(rejected.actionsRemaining == 2 and rejected.stats.confidence == 0
+    assert(rejectedScene:world():requireResource("activityChallengeState") == false
+        and rejected.actionsRemaining == 2 and rejected.stats.confidence == 0
         and rejected.feedback:find("enough energy", 1, true),
-        "insufficient energy must reject safely without consuming a room action")
+        "insufficient energy must reject before opening a room challenge")
     rejectedScene:dispose()
 
     local dialogueScene = AcademyLocationScene(payload(GameSession.new(), "astral_court"))
@@ -135,15 +135,9 @@ return function()
     moveToTarget(manager:current(), "practice_spells")
     pressManager(manager, "e")
     challenge = manager:current():world():requireResource("activityChallengeState")
-    if challenge.mode == "timing" then
-        challenge.timing.markerPosition = (challenge.timing.targetStart + challenge.timing.targetEnd) / 2
-        manager:current():world():setResource("activityChallengeState", challenge)
-        pressManager(manager, "e")
-    else
-        for _, key in ipairs(challenge.steps) do pressManager(manager, key) end
-    end
-    assert(manager:current():name() == "cardAcquisition"
-        and session.dayPhase == "cardAcquisition" and session.actionsRemaining == 0,
-        "the second successful room activity must transition once to card acquisition")
+    assert(challenge == false and manager:current():name() == "academyLocation"
+        and session.actionsRemaining == 1
+        and session.feedback:find("already completed", 1, true),
+        "a completed room activity must not reopen its challenge or consume another action")
     manager:quit()
 end

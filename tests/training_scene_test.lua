@@ -59,6 +59,9 @@ return function()
         "successful training must provide feedback")
 
     session.energy = 0
+    -- This branch isolates the energy rejection rule from the separate
+    -- once-per-day activity rule exercised by map_activity_test.
+    session.completedActivities = {}
     world:setResource("gameSession", session)
     press(scene, "return")
     resolveDecision(scene)

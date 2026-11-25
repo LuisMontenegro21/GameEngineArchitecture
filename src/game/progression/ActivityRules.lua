@@ -14,6 +14,14 @@ function ActivityRules.resolve(session, activityId)
             reason = "That training activity is unavailable.",
         }
     end
+    if session.completedActivities and session.completedActivities[activityId] then
+        return {
+            activityId = activityId,
+            activity = activity,
+            success = false,
+            reason = "You have already completed that activity today. Try another location.",
+        }
+    end
     if session.actionsRemaining <= 0 then
         return {
             activityId = activityId,
@@ -61,6 +69,8 @@ function ActivityRules.apply(session, result)
             end
         end
         session.lastActivity = activity.id
+        session.completedActivities = session.completedActivities or {}
+        session.completedActivities[activity.id] = true
     end
     session.feedback = ActivityRules.feedback(result)
     return result

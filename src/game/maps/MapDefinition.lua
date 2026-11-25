@@ -146,15 +146,8 @@ local layout = {
             id = "quiet_pond", x = 630, y = 105, w = 205, h = 90,
             pointOfInterestId = "quiet_garden",
             sprite = {
-                key = "quiet_pond", offsetX = -10, offsetY = -6, scaleX = 1, scaleY = 1, layer = "scenery",
+                key = "quiet_garden", offsetX = -10, offsetY = -22, scaleX = 1, scaleY = 1, layer = "scenery",
                 fallback = { shape = "circle", color = { r = 0.18, g = 0.58, b = 0.70 } },
-            },
-        },
-        {
-            id = "garden_hedge", x = 340, y = 405, w = 55, h = 45,
-            sprite = {
-                key = "garden_hedge", offsetX = -5, offsetY = -19, scaleX = 1, scaleY = 1, layer = "scenery",
-                fallback = { shape = "rectangle", color = { r = 0.12, g = 0.38, b = 0.18 } },
             },
         },
     },

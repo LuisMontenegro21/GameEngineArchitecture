@@ -71,8 +71,11 @@ return function()
         "activity resolution must be pure until its result is applied")
     ActivityRules.apply(pureSession, resolved)
     assert(pureSession.actionsRemaining == 1 and pureSession.energy == 2
-        and pureSession.stats.confidence == 2,
+        and pureSession.stats.confidence == 2 and pureSession.completedActivities.practice_spells,
         "the shared rules must apply the established spell-practice result")
+    local repeated = ActivityRules.resolve(pureSession, "practice_spells")
+    assert(not repeated.success and repeated.reason:find("already completed", 1, true),
+        "a completed activity must be unavailable until the next academy day")
 
     local cases = {
         {

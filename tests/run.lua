@@ -40,6 +40,7 @@ local tests = {
     "tests.map_data_test",
     "tests.map_tile_foundation_test",
     "tests.map_terrain_paths_test",
+    "tests.map_terrain_sprite_test",
     "tests.map_asset_pipeline_test",
     "tests.map_sprite_conversion_test",
     "tests.academy_map_scene_test",

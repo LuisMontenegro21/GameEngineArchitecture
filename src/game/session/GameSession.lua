@@ -70,6 +70,14 @@ local function validCardList(cards, expectedCount, uniqueIds)
     return true
 end
 
+local function validCompletedActivities(value)
+    if type(value) ~= "table" then return false end
+    for activityId, completed in pairs(value) do
+        if type(activityId) ~= "string" or activityId == "" or completed ~= true then return false end
+    end
+    return true
+end
+
 local function validEndingId(endingId)
     if endingId == nil then return true end
     if type(endingId) ~= "string" then return false end
@@ -103,6 +111,7 @@ function GameSession.validate(session)
         and integer(session.stats.empathy, 0)
         and integer(session.stats.arcaneKnowledge, 0)
         and (session.lastActivity == nil or type(session.lastActivity) == "string")
+        and validCompletedActivities(session.completedActivities)
         and type(session.feedback) == "string"
         and validCardList(session.generatedCards, nil, true)
         and integer(session.generatedSelection, 1)
@@ -133,6 +142,7 @@ function GameSession.new(options)
             DEFAULTS.dailyConversationCompleted),
         stats = { confidence = 0, empathy = 0, arcaneKnowledge = 0 },
         lastActivity = nil,
+        completedActivities = options.completedActivities and copyTable(options.completedActivities) or {},
         feedback = "Choose a magical training activity.",
         generatedCards = {},
         generatedSelection = 1,

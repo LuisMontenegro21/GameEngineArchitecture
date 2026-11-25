@@ -11,13 +11,15 @@ The map remains separate from progression rules:
 - `TileGrid.lua`, `AutoTile.lua`, `TerrainDefinition.lua`, and
   `TerrainTilesets.lua` provide headless terrain foundations.
 - `AcademyGardenTiles.lua` describes the aligned 28-by-14 ground grid, and
-  `MapTerrainRenderSystem` draws its fallback grass and path tiles behind map
-  objects. `AcademyGardenTilesets.lua` declares future image-sheet metadata
-  without loading images yet.
+  `MapTerrainRenderSystem` draws its grass and connected-road tiles behind map
+  objects through the renderer-side image cache. Missing or wrong-sized tile
+  art keeps the colored fallback terrain.
 - `MapSpriteRenderSystem`, `MapLabelRenderSystem`, and `MapHudRenderSystem`
   own fallback world objects, world-space labels, and screen-space UI in that
   explicit order.
-- `SpriteCatalog.lua` stores plain sprite metadata. `src/game/graphics/`
+- `SpriteCatalog.lua` stores plain sprite metadata. The available Academy Tree
+  PNG is active; missing building/character PNGs retain their placeholders.
+  `src/game/graphics/`
   contains the renderer-side image, sheet, and quad caches; LOVE objects never
   enter map components, resources, events, or sessions.
 - Input, movement, collision, proximity, and transitions live in independent

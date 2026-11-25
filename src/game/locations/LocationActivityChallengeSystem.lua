@@ -1,5 +1,6 @@
 -- Opens a transient challenge when the player interacts with an activity.
 local ActivityChallengeCatalog = require("src.game.locations.ActivityChallengeCatalog")
+local ActivityRules = require("src.game.progression.ActivityRules")
 
 local LocationActivityChallengeSystem = {}
 
@@ -9,20 +10,33 @@ function LocationActivityChallengeSystem.install(scheduler)
         stage = "postFixedUpdate",
         after = { "locationDialogue" },
         readsResources = { "gameSession", "locationDefinition", "activityChallengeState" },
-        writesResources = { "activityChallengeState", "locationState" },
+        writesResources = { "gameSession", "activityChallengeState", "locationState" },
         run = function(context)
             local world = context.world
             if world:requireResource("activityChallengeState") then return end
             for event in world:events("locationActivityChallengeRequested") do
                 local location = world:requireResource("locationDefinition")
                 local state = world:requireResource("locationState")
+                local session = world:requireResource("gameSession")
                 if event.payload.activityId ~= location.activityId then
                     state.feedback = "That activity is unavailable in this location."
+                    session.feedback = state.feedback
+                    world:setResource("gameSession", session)
                     world:setResource("locationState", state)
                     return
                 end
-                if world:requireResource("gameSession").dayPhase ~= "activities" then
+                if session.dayPhase ~= "activities" then
                     state.feedback = "Activities are unavailable during this part of the day."
+                    session.feedback = state.feedback
+                    world:setResource("gameSession", session)
+                    world:setResource("locationState", state)
+                    return
+                end
+                local availability = ActivityRules.resolve(session, location.activityId)
+                if not availability.success then
+                    state.feedback = ActivityRules.feedback(availability)
+                    session.feedback = state.feedback
+                    world:setResource("gameSession", session)
                     world:setResource("locationState", state)
                     return
                 end

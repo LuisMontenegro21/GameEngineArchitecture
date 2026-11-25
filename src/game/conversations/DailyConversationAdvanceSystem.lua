@@ -23,6 +23,7 @@ function DailyConversationAdvanceSystem.install(scheduler)
                     session.generatedSelection = 1
                     session.cardChosenThisDay = false
                     session.lastActivity = nil
+                    session.completedActivities = {}
                     session.dailyConversationCompleted = false
                     session.dayPhase = "activities"
                     session.feedback = "A new academy day begins. Choose an activity."

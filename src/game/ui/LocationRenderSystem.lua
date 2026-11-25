@@ -64,7 +64,7 @@ local function drawWorldTargets(g, world, nearby)
     query:close()
 end
 
-local function drawActivityPanel(g, location, nearby)
+local function drawActivityPanel(g, location, nearby, session)
     local activity = assert(Activities.get(location.activityId))
     local x, y, width, height = 18, 112, 214, 102
     UiTheme.drawPanel(g, x, y, width, height, nearby and nearby.kind == "activity")
@@ -75,7 +75,9 @@ local function drawActivityPanel(g, location, nearby)
     UiTheme.setColor(g, UiTheme.colors.text)
     g.printf(activity.name, x + 12, y + 38, width - 24, "center")
     UiTheme.setColor(g, UiTheme.colors.muted)
-    g.printf(nearby and nearby.kind == "activity" and "E / ENTER: practice" or "Approach the marker",
+    local completed = session.completedActivities[activity.id]
+    g.printf(completed and "Completed today" or (nearby and nearby.kind == "activity"
+        and "E / ENTER: practice" or "Approach the marker"),
         x + 12, y + 68, width - 24, "center")
 end
 
@@ -229,7 +231,7 @@ function LocationRenderSystem.install(scheduler)
             drawWorldTargets(g, world, nearby)
             drawCharacters(g, characters, nearby)
             drawPlayer(g, world)
-            drawActivityPanel(g, location, nearby)
+            drawActivityPanel(g, location, nearby, world:requireResource("gameSession"))
             drawCharacterPanel(g, characters, nearby)
             UiTheme.drawPanel(g, 18, 385, 214, 54, nearby and nearby.kind == "exit")
             UiTheme.setColor(g, UiTheme.colors.heading)

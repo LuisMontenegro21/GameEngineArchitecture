@@ -3,7 +3,7 @@ local SpriteCatalog = {}
 
 local entries = {
     { key = "player_idle", path = "assets/wizard_academia/map/player.png", frameW = 32, frameH = 48 },
-    { key = "academy_tree", path = "assets/wizard_academia/map/academy-tree.png", frameW = 96, frameH = 112 },
+    { key = "academy_tree", path = "assets/wizard_academia/maps/academy-tree.png", frameW = 96, frameH = 112 },
     { key = "ancient_library", path = "assets/wizard_academia/map/ancient-library.png", frameW = 192, frameH = 128 },
     { key = "student_commons", path = "assets/wizard_academia/map/student-commons.png", frameW = 192, frameH = 128 },
     { key = "astral_court", path = "assets/wizard_academia/map/astral-court.png", frameW = 192, frameH = 96 },
