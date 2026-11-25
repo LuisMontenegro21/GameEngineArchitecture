@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Course portfolio for Wizard Academia and its custom Lua ECS engine.">
+  <meta name="description" content="Portafolio del curso Game Engine Architecture">
   <title>Wizard Academia | Game Engine Portfolio</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -12,20 +12,23 @@
     <a class="brand" href="#top">WIZARD ACADEMIA</a>
     <nav aria-label="Primary navigation">
       <a href="#features">Features</a>
-      <a href="#evidence">Evidence</a>
-      <a href="#reflection">Reflection</a>
+      <a href="#evidence">Evidencia</a>
+      <a href="#reflection">Reflexión</a>
     </nav>
   </header>
 
   <main id="top">
     <section class="hero">
-      <p class="eyebrow">COURSE PORTFOLIO · GAME ENGINE DEVELOPMENT</p>
+      <p class="eyebrow">PORTAFOLIO · GAME ENGINE DEVELOPMENT</p>
       <h1>Wizard Academia</h1>
       <p class="hero-copy">
-        <span class="fill-inline">[Write a two-to-three sentence introduction to your game, its goal, and your role in the project.]</span>
+        <span class="fill-inline">
+          Este proyecto tiene como propósito enseñar el funcionamiento de los ECS. Esto al hacer un pequeño juego
+          llamado Wizard Academia que se basa en una modalidad similar a los juegos dating sim. 
+        </span>
       </p>
       <div class="hero-actions">
-        <a class="button button-primary" href="[REPLACE-WITH-PUBLIC-REPOSITORY-URL]">Repository</a>
+        <a class="button button-primary" href="https://github.com/LuisMontenegro21/GameEngineArchitecture.git">Repository</a>
         <a class="button button-secondary" href="[REPLACE-WITH-PLAYABLE-BUILD-OR-VIDEO-URL]">Play / Watch</a>
       </div>
       <div class="media-placeholder hero-media">
@@ -36,20 +39,25 @@
 
     <section class="section" id="overview">
       <p class="eyebrow">PROJECT OVERVIEW</p>
-      <h2>Game premise and core loop</h2>
+      <h2>Premisa del juego y bucle</h2>
       <div class="two-column">
         <div>
-          <h3>Narrative premise</h3>
-          <p class="fill-in">[Explain the Wizard Academia premise, the homecoming goal, and why the player trains, explores, and speaks with characters.]</p>
+          <h3>Premisa</h3>
+          <p class="fill-in">
+            [Explain the Wizard Academia premise, the homecoming goal, and why the player trains, explores, and speaks with characters.]
+            El juego es un juego sencillo que trata sobre una pequeña academia de magia donde el jugador tiene 5 días para lograr ganar suficiente
+            confianza para invitar a su crush para el HoCo. Esto lo logra él al realizar actividades de distintas índoles y coleccionando cartas 
+            que le servirán en el quinto día para mejorar sus chances de que ella le acepte. 
+          </p>
         </div>
         <div>
-          <h3>Playable loop</h3>
+          <h3>Bucle</h3>
           <ol class="loop">
-            <li>Explore the Academy Garden.</li>
-            <li>Enter a location and complete activities.</li>
-            <li>Acquire a card shaped by the player's progress.</li>
-            <li>Use a collected card in a daily conversation.</li>
-            <li>Reach the homecoming conversation after day five.</li>
+            <li>Explorar el jardín de la academia</li>
+            <li>Entrar en alguna ubicación y completar actividades</li>
+            <li>Adquirir una carta a partir del progreso del jugador</li>
+            <li>Usar una carta coleccionada en una conversación</li>
+            <li>Llegar a la conversación de HoCo al final del quinto día</li>
           </ol>
         </div>
       </div>
@@ -57,8 +65,10 @@
 
     <section class="section" id="features">
       <p class="eyebrow">ENGINE FEATURES</p>
-      <h2>Implementation evidence</h2>
-      <p class="section-intro">Complete every card below with your own explanation, source links, and visual evidence. Duplicate a card if your course includes another main feature.</p>
+      <h2>Evidencia de implementación</h2>
+      <p class="section-intro">
+        Complete every card below with your own explanation, source links, and visual evidence. Duplicate a card if your course includes another main feature.
+      </p>
 
       <article class="feature-card" id="ecs">
         <div class="feature-heading">
@@ -113,14 +123,13 @@
           <section>
             <h4>Technical evidence</h4>
             <ul class="evidence-list">
-              <li><a href="[REPLACE-WITH-PROGRESSION-BRANCH-OR-CODE-LINK]">Progression source code</a></li>
+              <li><a href="https://github.com/LuisMontenegro21/GameEngineArchitecture/tree/origin/progression-cycle">Progression source code</a></li>
               <li><a href="[REPLACE-WITH-CARD-CODE-OR-TEST-LINK]">Card generation / collection code</a></li>
               <li>[Add progression and card-acquisition screenshots or video.]</li>
             </ul>
           </section>
           <section class="reflection-box">
-            <h4>My personal reflection</h4>
-            <p class="reflection-warning">Write this section yourself. Do not use AI-generated reflection text.</p>
+            <h4>Reflexión</h4>
             <p class="fill-in">[Your own reflection on progression systems, shared state, and player feedback.]</p>
           </section>
         </div>
@@ -146,14 +155,13 @@
           <section>
             <h4>Technical evidence</h4>
             <ul class="evidence-list">
-              <li><a href="[REPLACE-WITH-MAP-EXPLORATION-BRANCH-LINK]">Map Exploration branch</a></li>
+              <li><a href="https://github.com/LuisMontenegro21/GameEngineArchitecture/tree/origin/map-exploration">Map Exploration branch</a></li>
               <li><a href="[REPLACE-WITH-MAP-OR-LOCATION-CODE-LINK]">Map / location source code</a></li>
               <li>[Add map movement, room-entry, and return screenshots or video.]</li>
             </ul>
           </section>
           <section class="reflection-box">
-            <h4>My personal reflection</h4>
-            <p class="reflection-warning">Write this section yourself. Do not use AI-generated reflection text.</p>
+            <h4>Reflexión personal</h4>
             <p class="fill-in">[Your own reflection on spatial design, collision, scenes, and debugging interactions.]</p>
           </section>
         </div>
@@ -179,14 +187,13 @@
           <section>
             <h4>Technical evidence</h4>
             <ul class="evidence-list">
-              <li><a href="[REPLACE-WITH-UI-SYSTEMS-BRANCH-LINK]">UI Systems branch</a></li>
+              <li><a href="https://github.com/LuisMontenegro21/GameEngineArchitecture/tree/origin/ui-systems">UI Systems branch</a></li>
               <li><a href="[REPLACE-WITH-UI-CODE-OR-TEST-LINK]">UI source code and tests</a></li>
               <li>[Add UI navigation, card, and final-conversation screenshots or video.]</li>
             </ul>
           </section>
           <section class="reflection-box">
-            <h4>My personal reflection</h4>
-            <p class="reflection-warning">Write this section yourself. Do not use AI-generated reflection text.</p>
+            <h4>Reflexión personal</h4>
             <p class="fill-in">[Your own reflection on usability, visual hierarchy, and separating presentation from gameplay.]</p>
           </section>
         </div>
@@ -207,17 +214,29 @@
           <p class="fill-in">[Explain which mechanics and assets are original. List any external tools used and confirm that no course-example assets or mechanics were reused.]</p>
         </div>
       </div>
-      <div class="team-box">
-        <h3>Team contribution <span>(complete only if applicable)</span></h3>
-        <p class="fill-in">[List each member's concrete responsibility, decisions made together, and how integrated work was verified. Do not divide responsibility only by file names.]</p>
-      </div>
     </section>
 
     <section class="section final-reflection" id="reflection">
       <p class="eyebrow">FINAL REFLECTION</p>
-      <h2>What I learned from the course</h2>
-      <p class="reflection-warning">This reflection must be written individually in your own words. Do not use AI-generated text.</p>
-      <p class="fill-in large-fill">[Write your personal final reflection about low-level game development, engine creation, asset construction, and how these learnings relate to your future career in the video game industry.]</p>
+      <h2>Lo que aprendí durante el curso</h2>
+      <p class="fill-in large-fill">
+        [Write your personal final reflection about low-level game development, engine creation, asset construction, and how these learnings relate to your future career in the video game industry.]
+        Este curso me enseñó muchas cosas que yo previo a llevarlo desconocía. Entender un poco mejor la mecánica de los ECS me hizo darme cuenta de cómo realmente funcionan los videojuegos y 
+        entenderlos a mayor profundidad, inclusive si solo abarcamos muy poco sobre estos mismos, ayudó a darme una idea de todo el mundo que hay allá fuera. Yo previo al curso no sabía casi nada
+        del proceso de cómo se desarrolla un videojuego ya que no era mi especialidad pero igual considero que este tipo de engines ayudan a entender mejor 
+        cómo optimizar el manejo de memoria y que el programa logre ejecutarse suavemente, cosas que considero yo que son muy útiles si se desea construir software
+        de cualquier tipo; que este corra bien y maneje bien la memoria es un aspecto que se debe velar siempre. Por eso creo que construir este tipo de modelos donde 
+        se intenta, tal vez no manualmente manejar memoria como en C++, pero sí optimizarla, me deja conocimientos técnicos de cómo sacarle provecho a los recursos 
+        que tenemos en un sistema. 
+
+        También aprendí que el pixel art y hacer sprites es un poco más complicado de lo que esperaba y que trabajarlos para que lleguen a tener un diseño bonito y llamativo requiere de bastante 
+        esfuerzo, creo fue una de las cosas más difíciles. Otra cosa que este curso me dejó fue el saber cómo usar Lua, ya que yo previamente nunca lo había usado, solo a lo lejos sabía de su existencia. 
+        Este lenguaje me gustó por su simpleza, ya que es similar en sintaxis a lenguajes como Ruby o Python, pero eso también no me terminó de gustar mucho porque hay que poner un end a cada rato 
+        lo cual en ciclos anidados o condiciones if else muy grandes puede ser algo engorroso. Sin embargo, creo que es un lenguaje útil que posiblemente me sirva en un futuro y haberlo explorado 
+        preliminarmente en este curso me haya encaminado y disminuido un poco la curva de aprendizaje para futuras instancias. Por ende, creo estoy 
+        satisfecho con los aprendizajes que me llevo de este curso que pese a no estar 100% conectados con mi especialidad y futuro, sí 
+        me dejaron saberes nuevos que nutren mi comprensión total del mundo de videojuegos y de conceptos de bajo nivel.
+      </p>
     </section>
 
     <section class="section checklist">
@@ -234,7 +253,7 @@
   </main>
 
   <footer>
-    <p>Wizard Academia · <span class="fill-inline">[Your name] · [Course / semester]</span></p>
+    <p>Wizard Academia · <span class="fill-inline">Luis Pedro Montenegro · Game Engine Architecture</span></p>
   </footer>
 </body>
 </html>
