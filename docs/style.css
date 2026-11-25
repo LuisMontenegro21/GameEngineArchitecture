@@ -109,6 +109,8 @@ h4 { margin: 0 0 .55rem; color: var(--accent); font-family: Arial, sans-serif; f
 }
 .media-placeholder strong { color: var(--ink); }
 .hero-media { grid-column: 2; grid-row: 1 / span 4; min-height: 19rem; }
+.hero-video { display: flex; align-items: center; border: 1px solid var(--line); background: var(--panel); overflow: hidden; }
+.hero-video video { width: 100%; max-height: 27rem; display: block; }
 
 .section { padding: 5rem 0; border-top: 1px solid rgba(188, 179, 207, .2); }
 .section-intro { max-width: 45rem; color: var(--muted); margin-bottom: 2rem; }
