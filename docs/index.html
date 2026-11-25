@@ -11,6 +11,7 @@
   <header class="site-header">
     <a class="brand" href="#top">WIZARD ACADEMIA</a>
     <nav aria-label="Primary navigation">
+      <a href="#play">Jugar</a>
       <a href="#features">Features</a>
       <a href="#evidence">Evidencia</a>
       <a href="#reflection">Reflexión</a>
@@ -36,6 +37,31 @@
           <source src="assets/demo/demo-vid.mp4" type="video/mp4">
           Tu navegador no soporta video HTML5.
         </video>
+      </div>
+    </section>
+
+    <section class="section play-section" id="play">
+      <p class="eyebrow">PLAY THE GAME</p>
+      <h2>Dónde y cómo jugar</h2>
+      <p>Wizard Academia se ejecuta localmente con <a href="https://love2d.org/">L&Ouml;VE 11.5</a>. La versión jugable está en la rama 
+        <a href="https://github.com/LuisMontenegro21/GameEngineArchitecture/tree/origin/ui-systems"><code>origin/ui-systems</code></a>.</p>
+      <div class="two-column">
+        <div>
+          <h3>Instalación</h3>
+          <ol class="loop">
+            <li>Instala L&Ouml;VE 11.5.</li>
+            <li>Clona el repositorio y cambia a la rama del juego.</li>
+            <li>Desde la raíz del proyecto, ejecuta <code>love .</code>.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>Comandos</h3>
+          <pre class="command-block"><code>git clone https://github.com/LuisMontenegro21/GameEngineArchitecture.git
+cd GameEngineArchitecture
+git switch --track origin/origin/ui-systems
+love .</code></pre>
+          <p class="command-note">En Windows, si L&Ouml;VE no está en <code>PATH</code>: <code>&amp; "C:\Program Files\LOVE\love.exe" .</code></p>
+        </div>
       </div>
     </section>
 
@@ -72,8 +98,8 @@
         <div class="feature-heading">
           <p class="feature-number">01</p>
           <div>
-            <h3>Custom ECS and engine architecture</h3>
-            <p>Entities, components, resources, events, systems, scheduling, and scenes.</p>
+            <h3>Custom ECS</h3>
+            <p>Entidades, componentes, recursos, eventos, sistemas, scheduling y escenas.</p>
           </div>
         </div>
         <div class="feature-grid">
@@ -84,8 +110,8 @@
           <section>
             <h4>Conexión a la narrativa</h4>
             <p class="fill-in">
-              Este ECS sirve como la base o inspiración para los futuros sistemas a ser implementados para el juego. Sin este el juego no podría existir, ya 
-              que es el pilar fundamental para las siguientes fases.
+              Este ECS sirve como la base o inspiración para los futuros sistemas a ser implementados para el juego. Pese a ser parte del 
+              Breakout, se reutiliza mucho de su código y estructura para acoplarlo a Wizard Academia. 
             </p>
           </section>
           <section>
@@ -94,6 +120,9 @@
               <li><a href="https://github.com/LuisMontenegro21/GameEngineArchitecture/tree/origin/custom-ecs-breakout/src/engine/ecs">Código del ECS personalizado</a></li>
               <li><a href="https://github.com/LuisMontenegro21/GameEngineArchitecture/blob/origin/custom-ecs-breakout/src/engine/ecs/CONTRACTS.md">Contratos y reglas del ECS</a></li>
             </ul>
+            <div class="evidence-media">
+              <img src="assets/demo/breakout-demo.gif" alt="Demostración de Breakout implementado sobre el ECS personalizado">
+            </div>
           </section>
           <section class="reflection-box">
             <h4>Reflexión</h4>
@@ -120,7 +149,7 @@
         <div class="feature-grid">
           <section>
             <h4>Cómo se implementó</h4>
-            <p>El ciclo usa una sesión persistente para conservar el día, energía, acciones, estadísticas y colección entre escenas. El jugador explora la academia, completa actividades y luego recibe tres cartas. La selección de cartas es pseudoaleatoria determinista: combina la semilla de la partida, el día, la estadística dominante, la &uacute;ltima actividad y las cartas ya obtenidas. Al elegir una carta se avanza el día; en el quinto día se llega a la conversación final de HoCo.</p>
+            <p>El ciclo usa una sesión persistente para conservar el día, energía, acciones, estadísticas y colección entre escenas. El jugador explora la academia, completa actividades y luego recibe tres cartas. La selección de cartas es pseudoaleatoria determinista: combina la semilla de la partida, el día, la estadística dominante, la última actividad y las cartas ya obtenidas. Al elegir una carta se avanza el día; en el quinto día se llega a la conversación final de HoCo.</p>
           </section>
           <section>
             <h4>Conexión a la narrativa</h4>
@@ -145,6 +174,7 @@
               del juego inicialmente para tampoco complicarme mucho la vida, por eso se optó como decisión final este diseño de 12 cartas,
               actividades y de progresar hacia una propuesta de salida con Rowan. Esta parte del ejercicio me hizo cuestionarme bien 
               los requerimientos y practocar la planificación previo a la implementación, cosa que es útil en cualquier campo de tecnología.
+              También comenzar a familiarizarme con los bucles de juegos y el uso del delta time fue algo que aprendí con este ejercicio.
             </p>
           </section>
         </div>
@@ -154,18 +184,29 @@
         <div class="feature-heading">
           <p class="feature-number">03</p>
           <div>
-            <h3>Map exploration and location scenes</h3>
-            <p>Movement, collision, points of interest, room transitions, and scheduled characters.</p>
+            <h3>Mapa y ubicaciones</h3>
+            <p>Movimiento, colisión, puntos de interés y personajes</p>
           </div>
         </div>
         <div class="feature-grid">
           <section>
             <h4>Cómo se implementó</h4>
-            <p>La escena Academy Map crea el terreno, jugador, límites, obstáculos y cuatro puntos de interés: Ancient Library, Student Commons, Astral Practice Court y Quiet Garden. El input transforma WASD/flechas en movimiento con delta time; las colisiones impiden salir del mapa o atravesar objetos. Al acercarse a un lugar, el sistema detecta el punto de interés, muestra el HUD y permite entrar a una escena interior reutilizable. El retorno conserva la sesión y la posición de entrada.</p>
+            <p>La escena Academy Map crea el terreno, jugador, límites, obstáculos y cuatro puntos de interés: 
+              Ancient Library, Student Commons, Astral Practice Court y Quiet Garden. 
+              El input transforma WASD/flechas en movimiento con delta time; 
+              las colisiones impiden salir del mapa o atravesar objetos. Al acercarse a un lugar, 
+              el sistema detecta el punto de interés, muestra el HUD y permite entrar a una escena interior reutilizable. 
+              El retorno conserva la sesión y la posición de entrada.</p>
           </section>
           <section>
             <h4>Conexión a la narrativa</h4>
-            <p>El jardín funciona como el campus que conecta las actividades de preparación. Cada lugar responde a una actividad concreta y los personajes cambian de ubicación seg&uacute;n el día, por lo que la academia se presenta como un espacio explorable y no solamente como una lista de men&uacute;s.</p>
+            <p>El jardín funciona como el campus que conecta las actividades de preparación. 
+              Cada lugar responde a una actividad concreta y los personajes cambian de ubicación según el día, 
+              por lo que la academia se presenta como un espacio explorable y no solamente como una lista de menús.
+              En el mapa hay 4 lugares importantes: Ancient Library, Student Commons, Astral Practice Court y Quiet Garden.
+              La Ancient Library sirve para practicar concominiento y adquirirlo, los Student Commons es para que se practique 
+              la empatía, Astral Practice Court es para practicar la confianza y los hechizos y el Quiet Garden es para meditar.
+            </p>
           </section>
           <section>
             <h4>Evidencia</h4>
@@ -186,7 +227,8 @@
               y capaz hacer un juego que abarcase mucho. Intenté que quedase simple pero que a la vez fuera completo, sin embargo,
               considero que pude hacer un diseño mucho más bonito y mejor planeado del mapa. Sin embargo, creo que esto me enseñó
               a que debo cranearla un poco mejor antes de comenzar a trabajar en algo y eso es importante porque del error se 
-              aprende.
+              aprende. Ya como aprendizaje técnico esta entrega me dejó fue que ahora sé mejor cómo es que se despliega en el mapa el movimiento de un personaje y 
+              a trabajar en colisiones con objetos. 
             </p>
           </section>
         </div>
@@ -196,24 +238,53 @@
         <div class="feature-heading">
           <p class="feature-number">04</p>
           <div>
-            <h3>UI systems and player feedback</h3>
+            <h3>UI systems</h3>
             <p>Training, card acquisition, Academy Map HUD, room interactions, and final conversation UI.</p>
           </div>
         </div>
         <div class="feature-grid">
           <section>
             <h4>Cómo se implementó</h4>
-            <p>Se implementó tres sistemas principales de UI con la estructura Setup &rarr; Update &rarr; Render. La UI de entrenamiento inicializa la actividad seleccionada, procesa navegación y muestra acciones, energía y resultados. La UI de cartas inicializa el borrador diario y la colección, permite seleccionar/adquirir cartas y renderiza sus bases e íconos. El HUD del mapa inicia un estado vacío, actualiza el punto de interés o interacción cercana y renderiza objetivo, controles, etiquetas, diálogo y feedback. Las reglas de juego permanecen en sistemas de progresión, cartas y mapa.</p>
+            <div class="ui-system-detail">
+              <h5>1. UI de actividades de entrenamiento</h5>
+              <p><strong>Función:</strong> presenta las actividades disponibles, energía, acciones restantes y feedback. 
+                <strong>Setup:</strong> crea el estado de selección y enlaza la actividad con la sesión. 
+                <strong>Update:</strong> transforma las teclas de navegación y confirmación en eventos de selección o 
+                solicitud de actividad. <strong>Render:</strong> dibuja el menú, los datos de la sesión y el resultado de 
+                cada actividad, mientras que la lógica que modifica estadísticas permanece fuera de la UI.</p>
+            </div>
+            <div class="ui-system-detail">
+              <h5>2. UI de adquisición y colección de cartas</h5>
+              <p><strong>Función:</strong> muestra las tres cartas del borrador diario y permite 
+                revisar la colección persistente. <strong>Setup:</strong> inicializa el estado visual de 
+                cartas y recibe las opciones generadas por el sistema de cartas. <strong>Update:</strong> 
+                procesa la selección, adquisición y navegación de la colección. <strong>Render:</strong> 
+                presenta la carta elegida, sus datos, base visual e íconos; la generación y el almacenamiento de 
+                cartas continúan siendo responsabilidades separadas.</p>
+            </div>
+            <div class="ui-system-detail">
+              <h5>3. HUD del mapa y ubicaciones</h5>
+              <p><strong>Función:</strong> comunica el objetivo, controles, ubicación próxima, diálogo e 
+                instrucciones de interacción sin cubrir el mundo explorable. <strong>Setup:</strong> registra 
+                un estado inicial vacío para el HUD. <strong>Update:</strong> copia al estado visual la información 
+                de proximidad e interacción producida por los sistemas del mapa. <strong>Render:</strong> dibuja terreno, 
+                sprites, etiquetas y paneles de información; el movimiento, colisiones y detección de puntos de interés 
+                se mantienen en sistemas del mapa.</p>
+            </div>
           </section>
           <section>
             <h4>Conexión a la narrativa</h4>
-            <p>La interfaz comunica qué actividad se puede realizar, cuánta energía queda, qué cartas se obtuvieron y cuál es el siguiente objetivo. Esto mantiene clara la preparación gradual del personaje para la conversación final de HoCo sin separar al jugador de la ambientación de la academia.</p>
+            <p>La interfaz comunica qué actividad se puede realizar, 
+              cuánta energía queda, qué cartas se obtuvieron y cuál es el siguiente objetivo. 
+              Esto mantiene clara la preparación gradual del personaje para la conversación 
+              final de HoCo sin separar al jugador de la ambientación de la academia.</p>
           </section>
           <section>
             <h4>Evidencia</h4>
             <ul class="evidence-list">
-              <li><a href="https://github.com/LuisMontenegro21/GameEngineArchitecture/tree/origin/ui-systems/src/game/ui">Código de los sistemas de UI</a></li>
-              <li><a href="https://github.com/LuisMontenegro21/GameEngineArchitecture/tree/origin/ui-systems/src/game/scenes">Escenas que integran las interfaces</a></li>
+              <li><a href="https://github.com/LuisMontenegro21/GameEngineArchitecture/blob/origin/ui-systems/src/game/ui/TrainingUiSetupSystem.lua">UI de entrenamiento: Setup</a>, <a href="https://github.com/LuisMontenegro21/GameEngineArchitecture/blob/origin/ui-systems/src/game/ui/TrainingUiUpdateSystem.lua">Update</a> y <a href="https://github.com/LuisMontenegro21/GameEngineArchitecture/blob/origin/ui-systems/src/game/ui/TrainingRenderSystem.lua">Render</a>.</li>
+              <li><a href="https://github.com/LuisMontenegro21/GameEngineArchitecture/blob/origin/ui-systems/src/game/ui/CardUiSetupSystem.lua">UI de cartas: Setup</a>, <a href="https://github.com/LuisMontenegro21/GameEngineArchitecture/blob/origin/ui-systems/src/game/ui/CardUiUpdateSystem.lua">Update</a> y <a href="https://github.com/LuisMontenegro21/GameEngineArchitecture/blob/origin/ui-systems/src/game/ui/CardRenderSystem.lua">Render</a>.</li>
+              <li><a href="https://github.com/LuisMontenegro21/GameEngineArchitecture/blob/origin/ui-systems/src/game/ui/MapHudSetupSystem.lua">HUD del mapa: Setup</a>, <a href="https://github.com/LuisMontenegro21/GameEngineArchitecture/blob/origin/ui-systems/src/game/ui/MapHudUpdateSystem.lua">Update</a> y <a href="https://github.com/LuisMontenegro21/GameEngineArchitecture/blob/origin/ui-systems/src/game/ui/MapHudRenderSystem.lua">Render</a>.</li>
             </ul>
             <div class="evidence-media">
               <img src="assets/demo/training-scene.png" alt="Interfaz de actividades de entrenamiento">
@@ -228,7 +299,9 @@
               de la implementación inicial, y segundo que al tener que agregarle sprites siento que el diseño no quedaba como esperaba yo.
               Eso fue lo que más tiempo me tomó. Sin embargo, creo que sí logré separar las responsabilidades para que no fuera tan difícil
               refactorizar el juego, y a la vez separar responsabilidades cada quien en su propio archivo. No obstante, sigo creyendo que 
-              el resultado final pudo haber sido mejor si hubiera hecho con más tiempo, cosa que debo mejorar. 
+              el resultado final pudo haber sido mejor si hubiera hecho con más tiempo, cosa que debo mejorar. Y como aprendizaje 
+              esta entrega me enseñó a cómo integrar sprites en la visualización y a emplear Setup, Update y Render para poder 
+              desplegar en pantalla las acciones y concretarlas con cada input del usuario.
             </p>
           </section>
         </div>
@@ -237,11 +310,14 @@
 
     <section class="section" id="evidence">
       <p class="eyebrow">PROJECT EVIDENCE</p>
-      <h2>Repository testing</h2>
+      <h2>Testing</h2>
       <div class="one-column">
         <div>
           <h3>Pruebas y verificación</h3>
-          <p>La suite se ejecuta sin depender de L&Ouml;VE con <code>lua tests/run.lua</code>. Cada prueba usa <code>pcall</code>, <code>require</code> y aserciones locales, por lo que puede validar la lógica del motor y del juego de forma repetible.</p>
+          <p>La suite se ejecuta sin depender de L&Ouml;VE con <code>lua tests/run.lua</code>. 
+            Cada prueba usa <code>pcall</code>, <code>require</code> y aserciones locales, por lo que puede validar la 
+            lógica del motor y del juego de forma repetible.
+          </p>
           <ul class="evidence-list">
             <li><strong>ECS:</strong> <code>entity_test</code>, <code>component_test</code>, <code>resource_test</code>, <code>query_test</code>, <code>command_test</code>, <code>event_test</code>, <code>runtime_test</code>, <code>snapshot_test</code>, <code>relationship_test</code> y <code>diagnostics_test</code>.</li>
             <li><strong>Escenas y progresión:</strong> <code>scene_test</code>, <code>scene_runner_test</code>, <code>scene_event_transition_test</code>, <code>game_session_alpha_test</code>, <code>progression_cycle_test</code>, <code>arcane_daily_cycle_test</code>, <code>card_generation_alpha_test</code> y <code>card_acquisition_scene_test</code>.</li>
@@ -259,7 +335,7 @@
     </section>
 
     <section class="section final-reflection" id="reflection">
-      <p class="eyebrow">FINAL REFLECTION</p>
+      <p class="eyebrow">Reflexión Final</p>
       <h2>Lo que aprendí durante el curso</h2>
       <p class="fill-in large-fill">
         Este curso me enseñó muchas cosas que yo previo a llevarlo desconocía. Entender un poco mejor la mecánica de los ECS me hizo darme cuenta de cómo realmente funcionan los videojuegos y 
@@ -276,8 +352,10 @@
         lo cual en ciclos anidados o condiciones if else muy grandes puede ser algo engorroso. Sin embargo, creo que es un lenguaje útil que posiblemente me sirva en un futuro y haberlo explorado 
         preliminarmente en este curso me haya encaminado y disminuido un poco la curva de aprendizaje para futuras instancias. Por ende, creo estoy 
         satisfecho con los aprendizajes que me llevo de este curso que pese a no estar 100% conectados con mi especialidad y futuro, sí 
-        me dejaron saberes nuevos que nutren mi comprensión total del mundo de videojuegos y de conceptos de bajo nivel que me van a servir 
-        como aprendizaje de por vida. 
+        me dejaron saberes nuevos que nutren mi comprensión total del mundo de videojuegos y de conceptos de bajo nivel que pueden ayudarme a tener 
+        un mejor conocimiento sobre dichas tecnologías y que inclusive me pueden servir en mi carrera de ciberseguridad al yo conocer ya mejor fundamentos 
+        internos básicos de un videojuego y hacer más fácil las tareas que pueden ser de ingeniería inversa, como se ha visto mucho 
+        hoy en día con los videojuegos y la IA; entonces ya saber cómo funciona hace más claro esta tarea.
       </p>
     </section>
 

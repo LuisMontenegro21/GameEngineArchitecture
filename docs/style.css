@@ -114,6 +114,9 @@ h4 { margin: 0 0 .55rem; color: var(--accent); font-family: Arial, sans-serif; f
 
 .section { padding: 5rem 0; border-top: 1px solid rgba(188, 179, 207, .2); }
 .section-intro { max-width: 45rem; color: var(--muted); margin-bottom: 2rem; }
+.play-section { padding-top: 3rem; }
+.command-block { margin: 0; padding: 1rem; overflow-x: auto; border: 1px solid var(--line); background: var(--panel); }
+.command-note { margin-bottom: 0; color: var(--muted); font-size: .9rem; }
 .two-column { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
 .loop { margin: 0; padding-left: 1.3rem; }
 .loop li { margin-bottom: .45rem; }
@@ -129,6 +132,9 @@ h4 { margin: 0 0 .55rem; color: var(--accent); font-family: Arial, sans-serif; f
 .feature-number { min-width: 2rem; font-size: 1rem; }
 .feature-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.7rem 2.4rem; }
 .feature-grid section { padding-top: .75rem; border-top: 1px solid rgba(188, 179, 207, .18); }
+.ui-system-detail + .ui-system-detail { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(188, 179, 207, .12); }
+.ui-system-detail h5 { margin: 0 0 .4rem; color: var(--accent-soft); font-family: Arial, sans-serif; font-size: .9rem; }
+.ui-system-detail p { margin: 0; }
 
 .fill-in, .fill-inline {
   color: var(--warning);
